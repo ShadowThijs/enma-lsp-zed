@@ -1,0 +1,491 @@
+==========
+Comments
+==========
+
+// line comment
+int32 x;
+
+/* block comment */
+int32 y;
+
+/* nested /* block */ comment */
+int32 z;
+
+==========
+Primitive types
+==========
+
+bool b = true;
+char c = 'A';
+wchar wc = L'A';
+int8 i8 = -128;
+int16 i16 = -32768;
+int32 i32 = -2147483648;
+int64 i64 = -9223372036854775808;
+uint8 u8 = 255;
+uint16 u16 = 65535;
+uint32 u32 = 4294967295;
+uint64 u64 = 18446744073709551615;
+float32 f32 = 3.14f;
+float64 f64 = 3.14159265358979;
+string s = "hello";
+wstring ws = L"hello";
+void nothing;
+
+==========
+Number literals
+==========
+
+int64 dec = 42;
+int64 hex = 0xFF;
+int64 bin = 0b1010;
+int64 big = 1_000_000;
+int64 hex_u = 0xFF_FF_FF;
+float64 exp = 1.5e-3;
+float32 f_ex = 3.14f;
+float64 sci = 1.5e+3;
+int64 km = 42_km;
+float64 deg = 180.0_deg;
+
+==========
+String escapes
+==========
+
+string s1 = "hello\nworld";
+string s2 = "tab\there";
+string s3 = "backslash\\";
+string s4 = "quote\"inside";
+string s5 = "\x41\x42\x43";
+string s6 = "null\0char";
+wstring ws1 = L"wide\nstring";
+
+==========
+f-strings (interpolation)
+==========
+
+int32 x = 5;
+string s = f"value is {x}";
+string t = f"sum = {x + x * 2}";
+string u = f"nested {f"inner {x}"}";
+
+==========
+Variables
+==========
+
+int32 x = 42;
+const float64 PI = 3.14;
+constexpr int32 MAX = 100;
+auto y = x + 1;
+nullable int32 n = null;
+
+int64 a = 10, b = 20, c = 30;
+
+==========
+Operators
+==========
+
+int64 r = a + b - c * d / e % f;
+bool eq = a == b;
+bool ne = a != b;
+bool lt = a < b;
+bool le = a <= b;
+bool gt = a > b;
+bool ge = a >= b;
+bool three = a <=> b;
+bool land = a && b;
+bool lor = a || b;
+int64 band = a & b;
+int64 bor = a | b;
+int64 bxor = a ^ b;
+int64 shl = a << b;
+int64 shr = a >> b;
+
+a += 1;
+b -= 2;
+c *= 3;
+d /= 4;
+e %= 5;
+f &= 6;
+g |= 7;
+h ^= 8;
+i <<= 9;
+j >>= 10;
+
+int64 pre = ++a;
+int64 post = a++;
+int64 pre_d = --b;
+int64 post_d = b--;
+
+int64 t = cond ? a : b;
+int64 cs = cast<int64>(f);
+int64 ss = static_cast<int64>(f);
+int64 rs = reinterpret_cast<uint32>(f);
+int64 co = const_cast<int32>(x);
+
+int64 sz = sizeof(int32);
+int64 off = offsetof(Point, x);
+
+int64 ip = new int32(5);
+int64 dp = delete p;
+delete[] arr;
+
+==========
+Control flow
+==========
+
+if (x > 0) {
+    println("positive");
+} else if (x == 0) {
+    println("zero");
+} else {
+    println("negative");
+}
+
+while (x > 0) {
+    x = x - 1;
+}
+
+do {
+    x = x + 1;
+} while (x < 10);
+
+for (int32 i = 0; i < 10; i++) {
+    println(i);
+}
+
+int32[] arr = {1, 2, 3};
+for (int32 v : arr) {
+    println(v);
+}
+
+switch (x) {
+    case 1: println("one"); break;
+    case 2: println("two"); break;
+    default: println("other");
+}
+
+int32 r = match (x) {
+    1 => 10,
+    2 => 20,
+    _ => 0
+};
+
+defer { println("cleanup"); }
+
+goto done;
+done:
+println("reached");
+
+==========
+Functions
+==========
+
+int32 add(int32 a, int32 b) {
+    return a + b;
+}
+
+int32 add_default(int32 a, int32 b = 10) {
+    return a + b;
+}
+
+void swap(int32& a, int32& b) {
+    int32 t = a;
+    a = b;
+    b = t;
+}
+
+void compute(int32 input, out int32 result) {
+    result = input / 10;
+}
+
+int64 sum(...) {
+    int64 s = 0;
+    int64 i = 0;
+    while (i < __va_count) {
+        s = s + __va_arg(i);
+        i = i + 1;
+    }
+    return s;
+}
+
+int32 forward(int32 x);
+
+int32 bar() { return forward(5); }
+
+int32 forward(int32 x) { return x * 2; }
+
+extern int32 host_fn(int32);
+
+constexpr int32 fact(int32 n) {
+    if (n <= 1) return 1;
+    return n * fact(n - 1);
+}
+
+==========
+Lambdas
+==========
+
+delegate int32 Transform(int32 x);
+
+Transform fn = [](int32 x) -> int32 { return x * 2; };
+Transform fn2 = (int32 x) => x * 2;
+int64 fn3 = (int32 a, int32 b) => {
+    int32 s = a + b;
+    return s * 2;
+};
+int64 fn4 = () => 42;
+
+int32 base = 100;
+Transform adder = [](int32 x) -> int32 { return base + x; };
+Transform cap = [&base](int32 x) -> int32 { return base + x; };
+
+==========
+Structs
+==========
+
+struct Point {
+    int32 x;
+    int32 y;
+    Point(int32 ix, int32 iy) { x = ix; y = iy; }
+    int32 sum() { return x + y; }
+    ~Point() { }
+}
+
+Point p = Point(3, 4);
+Point q = {5, 6};
+Point r = {.x = 7, .y = 8};
+
+struct Vec2 {
+    float64 x;
+    float64 y;
+    Vec2 operator+(Vec2 o) { return Vec2(x + o.x, y + o.y); }
+    bool operator==(Vec2 o) { return x == o.x && y == o.y; }
+    property int32 mag_sq { get { return x*x + y*y; } }
+}
+
+struct Flags {
+    uint32 ready : 1;
+    uint32 mode : 3;
+}
+
+[[packed]] struct Header { uint8 kind; uint32 size; }
+[[align(16)]] struct Aligned { int32 x; int32 y; }
+
+==========
+Classes
+==========
+
+class Entity {
+    int32 hp;
+    Entity(int32 h) { hp = h; }
+    int32 get_hp() { return hp; }
+    ~Entity() {}
+}
+
+class Player : Entity {
+    int32 xp;
+    Player(int32 h, int32 x) { hp = h; xp = x; }
+    int32 get_hp() override { return hp + xp * 10; }
+}
+
+class Wizard : Entity {
+    int32 mp;
+    Wizard(int32 h, int32 m) : Entity(h) { mp = m; }
+}
+
+class C : A, B {
+    override int32 sig() { return 999; }
+}
+
+==========
+Interfaces
+==========
+
+interface Shape {
+    int32 area();
+    int32 kind();
+}
+
+struct Rect : Shape {
+    int32 w; int32 h;
+    int32 area() override { return w * h; }
+    int32 kind() override { return 1; }
+}
+
+==========
+Mixins
+==========
+
+struct Box { int32 w; int32 h; }
+
+mixin int32 Box::area() { return w * h; }
+
+==========
+Enums
+==========
+
+enum Color { Red = 0, Green = 1, Blue = 2 }
+
+Color c = Color::Red;
+
+==========
+Typedefs
+==========
+
+using ID = int32;
+typedef int32 CID;
+
+==========
+Templates
+==========
+
+template<typename T>
+struct Container {
+    T value;
+    Container(T v) { value = v; }
+    T get() { return value; }
+}
+
+Container<int32> bi = Container<int32>(42);
+
+template<typename T>
+T max_val(T a, T b) {
+    if (a > b) return a;
+    return b;
+}
+
+int32 m = max_val<int32>(10, 20);
+
+==========
+Annotations
+==========
+
+[[inline]] int32 hot_fn(int32 x) { return x * 2; }
+[[noinline]] int32 cold_fn(int32 x) { return x + 1; }
+[[noopt]] int32 debug_fn(int32 x) { return x + 1; }
+[[reflect]] struct Data { int32 v; }
+[[export]] int32 public_api(int32 x) { return x * 2; }
+
+[[dll("libc.so.6")]]
+extern int64 getpid();
+
+[[priority(5)]]
+[[category("combat")]]
+void attack(int32 target) { }
+
+==========
+Namespaces
+==========
+
+namespace math {
+    int32 square(int32 x) { return x * x; }
+    int32 cube(int32 x) { return x * x * x; }
+}
+
+using namespace math;
+int32 r = square(5);
+
+==========
+Coroutines
+==========
+
+coroutine int32 counter(int32 start) {
+    int32 i = start;
+    while (true) {
+        yield i;
+        i = i + 1;
+    }
+}
+
+coroutine_t c = counter(0);
+
+==========
+Exceptions
+==========
+
+try {
+    if (x < 0) throw -1;
+    process(x);
+} catch (int32 e) {
+    println(e);
+}
+
+struct NetErr { int32 code; string msg; }
+
+try {
+    throw NetErr(503, "timeout");
+} catch (NetErr e) {
+    println(e.code);
+}
+
+==========
+Preprocessor
+==========
+
+#define MAX_HP 100
+#define SQUARE(x) ((x) * (x))
+
+#ifdef DEBUG
+    println("debug");
+#else
+    println("release");
+#endif
+
+#if VER > 40
+    int32 v = VER;
+#endif
+
+#include "helpers.em"
+#pragma once
+
+==========
+Pointers
+==========
+
+struct Node { int32 v; Node(int32 x) { v = x; } }
+
+Node* p = new Node(42);
+int32 val = p->v;
+delete p;
+
+Node* p2 = null;
+
+Node* a = new Node(1);
+Node* b = a;
+delete a;
+
+Pt* a2 = new Pt(1, 2);
+Pt b2 = *a2;
+
+Pt* a3 = new Pt(1, 2);
+Pt* b3 = move(a3);
+
+struct P { int32 x; int32 y; }
+P* ps = new P[10];
+delete[] ps;
+
+P* ys = new P[4](3, 5);
+delete[] ys;
+
+==========
+static_assert / constexpr
+==========
+
+static_assert(sizeof(int32) == 4, "int32 must be 4 bytes");
+
+constexpr int32 FACT10 = fact(10);
+static_assert(FACT10 == 3628800);
+
+==========
+Functions (advanced)
+==========
+
+delegate int32 Transform(int32 x);
+
+int64 fn_ptr = @add;
+
+// function reference
+delegate int32 BinOp(int32 a, int32 b);
+int32 add_two(int32 a, int32 b) { return a + b; }
+BinOp op = add_two;
+int32 result = op(3, 4);

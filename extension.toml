@@ -5,3 +5,7 @@ schema_version = 1
 authors = ["Shadowthijs <logtenbergthijs@yahoo.com>"]
 description = "Enma language extension"
 repository = "https://github.com/shadowthijs/enma-lsp-zed"
+
+[grammars.enma]
+repository = "https://github.com/shadowthijs/tree-sitter-enma"
+rev = "main"

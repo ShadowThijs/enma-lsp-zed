@@ -1,0 +1,5 @@
+{
+  "name": "tree-sitter-enma",
+  "version": "0.0.1",
+  "description": "Enma language grammar for tree-sitter"
+}

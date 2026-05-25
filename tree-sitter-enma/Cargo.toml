@@ -1,0 +1,15 @@
+[package]
+name = "tree-sitter-enma"
+description = "Enma language grammar for tree-sitter"
+version = "0.0.1"
+edition = "2021"
+license = "MIT"
+
+[lib]
+path = "bindings/rust/lib.rs"
+
+[dependencies]
+tree-sitter-language = "0.1"
+
+[build-dependencies]
+cc = "1"
