@@ -854,6 +854,8 @@ module.exports = grammar({
       'aint8', 'aint16', 'aint32', 'aint64',
       'float32', 'float64', 'float', 'double',
       'string', 'wstring', 'size_t', 'auto',
+      // Math/Perception types (safe — have _t suffix or are standard math types)
+      'vec2', 'vec3', 'vec4', 'quat', 'mat4',
     ),
 
     pointer_type: $ => prec(15, seq(

@@ -135550,6 +135550,10 @@
     "named": false
   },
   {
+    "type": "mat4",
+    "named": false
+  },
+  {
     "type": "match",
     "named": false
   },
@@ -135615,6 +135619,10 @@
   },
   {
     "type": "public",
+    "named": false
+  },
+  {
+    "type": "quat",
     "named": false
   },
   {
@@ -135707,6 +135715,18 @@
   },
   {
     "type": "using",
+    "named": false
+  },
+  {
+    "type": "vec2",
+    "named": false
+  },
+  {
+    "type": "vec3",
+    "named": false
+  },
+  {
+    "type": "vec4",
     "named": false
   },
   {

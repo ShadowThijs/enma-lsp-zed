@@ -249,19 +249,22 @@ impl Backend {
         let mut results = Vec::new();
 
         if node.is_error() || node.is_missing() {
-            let range = node_range(&node);
-            results.push(Diagnostic {
-                range,
-                severity: Some(DiagnosticSeverity::ERROR),
-                code: Some(NumberOrString::String("syntax-error".into())),
-                source: Some("enma-lsp".into()),
-                message: if node.is_missing() {
-                    format!("Missing: {}", node.kind())
-                } else {
-                    "Syntax error".into()
-                },
-                ..Default::default()
-            });
+            // Only report leaf errors — skip large ERROR nodes that contain
+            // children (those children will be reported individually).
+            if node.child_count() == 0 {
+                results.push(Diagnostic {
+                    range: node_range(&node),
+                    severity: Some(DiagnosticSeverity::ERROR),
+                    code: Some(NumberOrString::String("syntax-error".into())),
+                    source: Some("enma-lsp".into()),
+                    message: if node.is_missing() {
+                        format!("Missing: {}", node.kind())
+                    } else {
+                        "Syntax error".into()
+                    },
+                    ..Default::default()
+                });
+            }
         }
 
         let mut cursor = node.walk();
@@ -282,7 +285,7 @@ fn find_named_leaf(node: tree_sitter::Node, pos: Position) -> tree_sitter::Node 
     let mut cursor = node.walk();
     for child in node.children(&mut cursor) {
         let cr = node_range(&child);
-        if range_contains(&cr, target) && child.start_position().row == target.line as usize {
+        if range_contains(&cr, target) {
             if child.child_count() == 0 || child.kind() == "identifier" {
                 return child;
             }
