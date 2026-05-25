@@ -119,9 +119,9 @@ impl LanguageServer for Backend {
                 let best = model.symbols.iter()
                     .filter(|s| range_contains(&s.range, pos))
                     .min_by_key(|s| {
-                        let lines = s.range.end.line - s.range.start.line;
-                        let chars = s.range.end.character as i64 - s.range.start.character as i64;
-                        lines * 1000 + chars.abs()
+                        let lines = (s.range.end.line - s.range.start.line) as u64;
+                        let chars = s.range.end.character.abs_diff(s.range.start.character) as u64;
+                        lines * 1000 + chars
                     });
 
                 if let Some(sym) = best {
