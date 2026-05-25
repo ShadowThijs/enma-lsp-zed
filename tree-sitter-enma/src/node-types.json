@@ -4448,6 +4448,10 @@
       "required": false,
       "types": [
         {
+          "type": "array_type",
+          "named": true
+        },
+        {
           "type": "boolean_literal",
           "named": true
         },
@@ -4461,6 +4465,10 @@
         },
         {
           "type": "f_string_literal",
+          "named": true
+        },
+        {
+          "type": "generic_type",
           "named": true
         },
         {
@@ -4484,6 +4492,10 @@
           "named": true
         },
         {
+          "type": "nullable_type",
+          "named": true
+        },
+        {
           "type": "number_literal",
           "named": true
         },
@@ -4492,7 +4504,23 @@
           "named": true
         },
         {
+          "type": "pointer_type",
+          "named": true
+        },
+        {
+          "type": "primitive_type",
+          "named": true
+        },
+        {
+          "type": "reference_type",
+          "named": true
+        },
+        {
           "type": "scope_resolution",
+          "named": true
+        },
+        {
+          "type": "scope_type",
           "named": true
         },
         {
@@ -8924,6 +8952,10 @@
       "required": false,
       "types": [
         {
+          "type": "array_type",
+          "named": true
+        },
+        {
           "type": "boolean_literal",
           "named": true
         },
@@ -8937,6 +8969,10 @@
         },
         {
           "type": "f_string_literal",
+          "named": true
+        },
+        {
+          "type": "generic_type",
           "named": true
         },
         {
@@ -8960,6 +8996,10 @@
           "named": true
         },
         {
+          "type": "nullable_type",
+          "named": true
+        },
+        {
           "type": "number_literal",
           "named": true
         },
@@ -8968,7 +9008,23 @@
           "named": true
         },
         {
+          "type": "pointer_type",
+          "named": true
+        },
+        {
+          "type": "primitive_type",
+          "named": true
+        },
+        {
+          "type": "reference_type",
+          "named": true
+        },
+        {
           "type": "scope_resolution",
+          "named": true
+        },
+        {
+          "type": "scope_type",
           "named": true
         },
         {
@@ -13400,6 +13456,10 @@
       "required": false,
       "types": [
         {
+          "type": "array_type",
+          "named": true
+        },
+        {
           "type": "boolean_literal",
           "named": true
         },
@@ -13413,6 +13473,10 @@
         },
         {
           "type": "f_string_literal",
+          "named": true
+        },
+        {
+          "type": "generic_type",
           "named": true
         },
         {
@@ -13436,6 +13500,10 @@
           "named": true
         },
         {
+          "type": "nullable_type",
+          "named": true
+        },
+        {
           "type": "number_literal",
           "named": true
         },
@@ -13444,7 +13512,23 @@
           "named": true
         },
         {
+          "type": "pointer_type",
+          "named": true
+        },
+        {
+          "type": "primitive_type",
+          "named": true
+        },
+        {
+          "type": "reference_type",
+          "named": true
+        },
+        {
           "type": "scope_resolution",
+          "named": true
+        },
+        {
+          "type": "scope_type",
           "named": true
         },
         {
@@ -31864,6 +31948,10 @@
       "required": false,
       "types": [
         {
+          "type": "array_type",
+          "named": true
+        },
+        {
           "type": "boolean_literal",
           "named": true
         },
@@ -31881,6 +31969,10 @@
         },
         {
           "type": "f_string_literal",
+          "named": true
+        },
+        {
+          "type": "generic_type",
           "named": true
         },
         {
@@ -31904,6 +31996,10 @@
           "named": true
         },
         {
+          "type": "nullable_type",
+          "named": true
+        },
+        {
           "type": "number_literal",
           "named": true
         },
@@ -31912,7 +32008,23 @@
           "named": true
         },
         {
+          "type": "pointer_type",
+          "named": true
+        },
+        {
+          "type": "primitive_type",
+          "named": true
+        },
+        {
+          "type": "reference_type",
+          "named": true
+        },
+        {
           "type": "scope_resolution",
+          "named": true
+        },
+        {
+          "type": "scope_type",
           "named": true
         },
         {
@@ -45291,6 +45403,10 @@
       "required": false,
       "types": [
         {
+          "type": "array_type",
+          "named": true
+        },
+        {
           "type": "boolean_literal",
           "named": true
         },
@@ -45304,6 +45420,10 @@
         },
         {
           "type": "f_string_literal",
+          "named": true
+        },
+        {
+          "type": "generic_type",
           "named": true
         },
         {
@@ -45327,6 +45447,10 @@
           "named": true
         },
         {
+          "type": "nullable_type",
+          "named": true
+        },
+        {
           "type": "number_literal",
           "named": true
         },
@@ -45335,7 +45459,23 @@
           "named": true
         },
         {
+          "type": "pointer_type",
+          "named": true
+        },
+        {
+          "type": "primitive_type",
+          "named": true
+        },
+        {
+          "type": "reference_type",
+          "named": true
+        },
+        {
           "type": "scope_resolution",
+          "named": true
+        },
+        {
+          "type": "scope_type",
           "named": true
         },
         {
@@ -78662,6 +78802,10 @@
       "required": false,
       "types": [
         {
+          "type": "array_type",
+          "named": true
+        },
+        {
           "type": "boolean_literal",
           "named": true
         },
@@ -78675,6 +78819,10 @@
         },
         {
           "type": "f_string_literal",
+          "named": true
+        },
+        {
+          "type": "generic_type",
           "named": true
         },
         {
@@ -78698,6 +78846,10 @@
           "named": true
         },
         {
+          "type": "nullable_type",
+          "named": true
+        },
+        {
           "type": "number_literal",
           "named": true
         },
@@ -78706,7 +78858,23 @@
           "named": true
         },
         {
+          "type": "pointer_type",
+          "named": true
+        },
+        {
+          "type": "primitive_type",
+          "named": true
+        },
+        {
+          "type": "reference_type",
+          "named": true
+        },
+        {
           "type": "scope_resolution",
+          "named": true
+        },
+        {
+          "type": "scope_type",
           "named": true
         },
         {
@@ -83202,6 +83370,10 @@
       "required": false,
       "types": [
         {
+          "type": "array_type",
+          "named": true
+        },
+        {
           "type": "boolean_literal",
           "named": true
         },
@@ -83215,6 +83387,10 @@
         },
         {
           "type": "f_string_literal",
+          "named": true
+        },
+        {
+          "type": "generic_type",
           "named": true
         },
         {
@@ -83238,6 +83414,10 @@
           "named": true
         },
         {
+          "type": "nullable_type",
+          "named": true
+        },
+        {
           "type": "number_literal",
           "named": true
         },
@@ -83246,7 +83426,23 @@
           "named": true
         },
         {
+          "type": "pointer_type",
+          "named": true
+        },
+        {
+          "type": "primitive_type",
+          "named": true
+        },
+        {
+          "type": "reference_type",
+          "named": true
+        },
+        {
           "type": "scope_resolution",
+          "named": true
+        },
+        {
+          "type": "scope_type",
           "named": true
         },
         {
@@ -112087,6 +112283,10 @@
       "required": false,
       "types": [
         {
+          "type": "array_type",
+          "named": true
+        },
+        {
           "type": "boolean_literal",
           "named": true
         },
@@ -112100,6 +112300,10 @@
         },
         {
           "type": "f_string_literal",
+          "named": true
+        },
+        {
+          "type": "generic_type",
           "named": true
         },
         {
@@ -112123,6 +112327,10 @@
           "named": true
         },
         {
+          "type": "nullable_type",
+          "named": true
+        },
+        {
           "type": "number_literal",
           "named": true
         },
@@ -112131,7 +112339,23 @@
           "named": true
         },
         {
+          "type": "pointer_type",
+          "named": true
+        },
+        {
+          "type": "primitive_type",
+          "named": true
+        },
+        {
+          "type": "reference_type",
+          "named": true
+        },
+        {
           "type": "scope_resolution",
+          "named": true
+        },
+        {
+          "type": "scope_type",
           "named": true
         },
         {

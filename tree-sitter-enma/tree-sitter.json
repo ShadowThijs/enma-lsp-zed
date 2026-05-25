@@ -2,17 +2,23 @@
   "grammars": [
     {
       "name": "enma",
-      "camelcase": "Enma",
-      "scope": "source.em",
+      "path": ".",
+      "scope": "source.enma",
       "file-types": ["em"],
       "highlights": "queries/highlights.scm",
-      "injection-regex": "^enma$"
+      "indents": "queries/indents.scm",
+      "outline": "queries/outline.scm",
+      "brackets": "queries/brackets.scm"
     }
   ],
   "metadata": {
-    "version": "0.0.1",
+    "version": "0.1.0",
     "license": "MIT",
-    "description": "Enma language grammar for tree-sitter",
-    "authors": [{"name": "ShadowThijs"}]
+    "description": "Tree-sitter grammar for the Enma scripting language",
+    "authors": [
+      {
+        "name": "Shadowthijs"
+      }
+    ]
   }
 }
