@@ -8,7 +8,7 @@ impl zed::Extension for EnmaExtension {
     fn new() -> Self
     where
         Self: Sized {
-        todo!()
+        Self {}
     }
 }
 
