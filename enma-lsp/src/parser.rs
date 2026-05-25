@@ -1,7 +1,6 @@
 use anyhow::Result;
 use tree_sitter::{Parser, Tree};
 
-/// Wrapper around tree-sitter for Enma language parsing.
 pub struct EnmaParser {
     parser: Parser,
 }
@@ -9,7 +8,8 @@ pub struct EnmaParser {
 impl EnmaParser {
     pub fn new() -> Result<Self> {
         let mut parser = Parser::new();
-        let language = unsafe { tree_sitter_enma() };
+        let lang_fn = unsafe { tree_sitter_enma() };
+        let language = unsafe { tree_sitter::Language::from_raw(lang_fn as *const _) };
         parser.set_language(&language)?;
         Ok(Self { parser })
     }
@@ -20,5 +20,5 @@ impl EnmaParser {
 }
 
 extern "C" {
-    fn tree_sitter_enma() -> tree_sitter::Language;
+    fn tree_sitter_enma() -> *const std::ffi::c_void;
 }

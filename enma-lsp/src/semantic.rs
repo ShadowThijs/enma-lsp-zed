@@ -292,18 +292,6 @@ impl<'a> SymbolCollector<'a> {
     }
 
     fn child_text_by_field(&self, node: tree_sitter::Node, field: &str) -> Option<String> {
-        let mut cursor = node.walk();
-        for child in node.children(&mut cursor) {
-            if child.kind() == "identifier" || child.kind() == "primitive_type" || child.kind() == "sdk_type" {
-                // Check if this child has the right field name by position
-                // tree-sitter field names require cursor access with goto_field
-            }
-        }
-        // Use tree-sitter's field API
-        let mut cursor = node.walk();
-        for child in node.children(&mut cursor) {
-            let _ = child;
-        }
         node.child_by_field_name(field)
             .map(|n| self.source[n.start_byte()..n.end_byte()].to_string())
     }

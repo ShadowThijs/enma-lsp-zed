@@ -151,11 +151,18 @@ impl<'a> CompletionContext<'a> {
 
 fn method_to_item(m: &MethodInfo) -> CompletionItem {
     let detail = TypeDatabase::method_detail(m);
+    let insert = if m.params.is_empty() {
+        format!("{}()", m.name)
+    } else {
+        format!("{}({})", m.name, m.params.iter().map(|p| p.name.as_str()).collect::<Vec<_>>().join(", "))
+    };
     CompletionItem {
         label: m.name.clone(),
         kind: Some(CompletionItemKind::METHOD),
         detail: Some(detail),
         documentation: if m.doc.is_empty() { None } else { Some(Documentation::String(m.doc.clone())) },
+        insert_text: Some(insert),
+        insert_text_format: Some(InsertTextFormat::PLAIN_TEXT),
         ..Default::default()
     }
 }
