@@ -15,7 +15,8 @@ impl zed::Extension for EnmaExtension {
         _worktree: &Worktree,
     ) -> zed::Result<Command> {
         // Look for the LSP binary in the extension directory
-        let extension_dir = std::env::current_dir()?;
+        let extension_dir = std::env::current_dir()
+            .map_err(|e| format!("Failed to get current directory: {}", e))?;
         let lsp_path = extension_dir
             .join("enma-lsp")
             .join("target")
