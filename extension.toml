@@ -11,6 +11,3 @@ repository = "https://github.com/shadowthijs/enma-lsp-zed"
 path = "tree-sitter-enma"
 rev = "1d02de323e73343f382a5284f16405a1a61b31d9"
 
-[language_servers.enma-lsp]
-name = "Enma LSP"
-languages = ["Enma"]

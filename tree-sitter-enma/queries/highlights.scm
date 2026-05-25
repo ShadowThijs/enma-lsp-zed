@@ -28,6 +28,9 @@
 ; ---- this ----
 "this" @variable.builtin
 
+; ---- Identifiers (user-defined names: functions, variables, etc.) ----
+(identifier) @variable
+
 ; ---- Preprocessor ----
 (preprocessor) @preproc
 (preprocessor "#" @preproc)

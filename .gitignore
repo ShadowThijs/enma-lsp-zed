@@ -9,3 +9,5 @@
 .omc
 /docs
 snippet examples/
+grammars/enma/
+extension.wasm
