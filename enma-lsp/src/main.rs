@@ -1,10 +1,12 @@
 mod parser;
 mod type_db;
 mod completion;
+mod semantic;
 
 use parser::EnmaParser;
 use type_db::TypeDatabase;
 use completion::CompletionContext;
+use semantic::SemanticModel;
 use std::collections::HashMap;
 use std::sync::OnceLock;
 use tokio::sync::Mutex;
@@ -130,8 +132,11 @@ impl Backend {
         let mut parser = self.parser.lock().await;
         let tree = parser.parse(text.as_bytes());
 
-        let diagnostics = if let Some(tree) = &tree {
-            self.collect_syntax_errors(tree.root_node())
+        let mut diagnostics = if let Some(tree) = &tree {
+            let mut diags = self.collect_syntax_errors(tree.root_node());
+            let model = SemanticModel::build(tree.root_node(), text, get_db());
+            diags.extend(model.diagnostics());
+            diags
         } else {
             vec![Diagnostic {
                 range: Range::default(),
