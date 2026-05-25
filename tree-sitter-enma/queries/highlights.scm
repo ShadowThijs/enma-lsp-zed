@@ -1,5 +1,4 @@
 ; Enma syntax highlighting — flat grammar queries for Zed
-; ============================================================================
 
 ; ---- Comments ----
 (comment) @comment
@@ -24,6 +23,7 @@
 "true" @boolean
 "false" @boolean
 "null" @constant.builtin
+"nullptr" @constant.builtin
 
 ; ---- this ----
 "this" @variable.builtin
@@ -31,10 +31,6 @@
 ; ---- Preprocessor ----
 (preprocessor) @preproc
 (preprocessor "#" @preproc)
-
-; ---- Annotations ----
-(annotation) @attribute
-(annotation "[" @punctuation.bracket "]" @punctuation.bracket)
 
 ; ---- Bracket punctuation ----
 ("(" @punctuation.bracket)
@@ -57,12 +53,11 @@
 
 ; ---- Operators ----
 ([
-  "=" "+=" "-=" "*=" "/=" "%=" "&=" "|=" "^=" "<<=" ">>="
+  "=" "+=" "-=" "*=" "/=" "%=" "&=" "|=" "^="
   "||" "&&"
-  "==" "!=" "<" ">" "<=" ">=" "<=>"
+  "==" "!=" "<" ">" "<=" ">="
   "|" "^" "&"
   "+" "-" "*" "/" "%"
-  "<<" ">>"
   "++" "--"
   "!" "~"
   "?" "@"
@@ -87,7 +82,7 @@
 ([
   "class" "struct" "interface" "mixin" "enum"
   "virtual" "override" "final" "property"
-  "operator"
+  "operator" "function"
 ] @keyword)
 
 ; ---- Templates ----
@@ -99,7 +94,7 @@
 ([
   "const" "constexpr" "auto" "nullable"
   "extern" "out" "delegate" "coroutine"
-  "static_assert"
+  "static"
 ] @keyword)
 
 ; ---- Object lifetime ----
@@ -109,33 +104,33 @@
 
 ; ---- Access ----
 ([
-  "private" "public"
+  "private" "public" "protected"
 ] @keyword)
 
 ; ---- Cast / built-in ops ----
 ([
   "cast" "static_cast" "reinterpret_cast" "const_cast"
-  "move" "sizeof" "offsetof" "decltype"
+  "sizeof" "typeof"
 ] @keyword)
 
 ; ---- Primitive types ----
 ([
-  "bool" "char" "wchar" "wchar_t"
+  "bool" "char" "wchar"
   "int8" "int16" "int32" "int64"
   "uint8" "uint16" "uint32" "uint64"
   "aint8" "aint16" "aint32" "aint64"
-  "float32" "float64"
-  "string" "wstring" "void"
+  "float32" "float64" "float" "double"
+  "string" "wstring" "void" "size_t"
 ] @type.builtin)
 
-; ---- Math / addon types ----
+; ---- Math types ----
 ([
-  "vec2" "vec3" "vec4" "quat" "mat4"
+  "vec2" "vec3" "vec4"
 ] @type)
 
 ; ---- Container types ----
 ([
-  "map" "hash_set" "sorted_map" "variant"
+  "array" "map" "hash_set" "sorted_map" "variant"
 ] @type)
 
 ; ---- SDK types ----
@@ -143,19 +138,11 @@
   "coroutine_t" "atomic_int32" "atomic_int64"
   "mutex" "cond_var" "lock_guard"
   "file_t" "regex" "json_value"
-  "proc_t" "cpu_t" "ws_t" "udp_t"
-  "http_response_t" "sound_t"
 ] @type)
 
-; ---- Annotation keywords ----
+; ---- Misc keywords ----
 ([
-  "inline" "noinline" "noopt" "noescape"
-  "packed" "reflect" "serialize" "export"
-  "dll"
-] @attribute)
-
-; ---- Function intrinsics ----
-([
-  "__asm_rdtsc" "__asm_pause" "__asm_mfence" "__asm_nop"
-  "__va_count" "__va_arg"
-] @function.builtin)
+  "abstract" "final" "shared" "inline"
+  "volatile" "get" "set"
+  "typedef"
+] @keyword)
