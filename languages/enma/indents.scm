@@ -10,9 +10,6 @@
 (initializer_list "{" @indent)
 (designated_initializer "{" @indent)
 
-; Dedent for closing braces
-("}" @indent_end)
-
 ; Indent after control flow without braces
 (if_statement consequence: (_) @indent)
 (if_statement alternative: (_) @indent)
@@ -21,6 +18,6 @@
 (for_each_statement body: (_) @indent)
 (do_statement body: (_) @indent)
 
-; Case/default labels
-(case_clause) @indent
-(default_clause) @indent
+; Case/default labels dedent
+(case_clause) @dedent
+(default_clause) @dedent
