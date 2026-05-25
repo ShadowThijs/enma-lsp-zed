@@ -5942,6 +5942,14 @@
     [
       "expression_statement",
       "declaration_statement"
+    ],
+    [
+      "_binary_expression_3",
+      "_binary_expression_4"
+    ],
+    [
+      "generic_type",
+      "_binary_expression_4"
     ]
   ],
   "precedences": [],

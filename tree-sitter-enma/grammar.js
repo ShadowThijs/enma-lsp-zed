@@ -22,7 +22,9 @@ module.exports = grammar({
     [$._type, $.generic_type],
     [$._postfix_expression],
     [$._unary_expression],
-    [$.expression_statement, $.declaration_statement]
+    [$.expression_statement, $.declaration_statement],
+    [$._binary_expression_3, $._binary_expression_4],
+    [$.generic_type, $._binary_expression_4]
   ],
 
   rules: {
@@ -543,7 +545,7 @@ module.exports = grammar({
       $._binary_expression_4,
     ),
 
-    // Equality / Comparison
+    // Equality / Comparison (dynamic — resolves identifier-vs-type ambiguity at runtime)
     _binary_expression_4: $ => choice(
       prec.left(4, seq(field('left', $._binary_expression_4), field('operator', choice('==', '!=', '<', '>', '<=', '>=', '<=>')), field('right', $._binary_expression_5))),
       $._binary_expression_5,

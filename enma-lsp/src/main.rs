@@ -102,6 +102,19 @@ impl LanguageServer for Backend {
         let docs = self.documents.lock().await;
         if let Some(source) = docs.get(&uri) {
             if let Some(model) = self.build_model(source).await {
+                // Find the specific token at cursor for range
+                let mut parser = self.parser.lock().await;
+                let token_range = if let Some(tree) = parser.parse(source.as_bytes()) {
+                    let node = find_named_leaf(tree.root_node(), pos);
+                    if node.kind() == "identifier" {
+                        Some(node_range(&node))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                };
+
                 for sym in &model.symbols {
                     if range_contains(&sym.range, pos) {
                         let type_info = sym.type_name.as_deref().unwrap_or("unknown");
@@ -120,7 +133,7 @@ impl LanguageServer for Backend {
                             contents: HoverContents::Scalar(
                                 MarkedString::String(format!("{} {}: {}", kind_str, sym.name, type_info))
                             ),
-                            range: Some(sym.range),
+                            range: token_range,
                         }));
                     }
                 }
