@@ -102,76 +102,70 @@ impl LanguageServer for Backend {
         let docs = self.documents.lock().await;
         if let Some(source) = docs.get(&uri) {
             if let Some(model) = self.build_model(source).await {
-                // Find the specific token at cursor for range
+                // Get the identifier token at cursor
                 let mut parser = self.parser.lock().await;
-                let token_range = if let Some(tree) = parser.parse(source.as_bytes()) {
+                let (token_text, token_range) = if let Some(tree) = parser.parse(source.as_bytes()) {
                     let node = find_named_leaf(tree.root_node(), pos);
                     if node.kind() == "identifier" {
-                        Some(node_range(&node))
+                        let text = source[node.start_byte()..node.end_byte()].to_string();
+                        (Some(text), Some(node_range(&node)))
                     } else {
-                        None
+                        (None, None)
                     }
                 } else {
-                    None
+                    (None, None)
                 };
 
-                // Find the most specific symbol (smallest range containing pos)
-                let best = model.symbols.iter()
-                    .filter(|s| range_contains(&s.range, pos))
-                    .min_by_key(|s| {
-                        let lines = (s.range.end.line - s.range.start.line) as u64;
-                        let chars = s.range.end.character.abs_diff(s.range.start.character) as u64;
-                        lines * 1000 + chars
-                    });
-
-                if let Some(sym) = best {
-                    let type_info = sym.type_name.as_deref().unwrap_or("unknown");
-                    let kind_str = match sym.kind {
-                        semantic::SymbolKind::Function => "function",
-                        semantic::SymbolKind::Variable => "variable",
-                        semantic::SymbolKind::Parameter => "parameter",
-                        semantic::SymbolKind::Struct => "struct",
-                        semantic::SymbolKind::Class => "class",
-                        semantic::SymbolKind::Enum => "enum",
-                        semantic::SymbolKind::Interface => "interface",
-                        semantic::SymbolKind::Namespace => "namespace",
-                        semantic::SymbolKind::TypeAlias => "type alias",
-                    };
-                    return Ok(Some(Hover {
-                        contents: HoverContents::Scalar(
-                            MarkedString::String(format!("{} {}: {}", kind_str, sym.name, type_info))
-                        ),
-                        range: token_range,
-                    }));
+                // Only show local symbol info if the cursor is on the symbol's NAME
+                // (not just somewhere inside its body). Match by name + token contained in range.
+                if let Some(ref name) = token_text {
+                    if let Some(sym) = model.symbols.iter()
+                        .filter(|s| s.name == *name && range_contains(&s.range, pos))
+                        .min_by_key(|s| {
+                            let lines = (s.range.end.line - s.range.start.line) as u64;
+                            let chars = s.range.end.character.abs_diff(s.range.start.character) as u64;
+                            lines * 1000 + chars
+                        })
+                    {
+                        let type_info = sym.type_name.as_deref().unwrap_or("unknown");
+                        let kind_str = match sym.kind {
+                            semantic::SymbolKind::Function => "function",
+                            semantic::SymbolKind::Variable => "variable",
+                            semantic::SymbolKind::Parameter => "parameter",
+                            semantic::SymbolKind::Struct => "struct",
+                            semantic::SymbolKind::Class => "class",
+                            semantic::SymbolKind::Enum => "enum",
+                            semantic::SymbolKind::Interface => "interface",
+                            semantic::SymbolKind::Namespace => "namespace",
+                            semantic::SymbolKind::TypeAlias => "type alias",
+                        };
+                        return Ok(Some(Hover {
+                            contents: HoverContents::Scalar(
+                                MarkedString::String(format!("{} {}: {}", kind_str, sym.name, type_info))
+                            ),
+                            range: token_range,
+                        }));
+                    }
                 }
 
-                // Fallback: look up the identifier at cursor in the type database
-                let mut parser = self.parser.lock().await;
-                if let Some(tree) = parser.parse(source.as_bytes()) {
-                    let node = find_named_leaf(tree.root_node(), pos);
-                    if node.kind() == "identifier" {
-                        let name = &source[node.start_byte()..node.end_byte()];
-                        let db = get_db();
-
-                        // Check free functions
-                        if let Some(f) = db.functions.get(name) {
-                            return Ok(Some(Hover {
-                                contents: HoverContents::Scalar(
-                                    MarkedString::String(format!("built-in function: {}", TypeDatabase::function_detail(f)))
-                                ),
-                                range: Some(node_range(&node)),
-                            }));
-                        }
-
-                        // Check type names
-                        if db.is_type(name) {
-                            return Ok(Some(Hover {
-                                contents: HoverContents::Scalar(
-                                    MarkedString::String(format!("built-in type: {}", name))
-                                ),
-                                range: Some(node_range(&node)),
-                            }));
-                        }
+                // Fallback: look up in the type database
+                if let Some(ref name) = token_text {
+                    let db = get_db();
+                    if let Some(f) = db.functions.get(name) {
+                        return Ok(Some(Hover {
+                            contents: HoverContents::Scalar(
+                                MarkedString::String(format!("built-in function: {}", TypeDatabase::function_detail(f)))
+                            ),
+                            range: token_range,
+                        }));
+                    }
+                    if db.is_type(name) {
+                        return Ok(Some(Hover {
+                            contents: HoverContents::Scalar(
+                                MarkedString::String(format!("built-in type: {}", name))
+                            ),
+                            range: token_range,
+                        }));
                     }
                 }
             }
