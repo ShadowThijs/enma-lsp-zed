@@ -28,6 +28,10 @@
 (constructor_declaration name: (identifier) @constructor)
 (destructor_declaration (identifier) @constructor)
 
+; === FUNCTION CALLS (identifier immediately followed by argument_list) ===
+((identifier) @function.call
+ . (argument_list))
+
 ; === TYPE NAMES ===
 (struct_declaration name: (identifier) @type)
 (class_declaration name: (identifier) @type)
@@ -63,8 +67,9 @@
 ; === ACCESS SPECIFIERS ===
 (access_specifier) @keyword
 
-; === PRIMITIVE TYPES ===
+; === PRIMITIVE AND SDK TYPES ===
 (primitive_type) @type.builtin
+(sdk_type) @type.builtin
 
 ; === PUNCTUATION ===
 ("(" @punctuation.bracket)

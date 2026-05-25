@@ -323,6 +323,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -642,6 +646,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -974,6 +982,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -1321,6 +1333,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -1640,6 +1656,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -1965,6 +1985,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -2287,6 +2311,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -2606,6 +2634,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -2938,6 +2970,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -3405,6 +3441,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -3724,6 +3764,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -4049,6 +4093,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -4116,6 +4164,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -4409,6 +4461,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -4521,6 +4577,10 @@
         },
         {
           "type": "scope_type",
+          "named": true
+        },
+        {
+          "type": "sdk_type",
           "named": true
         },
         {
@@ -4827,6 +4887,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -5146,6 +5210,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -5478,6 +5546,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -5825,6 +5897,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -6144,6 +6220,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -6469,6 +6549,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -6791,6 +6875,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -7110,6 +7198,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -7442,6 +7534,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -7909,6 +8005,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -8228,6 +8328,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -8553,6 +8657,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -8620,6 +8728,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -8913,6 +9025,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -9025,6 +9141,10 @@
         },
         {
           "type": "scope_type",
+          "named": true
+        },
+        {
+          "type": "sdk_type",
           "named": true
         },
         {
@@ -9331,6 +9451,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -9650,6 +9774,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -9982,6 +10110,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -10329,6 +10461,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -10648,6 +10784,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -10973,6 +11113,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -11295,6 +11439,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -11614,6 +11762,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -11946,6 +12098,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -12413,6 +12569,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -12732,6 +12892,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -13057,6 +13221,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -13124,6 +13292,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -13417,6 +13589,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -13532,6 +13708,10 @@
           "named": true
         },
         {
+          "type": "sdk_type",
+          "named": true
+        },
+        {
           "type": "string_literal",
           "named": true
         },
@@ -13580,6 +13760,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -14002,6 +14186,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -14321,6 +14509,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -14653,6 +14845,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -15000,6 +15196,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -15319,6 +15519,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -15644,6 +15848,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -15966,6 +16174,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -16285,6 +16497,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -16617,6 +16833,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -17084,6 +17304,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -17403,6 +17627,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -17728,6 +17956,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -17795,6 +18027,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -18088,6 +18324,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -18259,6 +18499,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -18730,6 +18974,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -19049,6 +19297,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -19381,6 +19633,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -19728,6 +19984,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -20047,6 +20307,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -20372,6 +20636,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -20694,6 +20962,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -21013,6 +21285,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -21355,6 +21631,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -21819,6 +22099,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -22158,6 +22442,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -22480,6 +22768,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -22547,6 +22839,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -22840,6 +23136,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -23100,6 +23400,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -23396,6 +23700,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -23718,6 +24026,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -24050,6 +24362,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -24397,6 +24713,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -24716,6 +25036,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -25041,6 +25365,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -25363,6 +25691,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -25682,6 +26014,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -26024,6 +26360,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -26491,6 +26831,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -26810,6 +27154,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -27135,6 +27483,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -27202,6 +27554,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -27492,6 +27848,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -27823,6 +28183,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -28142,6 +28506,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -28474,6 +28842,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -28821,6 +29193,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -29140,6 +29516,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -29465,6 +29845,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -29787,6 +30171,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -30106,6 +30494,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -30438,6 +30830,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -30905,6 +31301,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -31224,6 +31624,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -31549,6 +31953,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -31616,6 +32024,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -31909,6 +32321,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -32025,6 +32441,10 @@
         },
         {
           "type": "scope_type",
+          "named": true
+        },
+        {
+          "type": "sdk_type",
           "named": true
         },
         {
@@ -32357,6 +32777,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -32676,6 +33100,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -33008,6 +33436,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -33433,6 +33865,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -33752,6 +34188,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -34077,6 +34517,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -34399,6 +34843,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -34718,6 +35166,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -35050,6 +35502,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -35517,6 +35973,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -35836,6 +36296,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -36161,6 +36625,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -36228,6 +36696,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -36518,6 +36990,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -36854,6 +37330,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -37173,6 +37653,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -37505,6 +37989,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -37852,6 +38340,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -38171,6 +38663,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -38496,6 +38992,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -38818,6 +39318,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -39137,6 +39641,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -39482,6 +39990,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -39946,6 +40458,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -40265,6 +40781,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -40590,6 +41110,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -40657,6 +41181,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -40947,6 +41475,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -41278,6 +41810,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -41597,6 +42133,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -41929,6 +42469,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -42276,6 +42820,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -42595,6 +43143,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -42920,6 +43472,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -43242,6 +43798,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -43561,6 +44121,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -43896,6 +44460,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -44360,6 +44928,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -44679,6 +45251,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -45004,6 +45580,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -45071,6 +45651,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -45364,6 +45948,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -45476,6 +46064,10 @@
         },
         {
           "type": "scope_type",
+          "named": true
+        },
+        {
+          "type": "sdk_type",
           "named": true
         },
         {
@@ -45801,6 +46393,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -46120,6 +46716,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -46455,6 +47055,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -46774,6 +47378,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -47121,6 +47729,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -47440,6 +48052,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -47765,6 +48381,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -48084,6 +48704,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -48409,6 +49033,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -48728,6 +49356,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -49073,6 +49705,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -49537,6 +50173,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -49856,6 +50496,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -50181,6 +50825,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -50248,6 +50896,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -50538,6 +51190,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -50879,6 +51535,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -51198,6 +51858,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -51530,6 +52194,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -51955,6 +52623,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -52274,6 +52946,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -52599,6 +53275,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -52918,6 +53598,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -53243,6 +53927,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -53310,6 +53998,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -53610,6 +54302,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -53942,6 +54638,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -54409,6 +55109,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -54728,6 +55432,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -55053,6 +55761,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -55120,6 +55832,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -55410,6 +56126,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -55751,6 +56471,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -56070,6 +56794,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -56402,6 +57130,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -56827,6 +57559,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -57146,6 +57882,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -57471,6 +58211,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -57793,6 +58537,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -58112,6 +58860,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -58441,6 +59193,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -58760,6 +59516,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -59102,6 +59862,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -59569,6 +60333,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -59888,6 +60656,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -60213,6 +60985,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -60280,6 +61056,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -60573,6 +61353,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -60667,6 +61451,10 @@
           {
             "type": "scope_type",
             "named": true
+          },
+          {
+            "type": "sdk_type",
+            "named": true
           }
         ]
       }
@@ -60751,6 +61539,10 @@
           {
             "type": "scope_type",
             "named": true
+          },
+          {
+            "type": "sdk_type",
+            "named": true
           }
         ]
       }
@@ -60815,6 +61607,10 @@
         },
         {
           "type": "scope_type",
+          "named": true
+        },
+        {
+          "type": "sdk_type",
           "named": true
         }
       ]
@@ -61126,6 +61922,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -61448,6 +62248,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -61784,6 +62588,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -62131,6 +62939,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -62450,6 +63262,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -62775,6 +63591,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -63097,6 +63917,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -63416,6 +64240,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -63758,6 +64586,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -64222,6 +65054,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -64565,6 +65401,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -64887,6 +65727,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -64954,6 +65798,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -65244,6 +66092,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -65657,6 +66509,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -65995,6 +66851,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -66324,6 +67184,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -66668,6 +67532,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -67049,6 +67917,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -67387,6 +68259,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -67706,6 +68582,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -68109,6 +68989,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -68438,6 +69322,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -68905,6 +69793,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -69224,6 +70116,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -69549,6 +70445,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -69616,6 +70516,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -69906,6 +70810,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -70253,6 +71161,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -70572,6 +71484,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -70904,6 +71820,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -71251,6 +72171,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -71570,6 +72494,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -71895,6 +72823,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -72217,6 +73149,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -72536,6 +73472,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -72881,6 +73821,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -73345,6 +74289,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -73664,6 +74612,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -73989,6 +74941,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -74056,6 +75012,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -74346,6 +75306,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -74677,6 +75641,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -74996,6 +75964,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -75328,6 +76300,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -75675,6 +76651,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -75994,6 +76974,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -76319,6 +77303,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -76641,6 +77629,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -76960,6 +77952,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -77292,6 +78288,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -77759,6 +78759,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -78078,6 +79082,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -78403,6 +79411,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -78470,6 +79482,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -78763,6 +79779,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -78878,6 +79898,10 @@
           "named": true
         },
         {
+          "type": "sdk_type",
+          "named": true
+        },
+        {
           "type": "string_literal",
           "named": true
         },
@@ -78946,6 +79970,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -79245,6 +80273,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -79564,6 +80596,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -79896,6 +80932,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -80243,6 +81283,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -80562,6 +81606,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -80887,6 +81935,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -81209,6 +82261,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -81528,6 +82584,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -81860,6 +82920,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -82327,6 +83391,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -82646,6 +83714,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -82971,6 +84043,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -83038,6 +84114,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -83331,6 +84411,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -83443,6 +84527,10 @@
         },
         {
           "type": "scope_type",
+          "named": true
+        },
+        {
+          "type": "sdk_type",
           "named": true
         },
         {
@@ -83843,6 +84931,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -84162,6 +85254,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -84497,6 +85593,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -84820,6 +85920,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -85177,6 +86281,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -85496,6 +86604,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -85821,6 +86933,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -86143,6 +87259,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -86462,6 +87582,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -86794,6 +87918,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -87271,6 +88399,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -87338,6 +88470,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -87628,6 +88764,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -87953,6 +89093,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -88020,6 +89164,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -88310,6 +89458,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -88641,6 +89793,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -88960,6 +90116,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -89295,6 +90455,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -89618,6 +90782,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -89965,6 +91133,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -90284,6 +91456,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -90609,6 +91785,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -90931,6 +92111,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -91250,6 +92434,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -91582,6 +92770,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -92049,6 +93241,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -92368,6 +93564,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -92693,6 +93893,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -93015,6 +94219,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -93082,6 +94290,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -93372,6 +94584,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -93703,6 +94919,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -94022,6 +95242,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -94357,6 +95581,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -94680,6 +95908,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -95027,6 +96259,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -95346,6 +96582,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -95671,6 +96911,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -95993,6 +97237,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -96312,6 +97560,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -96644,6 +97896,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -97111,6 +98367,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -97430,6 +98690,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -97755,6 +99019,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -97822,6 +99090,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -98112,6 +99384,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -98443,6 +99719,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -98762,6 +100042,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -99094,6 +100378,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -99441,6 +100729,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -99760,6 +101052,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -100085,6 +101381,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -100407,6 +101707,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -100726,6 +102030,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -101058,6 +102366,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -101525,6 +102837,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -101844,6 +103160,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -102169,6 +103489,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -102236,6 +103560,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -102529,6 +103857,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -102647,6 +103979,10 @@
           {
             "type": "scope_type",
             "named": true
+          },
+          {
+            "type": "sdk_type",
+            "named": true
           }
         ]
       }
@@ -102720,6 +104056,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -102865,6 +104205,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -103084,6 +104428,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -103380,6 +104728,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -103702,6 +105054,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -104034,6 +105390,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -104381,6 +105741,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -104703,6 +106067,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -105022,6 +106390,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -105361,6 +106733,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -105683,6 +107059,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -106002,6 +107382,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -106344,6 +107728,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -106811,6 +108199,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -107130,6 +108522,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -107455,6 +108851,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -107522,6 +108922,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -107812,6 +109216,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -108158,6 +109566,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -108477,6 +109889,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -108809,6 +110225,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -109156,6 +110576,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -109475,6 +110899,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -109800,6 +111228,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -110122,6 +111554,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -110441,6 +111877,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -110773,6 +112213,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -111240,6 +112684,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -111559,6 +113007,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -111884,6 +113336,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -111951,6 +113407,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -112244,6 +113704,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -112359,6 +113823,10 @@
           "named": true
         },
         {
+          "type": "sdk_type",
+          "named": true
+        },
+        {
           "type": "string_literal",
           "named": true
         },
@@ -112407,6 +113875,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -112493,6 +113965,10 @@
           {
             "type": "scope_type",
             "named": true
+          },
+          {
+            "type": "sdk_type",
+            "named": true
           }
         ]
       }
@@ -112550,6 +114026,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -112849,6 +114329,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -113168,6 +114652,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -113500,6 +114988,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -113847,6 +115339,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -114166,6 +115662,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -114491,6 +115991,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -114813,6 +116317,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -115132,6 +116640,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -115464,6 +116976,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -115931,6 +117447,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -116253,6 +117773,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -116575,6 +118099,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -116642,6 +118170,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -116935,6 +118467,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -117010,6 +118546,11 @@
         ]
       }
     }
+  },
+  {
+    "type": "sdk_type",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "setter",
@@ -117320,6 +118861,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -117639,6 +119184,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -117971,6 +119520,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -118318,6 +119871,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -118637,6 +120194,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -118962,6 +120523,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -119284,6 +120849,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -119603,6 +121172,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -119948,6 +121521,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -120412,6 +121989,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -120731,6 +122312,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -121056,6 +122641,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -121123,6 +122712,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -121413,6 +123006,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -121844,6 +123441,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -122163,6 +123764,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -122495,6 +124100,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -122842,6 +124451,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -123161,6 +124774,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -123486,6 +125103,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -123808,6 +125429,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -124127,6 +125752,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -124459,6 +126088,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -124926,6 +126559,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -125245,6 +126882,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -125570,6 +127211,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -125637,6 +127282,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -125930,6 +127579,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -126047,6 +127700,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -126356,6 +128013,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -126675,6 +128336,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -127007,6 +128672,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -127354,6 +129023,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -127673,6 +129346,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -127998,6 +129675,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -128320,6 +130001,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -128639,6 +130324,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -128971,6 +130660,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -129438,6 +131131,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -129757,6 +131454,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -130082,6 +131783,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -130149,6 +131854,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -130442,6 +132151,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -130627,6 +132340,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -130923,6 +132640,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -131245,6 +132966,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -131577,6 +133302,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -132002,6 +133731,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -132321,6 +134054,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -132646,6 +134383,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -132968,6 +134709,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -133287,6 +135032,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -133619,6 +135368,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -134086,6 +135839,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -134405,6 +136162,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           },
           {
@@ -134730,6 +136491,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -134797,6 +136562,10 @@
           },
           {
             "type": "scope_type",
+            "named": true
+          },
+          {
+            "type": "sdk_type",
             "named": true
           }
         ]
@@ -135090,6 +136859,10 @@
             "named": true
           },
           {
+            "type": "sdk_type",
+            "named": true
+          },
+          {
             "type": "sizeof",
             "named": false
           },
@@ -135366,6 +137139,18 @@
     "named": false
   },
   {
+    "type": "array",
+    "named": false
+  },
+  {
+    "type": "atomic_int32",
+    "named": false
+  },
+  {
+    "type": "atomic_int64",
+    "named": false
+  },
+  {
     "type": "auto",
     "named": false
   },
@@ -135398,6 +137183,14 @@
     "named": false
   },
   {
+    "type": "color",
+    "named": false
+  },
+  {
+    "type": "cond_var",
+    "named": false
+  },
+  {
     "type": "const",
     "named": false
   },
@@ -135415,6 +137208,14 @@
   },
   {
     "type": "coroutine",
+    "named": false
+  },
+  {
+    "type": "coroutine_t",
+    "named": false
+  },
+  {
+    "type": "cpu_t",
     "named": false
   },
   {
@@ -135482,6 +137283,10 @@
     "named": false
   },
   {
+    "type": "file_t",
+    "named": false
+  },
+  {
     "type": "final",
     "named": false
   },
@@ -135507,6 +137312,14 @@
   },
   {
     "type": "goto",
+    "named": false
+  },
+  {
+    "type": "hash_set",
+    "named": false
+  },
+  {
+    "type": "http_response_t",
     "named": false
   },
   {
@@ -135550,6 +137363,22 @@
     "named": false
   },
   {
+    "type": "json_value",
+    "named": false
+  },
+  {
+    "type": "lock_guard",
+    "named": false
+  },
+  {
+    "type": "map",
+    "named": false
+  },
+  {
+    "type": "mat4",
+    "named": false
+  },
+  {
     "type": "match",
     "named": false
   },
@@ -135559,6 +137388,10 @@
   },
   {
     "type": "move",
+    "named": false
+  },
+  {
+    "type": "mutex",
     "named": false
   },
   {
@@ -135606,6 +137439,10 @@
     "named": false
   },
   {
+    "type": "proc_t",
+    "named": false
+  },
+  {
     "type": "property",
     "named": false
   },
@@ -135615,6 +137452,14 @@
   },
   {
     "type": "public",
+    "named": false
+  },
+  {
+    "type": "quat",
+    "named": false
+  },
+  {
+    "type": "regex",
     "named": false
   },
   {
@@ -135635,6 +137480,18 @@
   },
   {
     "type": "sizeof",
+    "named": false
+  },
+  {
+    "type": "sorted_map",
+    "named": false
+  },
+  {
+    "type": "sound_inst_t",
+    "named": false
+  },
+  {
+    "type": "sound_t",
     "named": false
   },
   {
@@ -135690,6 +137547,10 @@
     "named": false
   },
   {
+    "type": "udp_t",
+    "named": false
+  },
+  {
     "type": "uint16",
     "named": false
   },
@@ -135710,6 +137571,22 @@
     "named": false
   },
   {
+    "type": "variant",
+    "named": false
+  },
+  {
+    "type": "vec2",
+    "named": false
+  },
+  {
+    "type": "vec3",
+    "named": false
+  },
+  {
+    "type": "vec4",
+    "named": false
+  },
+  {
     "type": "virtual",
     "named": false
   },
@@ -135727,6 +137604,10 @@
   },
   {
     "type": "while",
+    "named": false
+  },
+  {
+    "type": "ws_t",
     "named": false
   },
   {

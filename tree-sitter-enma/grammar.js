@@ -389,6 +389,7 @@ module.exports = grammar({
     // to avoid ambiguity with assignment expressions
     _local_type: $ => choice(
       $.primitive_type,
+      $.sdk_type,
       $.pointer_type,
       $.reference_type,
       $.array_type,
@@ -838,6 +839,7 @@ module.exports = grammar({
 
     _type: $ => choice(
       $.primitive_type,
+      $.sdk_type,
       $.identifier,
       $.pointer_type,
       $.reference_type,
@@ -854,6 +856,16 @@ module.exports = grammar({
       'aint8', 'aint16', 'aint32', 'aint64',
       'float32', 'float64', 'float', 'double',
       'string', 'wstring', 'size_t', 'auto',
+    ),
+
+    sdk_type: $ => choice(
+      'vec2', 'vec3', 'vec4', 'quat', 'mat4', 'color',
+      'coroutine_t', 'atomic_int32', 'atomic_int64',
+      'mutex', 'cond_var', 'lock_guard',
+      'file_t', 'regex', 'json_value',
+      'array', 'map', 'hash_set', 'sorted_map', 'variant',
+      'http_response_t', 'ws_t', 'cpu_t', 'proc_t', 'udp_t',
+      'sound_t', 'sound_inst_t',
     ),
 
     pointer_type: $ => prec(15, seq(
