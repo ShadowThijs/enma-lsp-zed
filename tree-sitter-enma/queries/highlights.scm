@@ -1,151 +1,145 @@
-; Enma syntax highlighting — flat grammar queries for Zed
+; Enma syntax highlighting — structured grammar queries for Zed
 
-; ---- Comments ----
+; === COMMENTS ===
 (comment) @comment
 
-; ---- Strings ----
-(string) @string
-(f_string) @string
-
-; ---- Escape sequences ----
-(escape) @string.escape
-
-; ---- Interpolation delimiters (f"...{expr}...") ----
+; === STRINGS AND CHARS ===
+(string_literal) @string
+(f_string_literal) @string
+(char_literal) @string
+(escape_sequence) @string.escape
 (interpolation "{" @punctuation.special "}" @punctuation.special)
 
-; ---- Character literals ----
-(char_literal) @string
+; === NUMBERS ===
+(number_literal) @number
 
-; ---- Numbers ----
-(number) @number
+; === LITERALS ===
+(boolean_literal) @boolean
+(null_literal) @constant.builtin
+(this_expression) @variable.builtin
 
-; ---- Boolean and null ----
-"true" @boolean
-"false" @boolean
-"null" @constant.builtin
-"nullptr" @constant.builtin
-
-; ---- this ----
-"this" @variable.builtin
-
-; ---- Identifiers (user-defined names: functions, variables, etc.) ----
+; === IDENTIFIERS ===
 (identifier) @variable
 
-; ---- Preprocessor ----
-(preprocessor) @preproc
-(preprocessor "#" @preproc)
+; === FUNCTION DEFINITION NAMES ===
+(function_definition name: (identifier) @function)
+(function_declaration name: (identifier) @function)
+(method_declaration name: (identifier) @function.method)
+(constructor_declaration name: (identifier) @constructor)
+(destructor_declaration (identifier) @constructor)
 
-; ---- Bracket punctuation ----
+; === TYPE NAMES ===
+(struct_declaration name: (identifier) @type)
+(class_declaration name: (identifier) @type)
+(interface_declaration name: (identifier) @type)
+(enum_declaration name: (identifier) @type)
+(generic_type base: (identifier) @type)
+
+; === FIELD / PROPERTY NAMES ===
+(field_declaration name: (identifier) @property)
+(property_declaration name: (identifier) @property)
+(designated_field name: (identifier) @property)
+
+; === PARAMETER NAMES ===
+(parameter_declaration name: (identifier) @variable.parameter)
+
+; === NAMESPACE / LABEL ===
+(namespace_definition name: (identifier) @namespace)
+(goto_statement label: (identifier) @label)
+
+; === PREPROCESSOR ===
+(preproc_directive) @preproc
+
+; === ANNOTATIONS ===
+(annotation) @attribute
+
+; === OPERATOR OVERLOADS ===
+(operator_overload "operator" @keyword)
+
+; === PROPERTY ACCESSORS ===
+(getter "get" @keyword)
+(setter "set" @keyword)
+
+; === ACCESS SPECIFIERS ===
+(access_specifier) @keyword
+
+; === PRIMITIVE TYPES ===
+(primitive_type) @type.builtin
+
+; === PUNCTUATION ===
 ("(" @punctuation.bracket)
 (")" @punctuation.bracket)
 ("{" @punctuation.bracket)
 ("}" @punctuation.bracket)
 ("[" @punctuation.bracket)
 ("]" @punctuation.bracket)
-
-; ---- Delimiter punctuation ----
 (";" @punctuation.delimiter)
 ("," @punctuation.delimiter)
 ("." @punctuation.delimiter)
 (":" @punctuation.delimiter)
-
-; ---- Special punctuation ----
 ("::" @punctuation.special)
 ("->" @punctuation.special)
 ("..." @punctuation.special)
 
-; ---- Operators ----
-([
-  "=" "+=" "-=" "*=" "/=" "%=" "&=" "|=" "^="
-  "||" "&&"
-  "==" "!=" "<" ">" "<=" ">="
-  "|" "^" "&"
-  "+" "-" "*" "/" "%"
-  "++" "--"
-  "!" "~"
-  "?" "@"
-] @operator)
+; === COMPOUND TYPE SIGILS ===
+(pointer_type "*" @type.builtin)
+(reference_type "&" @type.builtin)
+(array_type "[]" @type.builtin)
+(nullable_type "nullable" @keyword)
 
-; ---- Keywords ----
-([
+; === OPERATORS ===
+[
+  "=" "+=" "-=" "*=" "/=" "%=" "&=" "|=" "^=" "<<=" ">>="
+  "||" "&&"
+  "==" "!=" "<" ">" "<=" ">=" "<=>"
+  "|" "^" "&" "+" "-" "*" "/" "%" "<<" ">>"
+  "++" "--" "!" "~" "?"
+] @operator
+
+; === KEYWORDS — Control Flow ===
+[
   "if" "else" "for" "while" "do"
   "switch" "case" "default"
   "break" "continue" "return"
   "try" "catch" "throw"
-  "defer" "yield" "goto"
-  "match"
-] @keyword)
+  "defer" "goto" "match"
+] @keyword
 
-; ---- Module / namespace ----
-([
+; === KEYWORDS — Module / Import ===
+[
   "import" "using" "namespace"
-] @keyword.import)
+] @keyword.import
 
-; ---- OOP ----
-([
+; === KEYWORDS — OOP ===
+[
   "class" "struct" "interface" "mixin" "enum"
   "virtual" "override" "final" "property"
-  "operator" "function"
-] @keyword)
+] @keyword
 
-; ---- Templates ----
-([
+; === KEYWORDS — Templates ===
+[
   "template" "typename"
-] @keyword)
+] @keyword
 
-; ---- Declaration qualifiers ----
-([
+; === KEYWORDS — Qualifiers / Storage ===
+[
   "const" "constexpr" "auto" "nullable"
   "extern" "out" "delegate" "coroutine"
-  "static"
-] @keyword)
+  "static" "inline"
+] @keyword
 
-; ---- Object lifetime ----
-([
+; === KEYWORDS — Memory ===
+[
   "new" "delete"
-] @keyword)
+] @keyword
 
-; ---- Access ----
-([
-  "private" "public" "protected"
-] @keyword)
-
-; ---- Cast / built-in ops ----
-([
+; === KEYWORDS — Cast / Built-in ===
+[
   "cast" "static_cast" "reinterpret_cast" "const_cast"
-  "sizeof" "typeof"
-] @keyword)
+  "sizeof" "move" "offsetof" "decltype" "static_assert"
+] @keyword
 
-; ---- Primitive types ----
-([
-  "bool" "char" "wchar"
-  "int8" "int16" "int32" "int64"
-  "uint8" "uint16" "uint32" "uint64"
-  "aint8" "aint16" "aint32" "aint64"
-  "float32" "float64" "float" "double"
-  "string" "wstring" "void" "size_t"
-] @type.builtin)
-
-; ---- Math types ----
-([
-  "vec2" "vec3" "vec4"
-] @type)
-
-; ---- Container types ----
-([
-  "array" "map" "hash_set" "sorted_map" "variant"
-] @type)
-
-; ---- SDK types ----
-([
-  "coroutine_t" "atomic_int32" "atomic_int64"
-  "mutex" "cond_var" "lock_guard"
-  "file_t" "regex" "json_value"
-] @type)
-
-; ---- Misc keywords ----
-([
-  "abstract" "final" "shared" "inline"
-  "volatile" "get" "set"
-  "typedef"
-] @keyword)
+; === KEYWORDS — Access ===
+[
+  "private" "public" "protected"
+] @keyword
