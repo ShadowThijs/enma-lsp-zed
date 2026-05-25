@@ -94,14 +94,68 @@ impl LanguageServer for Backend {
         Ok(None)
     }
 
-    async fn hover(&self, _params: HoverParams) -> LspResult<Option<Hover>> {
+    async fn hover(&self, params: HoverParams) -> LspResult<Option<Hover>> {
+        let uri = params.text_document_position_params.text_document.uri.clone();
+        let pos = params.text_document_position_params.position;
+
+        let docs = self.documents.lock().await;
+        if let Some(source) = docs.get(&uri) {
+            if let Some(model) = self.build_model(source).await {
+                for sym in &model.symbols {
+                    if range_contains(&sym.range, pos) {
+                        let type_info = sym.type_name.as_deref().unwrap_or("unknown");
+                        let kind_str = match sym.kind {
+                            semantic::SymbolKind::Function => "function",
+                            semantic::SymbolKind::Variable => "variable",
+                            semantic::SymbolKind::Parameter => "parameter",
+                            semantic::SymbolKind::Struct => "struct",
+                            semantic::SymbolKind::Class => "class",
+                            semantic::SymbolKind::Enum => "enum",
+                            semantic::SymbolKind::Interface => "interface",
+                            semantic::SymbolKind::Namespace => "namespace",
+                            semantic::SymbolKind::TypeAlias => "type alias",
+                        };
+                        return Ok(Some(Hover {
+                            contents: HoverContents::Scalar(
+                                MarkedString::String(format!("{} {}: {}", kind_str, sym.name, type_info))
+                            ),
+                            range: Some(sym.range),
+                        }));
+                    }
+                }
+            }
+        }
         Ok(None)
     }
 
     async fn goto_definition(
         &self,
-        _params: GotoDefinitionParams,
+        params: GotoDefinitionParams,
     ) -> LspResult<Option<GotoDefinitionResponse>> {
+        let uri = params.text_document_position_params.text_document.uri.clone();
+        let pos = params.text_document_position_params.position;
+
+        let docs = self.documents.lock().await;
+        if let Some(source) = docs.get(&uri) {
+            // Parse and walk to find the identifier at cursor
+            let mut parser = self.parser.lock().await;
+            if let Some(tree) = parser.parse(source.as_bytes()) {
+                let node = find_named_leaf(tree.root_node(), pos);
+                if node.kind() == "identifier" {
+                    let name = &source[node.start_byte()..node.end_byte()];
+                    let model = SemanticModel::build(tree.root_node(), source, get_db());
+                    // Find a symbol definition with this name (not at this position)
+                    for sym in &model.symbols {
+                        if sym.name == name && !range_contains(&sym.range, pos) {
+                            return Ok(Some(GotoDefinitionResponse::Scalar(Location {
+                                uri: uri.clone(),
+                                range: sym.range,
+                            })));
+                        }
+                    }
+                }
+            }
+        }
         Ok(None)
     }
 
@@ -114,8 +168,38 @@ impl LanguageServer for Backend {
 
     async fn document_symbol(
         &self,
-        _params: DocumentSymbolParams,
+        params: DocumentSymbolParams,
     ) -> LspResult<Option<DocumentSymbolResponse>> {
+        let uri = params.text_document.uri.clone();
+        let docs = self.documents.lock().await;
+        if let Some(source) = docs.get(&uri) {
+            if let Some(model) = self.build_model(source).await {
+                let symbols: Vec<DocumentSymbol> = model.symbols.iter().map(|sym| {
+                    let kind = match sym.kind {
+                        semantic::SymbolKind::Function => SymbolKind::FUNCTION,
+                        semantic::SymbolKind::Struct => SymbolKind::STRUCT,
+                        semantic::SymbolKind::Class => SymbolKind::CLASS,
+                        semantic::SymbolKind::Enum => SymbolKind::ENUM,
+                        semantic::SymbolKind::Interface => SymbolKind::INTERFACE,
+                        semantic::SymbolKind::Namespace => SymbolKind::NAMESPACE,
+                        semantic::SymbolKind::Variable => SymbolKind::VARIABLE,
+                        semantic::SymbolKind::Parameter => SymbolKind::VARIABLE,
+                        semantic::SymbolKind::TypeAlias => SymbolKind::TYPE_PARAMETER,
+                    };
+                    DocumentSymbol {
+                        name: sym.name.clone(),
+                        detail: sym.type_name.clone(),
+                        kind,
+                        tags: None,
+                        deprecated: None,
+                        range: sym.range,
+                        selection_range: sym.range,
+                        children: None,
+                    }
+                }).collect();
+                return Ok(Some(DocumentSymbolResponse::Nested(symbols)));
+            }
+        }
         Ok(None)
     }
 
@@ -128,11 +212,17 @@ impl LanguageServer for Backend {
 }
 
 impl Backend {
+    async fn build_model(&self, source: &str) -> Option<SemanticModel> {
+        let mut parser = self.parser.lock().await;
+        let tree = parser.parse(source.as_bytes())?;
+        Some(SemanticModel::build(tree.root_node(), source, get_db()))
+    }
+
     async fn publish_diagnostics(&self, uri: &Url, text: &str) {
         let mut parser = self.parser.lock().await;
         let tree = parser.parse(text.as_bytes());
 
-        let mut diagnostics = if let Some(tree) = &tree {
+        let diagnostics = if let Some(tree) = &tree {
             let mut diags = self.collect_syntax_errors(tree.root_node());
             let model = SemanticModel::build(tree.root_node(), text, get_db());
             diags.extend(model.diagnostics());
@@ -180,6 +270,25 @@ impl Backend {
 
         results
     }
+}
+
+fn range_contains(range: &Range, pos: Position) -> bool {
+    pos >= range.start && pos <= range.end
+}
+
+fn find_named_leaf(node: tree_sitter::Node, pos: Position) -> tree_sitter::Node {
+    let target = Position { line: pos.line, character: pos.character };
+    let mut cursor = node.walk();
+    for child in node.children(&mut cursor) {
+        let cr = node_range(&child);
+        if range_contains(&cr, target) && child.start_position().row == target.line as usize {
+            if child.child_count() == 0 || child.kind() == "identifier" {
+                return child;
+            }
+            return find_named_leaf(child, pos);
+        }
+    }
+    node
 }
 
 fn node_range(node: &tree_sitter::Node) -> Range {

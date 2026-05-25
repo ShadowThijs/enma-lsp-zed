@@ -46,6 +46,10 @@ impl SemanticModel {
         }
     }
 
+    pub fn empty() -> Self {
+        Self { symbols: Vec::new(), diagnostics: Vec::new() }
+    }
+
     pub fn diagnostics(&self) -> Vec<Diagnostic> {
         self.diagnostics.clone()
     }
