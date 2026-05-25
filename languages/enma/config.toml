@@ -2,5 +2,4 @@ name = "Enma"
 grammar = "enma"
 path_suffixes = ["em"]
 line_comments = ["// "]
-tab_size = 4
-hard_tabs = true
+block_comments = ["/* ", " */"]
