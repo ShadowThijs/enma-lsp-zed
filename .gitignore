@@ -1,0 +1,9 @@
+# Added by cargo
+
+/target
+/Cargo.lock
+
+# Added manually
+
+/.claude
+/.omc

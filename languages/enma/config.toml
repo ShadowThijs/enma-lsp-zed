@@ -1,0 +1,6 @@
+name = "Enma"
+grammer = "enma"
+path_suffixes = ["em"]
+line_comments = ["// "]
+tab_size = 4
+hard_tabs = true
