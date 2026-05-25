@@ -1,11 +1,22 @@
 mod parser;
+mod type_db;
+mod completion;
 
 use parser::EnmaParser;
+use type_db::TypeDatabase;
+use completion::CompletionContext;
 use std::collections::HashMap;
+use std::sync::OnceLock;
 use tokio::sync::Mutex;
 use tower_lsp::jsonrpc::Result as LspResult;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
+
+static TYPE_DB: OnceLock<TypeDatabase> = OnceLock::new();
+
+fn get_db() -> &'static TypeDatabase {
+    TYPE_DB.get_or_init(TypeDatabase::load)
+}
 
 struct Backend {
     client: Client,
@@ -65,8 +76,19 @@ impl LanguageServer for Backend {
         self.documents.lock().await.remove(&params.text_document.uri);
     }
 
-    async fn completion(&self, _params: CompletionParams) -> LspResult<Option<CompletionResponse>> {
-        // Placeholder — will be implemented in Phase 2
+    async fn completion(&self, params: CompletionParams) -> LspResult<Option<CompletionResponse>> {
+        let uri = params.text_document_position.text_document.uri.clone();
+        let pos = params.text_document_position.position;
+
+        let docs = self.documents.lock().await;
+        if let Some(source) = docs.get(&uri) {
+            let ctx = CompletionContext::new(get_db());
+            let items = ctx.complete(source, pos);
+
+            if !items.is_empty() {
+                return Ok(Some(CompletionResponse::Array(items)));
+            }
+        }
         Ok(None)
     }
 

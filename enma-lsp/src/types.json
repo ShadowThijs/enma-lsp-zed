@@ -1,0 +1,241 @@
+{
+  "_schema": "enma-lsp-types v1",
+  "_doc": "Add types and methods here to update completions. No Rust code changes needed.",
+
+  "primitives": {
+    "void":    { "size": 0 },
+    "bool":    { "size": 1 },
+    "char":    { "size": 1 },
+    "wchar":   { "size": 2 },
+    "int8":    { "size": 1, "kind": "signed" },
+    "int16":   { "size": 2, "kind": "signed" },
+    "int32":   { "size": 4, "kind": "signed" },
+    "int64":   { "size": 8, "kind": "signed" },
+    "uint8":   { "size": 1, "kind": "unsigned" },
+    "uint16":  { "size": 2, "kind": "unsigned" },
+    "uint32":  { "size": 4, "kind": "unsigned" },
+    "uint64":  { "size": 8, "kind": "unsigned" },
+    "aint8":   { "size": 1, "kind": "atomic" },
+    "aint16":  { "size": 2, "kind": "atomic" },
+    "aint32":  { "size": 4, "kind": "atomic" },
+    "aint64":  { "size": 8, "kind": "atomic" },
+    "float32": { "size": 4, "kind": "float" },
+    "float64": { "size": 8, "kind": "float" },
+    "string":  { "size": 0, "kind": "heap" },
+    "wstring": { "size": 0, "kind": "heap" }
+  },
+
+  "keyword_types": [
+    "null", "nullptr", "true", "false", "this", "auto",
+    "const", "constexpr", "static", "extern", "inline",
+    "virtual", "override", "final", "abstract", "shared",
+    "public", "private", "protected",
+    "class", "struct", "interface", "mixin", "enum",
+    "namespace", "using", "template", "typename",
+    "if", "else", "for", "while", "do", "switch", "case", "default",
+    "break", "continue", "return", "try", "catch", "throw",
+    "defer", "goto", "match", "yield", "coroutine",
+    "new", "delete", "sizeof", "typeof", "decltype",
+    "cast", "static_cast", "reinterpret_cast", "const_cast",
+    "typedef", "delegate", "property", "operator", "function",
+    "import", "nullable", "out", "volatile", "move"
+  ],
+
+  "types": {
+    "string": {
+      "doc": "UTF-8 heap-allocated string",
+      "methods": [
+        {"name": "length",    "params": [], "return": "int64", "doc": "Number of characters"},
+        {"name": "is_empty",  "params": [], "return": "bool", "doc": "True if string is empty"},
+        {"name": "substr",    "params": [{"name":"start","type":"int64"},{"name":"len","type":"int64"}], "return": "string", "doc": "Extract substring from start of given length"},
+        {"name": "find",      "params": [{"name":"needle","type":"string"}], "return": "int64", "doc": "Index of first occurrence, or -1"},
+        {"name": "last_index_of", "params": [{"name":"needle","type":"string"}], "return": "int64", "doc": "Index of last occurrence, or -1"},
+        {"name": "contains",  "params": [{"name":"sub","type":"string"}], "return": "bool", "doc": "True if contains substring"},
+        {"name": "starts_with", "params": [{"name":"prefix","type":"string"}], "return": "bool"},
+        {"name": "ends_with", "params": [{"name":"suffix","type":"string"}], "return": "bool"},
+        {"name": "starts_with_i", "params": [{"name":"p","type":"string"}], "return": "bool", "doc": "Case-insensitive starts_with"},
+        {"name": "ends_with_i", "params": [{"name":"p","type":"string"}], "return": "bool", "doc": "Case-insensitive ends_with"},
+        {"name": "count",     "params": [{"name":"needle","type":"string"}], "return": "int64", "doc": "Count occurrences of substring"},
+        {"name": "char_at",   "params": [{"name":"i","type":"int64"}], "return": "int64", "doc": "Character code at index"},
+        {"name": "to_int",    "params": [], "return": "int64", "doc": "Parse as integer"},
+        {"name": "to_float",  "params": [], "return": "float64", "doc": "Parse as float"},
+        {"name": "to_upper",  "params": [], "return": "string", "doc": "Uppercase copy"},
+        {"name": "to_lower",  "params": [], "return": "string", "doc": "Lowercase copy"},
+        {"name": "trim",      "params": [], "return": "string", "doc": "Remove leading/trailing whitespace"},
+        {"name": "trim_left", "params": [], "return": "string"},
+        {"name": "trim_right","params": [], "return": "string"},
+        {"name": "reverse",   "params": [], "return": "string"},
+        {"name": "replace",   "params": [{"name":"from","type":"string"},{"name":"to","type":"string"}], "return": "string", "doc": "Replace all occurrences"},
+        {"name": "replace_first", "params": [{"name":"from","type":"string"},{"name":"to","type":"string"}], "return": "string"},
+        {"name": "repeat",    "params": [{"name":"n","type":"int64"}], "return": "string"},
+        {"name": "pad_left",  "params": [{"name":"width","type":"int64"},{"name":"pad","type":"char"}], "return": "string"},
+        {"name": "pad_right", "params": [{"name":"width","type":"int64"},{"name":"pad","type":"char"}], "return": "string"},
+        {"name": "insert",    "params": [{"name":"i","type":"int64"},{"name":"other","type":"string"}], "return": "string"},
+        {"name": "remove_range", "params": [{"name":"start","type":"int64"},{"name":"end","type":"int64"}], "return": "string"},
+        {"name": "split",     "params": [{"name":"sep","type":"string"}], "return": "array", "doc": "Split by separator, returns string[]"},
+        {"name": "chars",     "params": [], "return": "array", "doc": "Returns int64[] of char codes"}
+      ],
+      "free_functions": [
+        {"name": "int_to_str", "params": [{"name":"v","type":"int64"}], "return": "string"},
+        {"name": "float_to_str", "params": [{"name":"v","type":"float64"}], "return": "string"},
+        {"name": "bool_to_str", "params": [{"name":"v","type":"bool"}], "return": "string"},
+        {"name": "char_to_str", "params": [{"name":"c","type":"char"}], "return": "string"},
+        {"name": "format", "params": [{"name":"fmt","type":"string"}], "return": "string", "doc": "Format string with {0}, {1}, ... placeholders", "variadic": true},
+        {"name": "ord", "params": [{"name":"c","type":"char"}], "return": "int64", "doc": "Character to code point"},
+        {"name": "chr", "params": [{"name":"code","type":"int64"}], "return": "string", "doc": "Code point to 1-char string"},
+        {"name": "hex_encode", "params": [{"name":"v","type":"int64"}], "return": "string", "doc": "Integer to lowercase hex string"},
+        {"name": "hex_decode", "params": [{"name":"s","type":"string"}], "return": "string"},
+        {"name": "hex_to_int", "params": [{"name":"s","type":"string"}], "return": "int64"},
+        {"name": "base64_encode", "params": [{"name":"data","type":"string"}], "return": "string"},
+        {"name": "base64_decode", "params": [{"name":"text","type":"string"}], "return": "string"},
+        {"name": "url_encode", "params": [{"name":"data","type":"string"}], "return": "string"},
+        {"name": "url_decode", "params": [{"name":"text","type":"string"}], "return": "string"}
+      ]
+    },
+
+    "array": {
+      "doc": "Dynamic array T[]",
+      "methods": [
+        {"name": "length",     "params": [], "return": "int64", "doc": "Number of elements"},
+        {"name": "capacity",   "params": [], "return": "int64", "doc": "Allocated capacity"},
+        {"name": "push",       "params": [{"name":"v","type":"T"}], "return": "void"},
+        {"name": "pop",        "params": [], "return": "T"},
+        {"name": "get",        "params": [{"name":"i","type":"int64"}], "return": "T"},
+        {"name": "set",        "params": [{"name":"i","type":"int64"},{"name":"v","type":"T"}], "return": "void"},
+        {"name": "clear",      "params": [], "return": "void"},
+        {"name": "resize",     "params": [{"name":"n","type":"int64"}], "return": "void"},
+        {"name": "remove",     "params": [{"name":"i","type":"int64"}], "return": "T"},
+        {"name": "insert",     "params": [{"name":"i","type":"int64"},{"name":"v","type":"T"}], "return": "void"},
+        {"name": "slice",      "params": [{"name":"start","type":"int64"},{"name":"end","type":"int64"}], "return": "array"},
+        {"name": "contains",   "params": [{"name":"v","type":"T"}], "return": "int64", "doc": "Returns 1 or 0"},
+        {"name": "index_of",   "params": [{"name":"v","type":"T"}], "return": "int64", "doc": "Returns -1 if not found"},
+        {"name": "reverse",    "params": [], "return": "void"},
+        {"name": "sort",       "params": [], "return": "void"},
+        {"name": "join",       "params": [{"name":"sep","type":"string"}], "return": "string"},
+        {"name": "first",      "params": [], "return": "T"},
+        {"name": "last",       "params": [], "return": "T"},
+        {"name": "pop_front",  "params": [], "return": "T"},
+        {"name": "push_front", "params": [{"name":"x","type":"T"}], "return": "void"},
+        {"name": "swap",       "params": [{"name":"i","type":"int64"},{"name":"j","type":"int64"}], "return": "void"},
+        {"name": "fill",       "params": [{"name":"x","type":"T"}], "return": "void"},
+        {"name": "count",      "params": [{"name":"x","type":"T"}], "return": "int64"},
+        {"name": "unique",     "params": [], "return": "array"},
+        {"name": "sum",        "params": [], "return": "int64"},
+        {"name": "min",        "params": [], "return": "T"},
+        {"name": "max",        "params": [], "return": "T"},
+        {"name": "min_idx",    "params": [], "return": "int64"},
+        {"name": "max_idx",    "params": [], "return": "int64"},
+        {"name": "chunk",      "params": [{"name":"n","type":"int64"}], "return": "array"},
+        {"name": "flat",       "params": [], "return": "array"},
+        {"name": "map",        "params": [{"name":"fn","type":"int64"}], "return": "array", "doc": "Transform each element via callback"},
+        {"name": "filter",     "params": [{"name":"fn","type":"int64"}], "return": "array", "doc": "Filter elements via callback"},
+        {"name": "reduce",     "params": [{"name":"fn","type":"int64"},{"name":"acc","type":"T"}], "return": "T"},
+        {"name": "any",        "params": [{"name":"fn","type":"int64"}], "return": "bool"},
+        {"name": "all",        "params": [{"name":"fn","type":"int64"}], "return": "bool"},
+        {"name": "find",       "params": [{"name":"fn","type":"int64"}], "return": "int64", "doc": "Index of first match, -1 if none"}
+      ]
+    },
+
+    "map": {
+      "doc": "Associative map map<K,V>",
+      "methods": [
+        {"name": "set",       "params": [{"name":"k","type":"K"},{"name":"v","type":"V"}], "return": "void"},
+        {"name": "get",       "params": [{"name":"k","type":"K"}], "return": "V"},
+        {"name": "get_or_default", "params": [{"name":"k","type":"K"},{"name":"default","type":"V"}], "return": "V"},
+        {"name": "contains",  "params": [{"name":"k","type":"K"}], "return": "bool"},
+        {"name": "has_value", "params": [{"name":"v","type":"V"}], "return": "bool"},
+        {"name": "size",      "params": [], "return": "int64"},
+        {"name": "remove",    "params": [{"name":"k","type":"K"}], "return": "bool"},
+        {"name": "clear",     "params": [], "return": "void"},
+        {"name": "keys",      "params": [], "return": "array", "doc": "Returns K[]"},
+        {"name": "values",    "params": [], "return": "array", "doc": "Returns V[]"},
+        {"name": "merge",     "params": [{"name":"other","type":"map"}], "return": "void"}
+      ]
+    }
+  },
+
+  "free_functions": [
+    {"name": "print",   "params": [{"name":"s","type":"string"}], "return": "void", "module": "core"},
+    {"name": "println", "params": [{"name":"s","type":"string"}], "return": "void", "module": "core"},
+    {"name": "time_ms", "params": [], "return": "int64", "module": "core", "doc": "Wall-clock milliseconds"},
+    {"name": "assert",  "params": [{"name":"cond","type":"int64"},{"name":"msg","type":"string"}], "return": "int64", "module": "core", "doc": "Throws if cond == 0"},
+
+    {"name": "sin",  "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "cos",  "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "tan",  "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "asin", "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "acos", "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "atan", "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "atan2","params": [{"name":"y","type":"float64"},{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "sqrt", "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "pow",  "params": [{"name":"x","type":"float64"},{"name":"y","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "abs",  "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "min",  "params": [{"name":"a","type":"float64"},{"name":"b","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "max",  "params": [{"name":"a","type":"float64"},{"name":"b","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "clamp","params": [{"name":"x","type":"float64"},{"name":"lo","type":"float64"},{"name":"hi","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "floor","params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "ceil", "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "round","params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "log",  "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "log2", "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "log10","params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "exp",  "params": [{"name":"x","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "lerp", "params": [{"name":"a","type":"float64"},{"name":"b","type":"float64"},{"name":"t","type":"float64"}], "return": "float64", "module": "math"},
+    {"name": "rand", "params": [], "return": "float64", "module": "math", "doc": "Returns [0,1)"},
+    {"name": "pi",   "params": [], "return": "float64", "module": "math"}
+  ],
+
+  "math_types": {
+    "vec2": {
+      "fields": ["x", "y"],
+      "methods": [
+        {"name": "add",       "params": [{"name":"b","type":"vec2"}], "return": "vec2"},
+        {"name": "sub",       "params": [{"name":"b","type":"vec2"}], "return": "vec2"},
+        {"name": "scale",     "params": [{"name":"s","type":"float64"}], "return": "vec2"},
+        {"name": "negate",    "params": [], "return": "vec2"},
+        {"name": "dot",       "params": [{"name":"b","type":"vec2"}], "return": "float64"},
+        {"name": "length",    "params": [], "return": "float64"},
+        {"name": "length_sq", "params": [], "return": "float64"},
+        {"name": "distance",  "params": [{"name":"b","type":"vec2"}], "return": "float64"},
+        {"name": "normalize", "params": [], "return": "vec2"},
+        {"name": "lerp",      "params": [{"name":"b","type":"vec2"},{"name":"t","type":"float64"}], "return": "vec2"},
+        {"name": "rotate",    "params": [{"name":"rad","type":"float64"}], "return": "vec2", "doc": "Rotate counter-clockwise"}
+      ]
+    },
+    "vec3": {
+      "fields": ["x", "y", "z"],
+      "methods": [
+        {"name": "add",       "params": [{"name":"b","type":"vec3"}], "return": "vec3"},
+        {"name": "sub",       "params": [{"name":"b","type":"vec3"}], "return": "vec3"},
+        {"name": "scale",     "params": [{"name":"s","type":"float64"}], "return": "vec3"},
+        {"name": "negate",    "params": [], "return": "vec3"},
+        {"name": "dot",       "params": [{"name":"b","type":"vec3"}], "return": "float64"},
+        {"name": "length",    "params": [], "return": "float64"},
+        {"name": "length_sq", "params": [], "return": "float64"},
+        {"name": "distance",  "params": [{"name":"b","type":"vec3"}], "return": "float64"},
+        {"name": "normalize", "params": [], "return": "vec3"},
+        {"name": "lerp",      "params": [{"name":"b","type":"vec3"},{"name":"t","type":"float64"}], "return": "vec3"},
+        {"name": "cross",     "params": [{"name":"b","type":"vec3"}], "return": "vec3"},
+        {"name": "reflect",   "params": [{"name":"n","type":"vec3"}], "return": "vec3", "doc": "Reflect across normal"},
+        {"name": "project",   "params": [{"name":"onto","type":"vec3"}], "return": "vec3"},
+        {"name": "angle",     "params": [{"name":"v","type":"vec3"}], "return": "float64", "doc": "Angle between vectors in radians"},
+        {"name": "rotate_around", "params": [{"name":"axis","type":"vec3"},{"name":"rad","type":"float64"}], "return": "vec3"}
+      ]
+    },
+    "vec4": {
+      "fields": ["x", "y", "z", "w"],
+      "methods": [
+        {"name": "add", "params": [{"name":"b","type":"vec4"}], "return": "vec4"},
+        {"name": "sub", "params": [{"name":"b","type":"vec4"}], "return": "vec4"},
+        {"name": "scale", "params": [{"name":"s","type":"float64"}], "return": "vec4"},
+        {"name": "negate", "params": [], "return": "vec4"},
+        {"name": "dot", "params": [{"name":"b","type":"vec4"}], "return": "float64"},
+        {"name": "length", "params": [], "return": "float64"},
+        {"name": "length_sq", "params": [], "return": "float64"},
+        {"name": "distance", "params": [{"name":"b","type":"vec4"}], "return": "float64"},
+        {"name": "normalize", "params": [], "return": "vec4"},
+        {"name": "lerp", "params": [{"name":"b","type":"vec4"},{"name":"t","type":"float64"}], "return": "vec4"}
+      ]
+    }
+  }
+}
