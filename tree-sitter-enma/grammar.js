@@ -628,8 +628,17 @@ module.exports = grammar({
       $._postfix_expression,
     ),
 
+    // Template function call: func<T>(args)
+    _template_call: $ => prec(16, seq(
+      field('function', $.identifier),
+      '<', commaSep($._type), optional(','), '>',
+      field('arguments', $.argument_list),
+    )),
+
     // Postfix expressions
     _postfix_expression: $ => choice(
+      // Template call
+      $._template_call,
       // Function call
       prec(14, seq(
         field('function', $._postfix_expression),
