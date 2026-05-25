@@ -1,4 +1,6 @@
-use zed_extension_api::{self as zed, LspSettings, Worktree, LanguageServerId};
+use zed_extension_api::{self as zed, Worktree, LanguageServerId};
+use zed_extension_api::settings::LspSettings;
+use zed_extension_api::serde_json;
 
 struct EnmaExtension;
 
