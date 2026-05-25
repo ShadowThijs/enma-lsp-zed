@@ -144,6 +144,36 @@ impl LanguageServer for Backend {
                         range: token_range,
                     }));
                 }
+
+                // Fallback: look up the identifier at cursor in the type database
+                let mut parser = self.parser.lock().await;
+                if let Some(tree) = parser.parse(source.as_bytes()) {
+                    let node = find_named_leaf(tree.root_node(), pos);
+                    if node.kind() == "identifier" {
+                        let name = &source[node.start_byte()..node.end_byte()];
+                        let db = get_db();
+
+                        // Check free functions
+                        if let Some(f) = db.functions.get(name) {
+                            return Ok(Some(Hover {
+                                contents: HoverContents::Scalar(
+                                    MarkedString::String(format!("built-in function: {}", TypeDatabase::function_detail(f)))
+                                ),
+                                range: Some(node_range(&node)),
+                            }));
+                        }
+
+                        // Check type names
+                        if db.is_type(name) {
+                            return Ok(Some(Hover {
+                                contents: HoverContents::Scalar(
+                                    MarkedString::String(format!("built-in type: {}", name))
+                                ),
+                                range: Some(node_range(&node)),
+                            }));
+                        }
+                    }
+                }
             }
         }
         Ok(None)
