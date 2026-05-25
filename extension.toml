@@ -9,7 +9,7 @@ repository = "https://github.com/shadowthijs/enma-lsp-zed"
 [grammars.enma]
 repository = "https://github.com/shadowthijs/enma-lsp-zed"
 path = "tree-sitter-enma"
-rev = "d1c8b5109f7eb3b376049efdd3b9c281ab71d86d"
+rev = "db70b94c70663acb77b912b5ee4b2715238a87b0"
 
 [language_servers.enma-lsp]
 name = "Enma LSP"
