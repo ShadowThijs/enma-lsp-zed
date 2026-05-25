@@ -786,10 +786,11 @@ module.exports = grammar({
     // =========================================================================
 
     number_literal: $ => choice(
-      token(seq(/0[xX][0-9a-fA-F_]+/, optional(/_[A-Za-z_][A-Za-z0-9_]*/))),   // hex, optional UDL
-      token(seq(/0[bB][01_]+/, optional(/_[A-Za-z_][A-Za-z0-9_]*/))),             // binary, optional UDL
-      token(seq(/(\d+\.\d*|\.\d+)([eE][+-]?\d+)?[fF]?/, optional(/_[A-Za-z_][A-Za-z0-9_]*/))), // float, optional UDL
-      token(seq(/\d[\d_]*/, optional(/_[A-Za-z_][A-Za-z0-9_]*/))),                // decimal, optional UDL
+      token(seq(/0[xX][0-9a-fA-F_]+/, optional(/_[A-Za-z_][A-Za-z0-9_]*/))),
+      token(seq(/0[bB][01_]+/, optional(/_[A-Za-z_][A-Za-z0-9_]*/))),
+      token(seq(/(\d+\.\d*|\.\d+)([eE][+-]?\d+)?[fF]?/, optional(/_[A-Za-z_][A-Za-z0-9_]*/))),
+      token(seq(/\d+[eE][+\-]?\d+[fF]?/, optional(/_[A-Za-z_][A-Za-z0-9_]*/))),   // integer scientific: 1e-9
+      token(seq(/\d[\d_]*/, optional(/_[A-Za-z_][A-Za-z0-9_]*/))),
     ),
 
     string_literal: $ => seq(
