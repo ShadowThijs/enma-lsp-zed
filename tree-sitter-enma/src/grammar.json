@@ -3,7 +3,7 @@
   "name": "enma",
   "word": "identifier",
   "rules": {
-    "source_file": {
+    "translation_unit": {
       "type": "REPEAT",
       "content": {
         "type": "SYMBOL",
@@ -62,45 +62,718 @@
     },
     "_rest_of_line": {
       "type": "PATTERN",
-      "value": "[^\\n]*"
+      "value": "[^\\n]+"
     },
-    "comment": {
-      "type": "TOKEN",
-      "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "//"
-              },
-              {
-                "type": "PATTERN",
-                "value": ".*"
-              }
-            ]
-          },
-          {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "/*"
-              },
-              {
-                "type": "PATTERN",
-                "value": "[^*]*\\*+([^/*][^*]*\\*+)*"
-              },
-              {
-                "type": "STRING",
-                "value": "/"
-              }
-            ]
+    "expression_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_expr"
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "block": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_item"
           }
-        ]
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "_expr": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "SYMBOL",
+        "name": "_expr_part"
       }
+    },
+    "_expr_part": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "number"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "f_string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "char_literal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "parenthesized"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "bracketed"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "STRING",
+          "value": "+="
+        },
+        {
+          "type": "STRING",
+          "value": "-="
+        },
+        {
+          "type": "STRING",
+          "value": "*="
+        },
+        {
+          "type": "STRING",
+          "value": "/="
+        },
+        {
+          "type": "STRING",
+          "value": "%="
+        },
+        {
+          "type": "STRING",
+          "value": "&="
+        },
+        {
+          "type": "STRING",
+          "value": "|="
+        },
+        {
+          "type": "STRING",
+          "value": "^="
+        },
+        {
+          "type": "STRING",
+          "value": "||"
+        },
+        {
+          "type": "STRING",
+          "value": "&&"
+        },
+        {
+          "type": "STRING",
+          "value": "=="
+        },
+        {
+          "type": "STRING",
+          "value": "!="
+        },
+        {
+          "type": "STRING",
+          "value": "<"
+        },
+        {
+          "type": "STRING",
+          "value": ">"
+        },
+        {
+          "type": "STRING",
+          "value": "<="
+        },
+        {
+          "type": "STRING",
+          "value": ">="
+        },
+        {
+          "type": "STRING",
+          "value": "|"
+        },
+        {
+          "type": "STRING",
+          "value": "^"
+        },
+        {
+          "type": "STRING",
+          "value": "&"
+        },
+        {
+          "type": "STRING",
+          "value": "+"
+        },
+        {
+          "type": "STRING",
+          "value": "-"
+        },
+        {
+          "type": "STRING",
+          "value": "*"
+        },
+        {
+          "type": "STRING",
+          "value": "/"
+        },
+        {
+          "type": "STRING",
+          "value": "%"
+        },
+        {
+          "type": "STRING",
+          "value": "."
+        },
+        {
+          "type": "STRING",
+          "value": "->"
+        },
+        {
+          "type": "STRING",
+          "value": "::"
+        },
+        {
+          "type": "STRING",
+          "value": "++"
+        },
+        {
+          "type": "STRING",
+          "value": "--"
+        },
+        {
+          "type": "STRING",
+          "value": "!"
+        },
+        {
+          "type": "STRING",
+          "value": "~"
+        },
+        {
+          "type": "STRING",
+          "value": "?"
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "STRING",
+          "value": ","
+        },
+        {
+          "type": "STRING",
+          "value": "..."
+        },
+        {
+          "type": "STRING",
+          "value": "@"
+        },
+        {
+          "type": "STRING",
+          "value": "new"
+        },
+        {
+          "type": "STRING",
+          "value": "delete"
+        },
+        {
+          "type": "STRING",
+          "value": "sizeof"
+        },
+        {
+          "type": "STRING",
+          "value": "typeof"
+        },
+        {
+          "type": "STRING",
+          "value": "cast"
+        },
+        {
+          "type": "STRING",
+          "value": "static_cast"
+        },
+        {
+          "type": "STRING",
+          "value": "reinterpret_cast"
+        },
+        {
+          "type": "STRING",
+          "value": "const_cast"
+        },
+        {
+          "type": "STRING",
+          "value": "true"
+        },
+        {
+          "type": "STRING",
+          "value": "false"
+        },
+        {
+          "type": "STRING",
+          "value": "null"
+        },
+        {
+          "type": "STRING",
+          "value": "nullptr"
+        },
+        {
+          "type": "STRING",
+          "value": "this"
+        },
+        {
+          "type": "STRING",
+          "value": "if"
+        },
+        {
+          "type": "STRING",
+          "value": "else"
+        },
+        {
+          "type": "STRING",
+          "value": "for"
+        },
+        {
+          "type": "STRING",
+          "value": "while"
+        },
+        {
+          "type": "STRING",
+          "value": "do"
+        },
+        {
+          "type": "STRING",
+          "value": "switch"
+        },
+        {
+          "type": "STRING",
+          "value": "match"
+        },
+        {
+          "type": "STRING",
+          "value": "case"
+        },
+        {
+          "type": "STRING",
+          "value": "default"
+        },
+        {
+          "type": "STRING",
+          "value": "break"
+        },
+        {
+          "type": "STRING",
+          "value": "continue"
+        },
+        {
+          "type": "STRING",
+          "value": "return"
+        },
+        {
+          "type": "STRING",
+          "value": "try"
+        },
+        {
+          "type": "STRING",
+          "value": "catch"
+        },
+        {
+          "type": "STRING",
+          "value": "throw"
+        },
+        {
+          "type": "STRING",
+          "value": "defer"
+        },
+        {
+          "type": "STRING",
+          "value": "yield"
+        },
+        {
+          "type": "STRING",
+          "value": "goto"
+        },
+        {
+          "type": "STRING",
+          "value": "class"
+        },
+        {
+          "type": "STRING",
+          "value": "struct"
+        },
+        {
+          "type": "STRING",
+          "value": "interface"
+        },
+        {
+          "type": "STRING",
+          "value": "enum"
+        },
+        {
+          "type": "STRING",
+          "value": "namespace"
+        },
+        {
+          "type": "STRING",
+          "value": "using"
+        },
+        {
+          "type": "STRING",
+          "value": "template"
+        },
+        {
+          "type": "STRING",
+          "value": "typedef"
+        },
+        {
+          "type": "STRING",
+          "value": "mixin"
+        },
+        {
+          "type": "STRING",
+          "value": "import"
+        },
+        {
+          "type": "STRING",
+          "value": "extern"
+        },
+        {
+          "type": "STRING",
+          "value": "delegate"
+        },
+        {
+          "type": "STRING",
+          "value": "property"
+        },
+        {
+          "type": "STRING",
+          "value": "coroutine"
+        },
+        {
+          "type": "STRING",
+          "value": "typename"
+        },
+        {
+          "type": "STRING",
+          "value": "operator"
+        },
+        {
+          "type": "STRING",
+          "value": "function"
+        },
+        {
+          "type": "STRING",
+          "value": "static"
+        },
+        {
+          "type": "STRING",
+          "value": "const"
+        },
+        {
+          "type": "STRING",
+          "value": "constexpr"
+        },
+        {
+          "type": "STRING",
+          "value": "override"
+        },
+        {
+          "type": "STRING",
+          "value": "public"
+        },
+        {
+          "type": "STRING",
+          "value": "private"
+        },
+        {
+          "type": "STRING",
+          "value": "protected"
+        },
+        {
+          "type": "STRING",
+          "value": "virtual"
+        },
+        {
+          "type": "STRING",
+          "value": "abstract"
+        },
+        {
+          "type": "STRING",
+          "value": "final"
+        },
+        {
+          "type": "STRING",
+          "value": "shared"
+        },
+        {
+          "type": "STRING",
+          "value": "inline"
+        },
+        {
+          "type": "STRING",
+          "value": "nullable"
+        },
+        {
+          "type": "STRING",
+          "value": "out"
+        },
+        {
+          "type": "STRING",
+          "value": "auto"
+        },
+        {
+          "type": "STRING",
+          "value": "volatile"
+        },
+        {
+          "type": "STRING",
+          "value": "get"
+        },
+        {
+          "type": "STRING",
+          "value": "set"
+        },
+        {
+          "type": "STRING",
+          "value": "int8"
+        },
+        {
+          "type": "STRING",
+          "value": "int16"
+        },
+        {
+          "type": "STRING",
+          "value": "int32"
+        },
+        {
+          "type": "STRING",
+          "value": "int64"
+        },
+        {
+          "type": "STRING",
+          "value": "uint8"
+        },
+        {
+          "type": "STRING",
+          "value": "uint16"
+        },
+        {
+          "type": "STRING",
+          "value": "uint32"
+        },
+        {
+          "type": "STRING",
+          "value": "uint64"
+        },
+        {
+          "type": "STRING",
+          "value": "aint8"
+        },
+        {
+          "type": "STRING",
+          "value": "aint16"
+        },
+        {
+          "type": "STRING",
+          "value": "aint32"
+        },
+        {
+          "type": "STRING",
+          "value": "aint64"
+        },
+        {
+          "type": "STRING",
+          "value": "float32"
+        },
+        {
+          "type": "STRING",
+          "value": "float64"
+        },
+        {
+          "type": "STRING",
+          "value": "float"
+        },
+        {
+          "type": "STRING",
+          "value": "double"
+        },
+        {
+          "type": "STRING",
+          "value": "string"
+        },
+        {
+          "type": "STRING",
+          "value": "wstring"
+        },
+        {
+          "type": "STRING",
+          "value": "char"
+        },
+        {
+          "type": "STRING",
+          "value": "wchar"
+        },
+        {
+          "type": "STRING",
+          "value": "bool"
+        },
+        {
+          "type": "STRING",
+          "value": "void"
+        },
+        {
+          "type": "STRING",
+          "value": "size_t"
+        },
+        {
+          "type": "STRING",
+          "value": "array"
+        },
+        {
+          "type": "STRING",
+          "value": "map"
+        },
+        {
+          "type": "STRING",
+          "value": "hash_set"
+        },
+        {
+          "type": "STRING",
+          "value": "sorted_map"
+        },
+        {
+          "type": "STRING",
+          "value": "variant"
+        },
+        {
+          "type": "STRING",
+          "value": "vec2"
+        },
+        {
+          "type": "STRING",
+          "value": "vec3"
+        },
+        {
+          "type": "STRING",
+          "value": "vec4"
+        },
+        {
+          "type": "STRING",
+          "value": "coroutine_t"
+        },
+        {
+          "type": "STRING",
+          "value": "atomic_int32"
+        },
+        {
+          "type": "STRING",
+          "value": "atomic_int64"
+        },
+        {
+          "type": "STRING",
+          "value": "mutex"
+        },
+        {
+          "type": "STRING",
+          "value": "cond_var"
+        },
+        {
+          "type": "STRING",
+          "value": "lock_guard"
+        },
+        {
+          "type": "STRING",
+          "value": "file_t"
+        },
+        {
+          "type": "STRING",
+          "value": "regex"
+        },
+        {
+          "type": "STRING",
+          "value": "json_value"
+        }
+      ]
+    },
+    "parenthesized": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_expr_part"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
+    },
+    "bracketed": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "["
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_expr_part"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "]"
+        }
+      ]
+    },
+    "number": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "PATTERN",
+            "value": "0[xX][0-9a-fA-F_]+"
+          }
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "PATTERN",
+            "value": "(\\d+\\.\\d*|\\.\\d+)([eE][+-]?\\d+)?"
+          }
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "PATTERN",
+            "value": "\\d[\\d']*"
+          }
+        }
+      ]
     },
     "string": {
       "type": "SEQ",
@@ -227,857 +900,42 @@
         "value": "\\\\(x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{1,8}|.)"
       }
     },
-    "number": {
-      "type": "TOKEN",
-      "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "PATTERN",
-            "value": "0[xX][0-9a-fA-F_]+"
-          },
-          {
-            "type": "PATTERN",
-            "value": "0[bB][01_]+"
-          },
-          {
-            "type": "PATTERN",
-            "value": "(\\d+\\.\\d*|\\.\\d+)([eE][+-]?\\d+)?[fF]?"
-          },
-          {
-            "type": "PATTERN",
-            "value": "\\d[\\d'_]*"
-          }
-        ]
-      }
-    },
     "identifier": {
       "type": "PATTERN",
       "value": "[A-Za-z_][A-Za-z0-9_]*"
     },
-    "expression_statement": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_expr"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": ";"
-        }
-      ]
-    },
-    "_expr": {
-      "type": "REPEAT1",
-      "content": {
-        "type": "SYMBOL",
-        "name": "_expr_part"
-      }
-    },
-    "_expr_part": {
+    "comment": {
       "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "identifier"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "number"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "string"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "f_string"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "char_literal"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "parenthesized"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "bracketed"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "STRING",
-          "value": "+="
-        },
-        {
-          "type": "STRING",
-          "value": "-="
-        },
-        {
-          "type": "STRING",
-          "value": "*="
-        },
-        {
-          "type": "STRING",
-          "value": "/="
-        },
-        {
-          "type": "STRING",
-          "value": "%="
-        },
-        {
-          "type": "STRING",
-          "value": "&="
-        },
-        {
-          "type": "STRING",
-          "value": "|="
-        },
-        {
-          "type": "STRING",
-          "value": "^="
-        },
-        {
-          "type": "STRING",
-          "value": "<<="
-        },
-        {
-          "type": "STRING",
-          "value": ">>="
-        },
-        {
-          "type": "STRING",
-          "value": "||"
-        },
-        {
-          "type": "STRING",
-          "value": "&&"
-        },
-        {
-          "type": "STRING",
-          "value": "=="
-        },
-        {
-          "type": "STRING",
-          "value": "!="
-        },
-        {
-          "type": "STRING",
-          "value": "<"
-        },
-        {
-          "type": "STRING",
-          "value": ">"
-        },
-        {
-          "type": "STRING",
-          "value": "<="
-        },
-        {
-          "type": "STRING",
-          "value": ">="
-        },
-        {
-          "type": "STRING",
-          "value": "<=>"
-        },
-        {
-          "type": "STRING",
-          "value": "|"
-        },
-        {
-          "type": "STRING",
-          "value": "^"
-        },
-        {
-          "type": "STRING",
-          "value": "&"
-        },
-        {
-          "type": "STRING",
-          "value": "+"
-        },
-        {
-          "type": "STRING",
-          "value": "-"
-        },
-        {
-          "type": "STRING",
-          "value": "*"
-        },
-        {
-          "type": "STRING",
-          "value": "/"
-        },
-        {
-          "type": "STRING",
-          "value": "%"
-        },
-        {
-          "type": "STRING",
-          "value": "<<"
-        },
-        {
-          "type": "STRING",
-          "value": ">>"
-        },
-        {
-          "type": "STRING",
-          "value": "."
-        },
-        {
-          "type": "STRING",
-          "value": "->"
-        },
-        {
-          "type": "STRING",
-          "value": "::"
-        },
-        {
-          "type": "STRING",
-          "value": "++"
-        },
-        {
-          "type": "STRING",
-          "value": "--"
-        },
-        {
-          "type": "STRING",
-          "value": "!"
-        },
-        {
-          "type": "STRING",
-          "value": "~"
-        },
-        {
-          "type": "STRING",
-          "value": "?"
-        },
-        {
-          "type": "STRING",
-          "value": ":"
-        },
-        {
-          "type": "STRING",
-          "value": ","
-        },
-        {
-          "type": "STRING",
-          "value": "..."
-        },
-        {
-          "type": "STRING",
-          "value": "@"
-        },
-        {
-          "type": "STRING",
-          "value": "new"
-        },
-        {
-          "type": "STRING",
-          "value": "delete"
-        },
-        {
-          "type": "STRING",
-          "value": "sizeof"
-        },
-        {
-          "type": "STRING",
-          "value": "offsetof"
-        },
-        {
-          "type": "STRING",
-          "value": "decltype"
-        },
-        {
-          "type": "STRING",
-          "value": "cast"
-        },
-        {
-          "type": "STRING",
-          "value": "static_cast"
-        },
-        {
-          "type": "STRING",
-          "value": "reinterpret_cast"
-        },
-        {
-          "type": "STRING",
-          "value": "const_cast"
-        },
-        {
-          "type": "STRING",
-          "value": "move"
-        },
-        {
-          "type": "STRING",
-          "value": "true"
-        },
-        {
-          "type": "STRING",
-          "value": "false"
-        },
-        {
-          "type": "STRING",
-          "value": "null"
-        },
-        {
-          "type": "STRING",
-          "value": "this"
-        },
-        {
-          "type": "STRING",
-          "value": "if"
-        },
-        {
-          "type": "STRING",
-          "value": "else"
-        },
-        {
-          "type": "STRING",
-          "value": "for"
-        },
-        {
-          "type": "STRING",
-          "value": "while"
-        },
-        {
-          "type": "STRING",
-          "value": "do"
-        },
-        {
-          "type": "STRING",
-          "value": "switch"
-        },
-        {
-          "type": "STRING",
-          "value": "case"
-        },
-        {
-          "type": "STRING",
-          "value": "default"
-        },
-        {
-          "type": "STRING",
-          "value": "break"
-        },
-        {
-          "type": "STRING",
-          "value": "continue"
-        },
-        {
-          "type": "STRING",
-          "value": "return"
-        },
-        {
-          "type": "STRING",
-          "value": "try"
-        },
-        {
-          "type": "STRING",
-          "value": "catch"
-        },
-        {
-          "type": "STRING",
-          "value": "throw"
-        },
-        {
-          "type": "STRING",
-          "value": "defer"
-        },
-        {
-          "type": "STRING",
-          "value": "yield"
-        },
-        {
-          "type": "STRING",
-          "value": "goto"
-        },
-        {
-          "type": "STRING",
-          "value": "match"
-        },
-        {
-          "type": "STRING",
-          "value": "import"
-        },
-        {
-          "type": "STRING",
-          "value": "using"
-        },
-        {
-          "type": "STRING",
-          "value": "namespace"
-        },
-        {
-          "type": "STRING",
-          "value": "class"
-        },
-        {
-          "type": "STRING",
-          "value": "struct"
-        },
-        {
-          "type": "STRING",
-          "value": "interface"
-        },
-        {
-          "type": "STRING",
-          "value": "mixin"
-        },
-        {
-          "type": "STRING",
-          "value": "enum"
-        },
-        {
-          "type": "STRING",
-          "value": "virtual"
-        },
-        {
-          "type": "STRING",
-          "value": "override"
-        },
-        {
-          "type": "STRING",
-          "value": "final"
-        },
-        {
-          "type": "STRING",
-          "value": "property"
-        },
-        {
-          "type": "STRING",
-          "value": "operator"
-        },
-        {
-          "type": "STRING",
-          "value": "friend"
-        },
-        {
-          "type": "STRING",
-          "value": "explicit"
-        },
-        {
-          "type": "STRING",
-          "value": "template"
-        },
-        {
-          "type": "STRING",
-          "value": "typename"
-        },
-        {
-          "type": "STRING",
-          "value": "const"
-        },
-        {
-          "type": "STRING",
-          "value": "constexpr"
-        },
-        {
-          "type": "STRING",
-          "value": "auto"
-        },
-        {
-          "type": "STRING",
-          "value": "nullable"
-        },
-        {
-          "type": "STRING",
-          "value": "extern"
-        },
-        {
-          "type": "STRING",
-          "value": "out"
-        },
-        {
-          "type": "STRING",
-          "value": "delegate"
-        },
-        {
-          "type": "STRING",
-          "value": "coroutine"
-        },
-        {
-          "type": "STRING",
-          "value": "typedef"
-        },
-        {
-          "type": "STRING",
-          "value": "static_assert"
-        },
-        {
-          "type": "STRING",
-          "value": "private"
-        },
-        {
-          "type": "STRING",
-          "value": "public"
-        },
-        {
-          "type": "STRING",
-          "value": "inline"
-        },
-        {
-          "type": "STRING",
-          "value": "noinline"
-        },
-        {
-          "type": "STRING",
-          "value": "noopt"
-        },
-        {
-          "type": "STRING",
-          "value": "noescape"
-        },
-        {
-          "type": "STRING",
-          "value": "packed"
-        },
-        {
-          "type": "STRING",
-          "value": "reflect"
-        },
-        {
-          "type": "STRING",
-          "value": "serialize"
-        },
-        {
-          "type": "STRING",
-          "value": "export"
-        },
-        {
-          "type": "STRING",
-          "value": "dll"
-        },
-        {
-          "type": "STRING",
-          "value": "__asm_rdtsc"
-        },
-        {
-          "type": "STRING",
-          "value": "__asm_pause"
-        },
-        {
-          "type": "STRING",
-          "value": "__asm_mfence"
-        },
-        {
-          "type": "STRING",
-          "value": "__asm_nop"
-        },
-        {
-          "type": "STRING",
-          "value": "__va_count"
-        },
-        {
-          "type": "STRING",
-          "value": "__va_arg"
-        },
-        {
-          "type": "STRING",
-          "value": "bool"
-        },
-        {
-          "type": "STRING",
-          "value": "char"
-        },
-        {
-          "type": "STRING",
-          "value": "wchar"
-        },
-        {
-          "type": "STRING",
-          "value": "wchar_t"
-        },
-        {
-          "type": "STRING",
-          "value": "int8"
-        },
-        {
-          "type": "STRING",
-          "value": "int16"
-        },
-        {
-          "type": "STRING",
-          "value": "int32"
-        },
-        {
-          "type": "STRING",
-          "value": "int64"
-        },
-        {
-          "type": "STRING",
-          "value": "uint8"
-        },
-        {
-          "type": "STRING",
-          "value": "uint16"
-        },
-        {
-          "type": "STRING",
-          "value": "uint32"
-        },
-        {
-          "type": "STRING",
-          "value": "uint64"
-        },
-        {
-          "type": "STRING",
-          "value": "aint8"
-        },
-        {
-          "type": "STRING",
-          "value": "aint16"
-        },
-        {
-          "type": "STRING",
-          "value": "aint32"
-        },
-        {
-          "type": "STRING",
-          "value": "aint64"
-        },
-        {
-          "type": "STRING",
-          "value": "float32"
-        },
-        {
-          "type": "STRING",
-          "value": "float64"
-        },
-        {
-          "type": "STRING",
-          "value": "string"
-        },
-        {
-          "type": "STRING",
-          "value": "wstring"
-        },
-        {
-          "type": "STRING",
-          "value": "void"
-        },
-        {
-          "type": "STRING",
-          "value": "vec2"
-        },
-        {
-          "type": "STRING",
-          "value": "vec3"
-        },
-        {
-          "type": "STRING",
-          "value": "vec4"
-        },
-        {
-          "type": "STRING",
-          "value": "quat"
-        },
-        {
-          "type": "STRING",
-          "value": "mat4"
-        },
-        {
-          "type": "STRING",
-          "value": "map"
-        },
-        {
-          "type": "STRING",
-          "value": "hash_set"
-        },
-        {
-          "type": "STRING",
-          "value": "sorted_map"
-        },
-        {
-          "type": "STRING",
-          "value": "variant"
-        },
-        {
-          "type": "STRING",
-          "value": "coroutine_t"
-        },
-        {
-          "type": "STRING",
-          "value": "atomic_int32"
-        },
-        {
-          "type": "STRING",
-          "value": "atomic_int64"
-        },
-        {
-          "type": "STRING",
-          "value": "mutex"
-        },
-        {
-          "type": "STRING",
-          "value": "cond_var"
-        },
-        {
-          "type": "STRING",
-          "value": "lock_guard"
-        },
-        {
-          "type": "STRING",
-          "value": "file_t"
-        },
-        {
-          "type": "STRING",
-          "value": "regex"
-        },
-        {
-          "type": "STRING",
-          "value": "json_value"
-        },
-        {
-          "type": "STRING",
-          "value": "proc_t"
-        },
-        {
-          "type": "STRING",
-          "value": "cpu_t"
-        },
-        {
-          "type": "STRING",
-          "value": "ws_t"
-        },
-        {
-          "type": "STRING",
-          "value": "udp_t"
-        },
-        {
-          "type": "STRING",
-          "value": "http_response_t"
-        },
-        {
-          "type": "STRING",
-          "value": "sound_t"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "annotation"
-        }
-      ]
-    },
-    "parenthesized": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "("
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_expr_part"
-          }
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
-    },
-    "bracketed": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "["
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_expr_part"
-          }
-        },
-        {
-          "type": "STRING",
-          "value": "]"
-        }
-      ]
-    },
-    "block": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "{"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_item"
-          }
-        },
-        {
-          "type": "STRING",
-          "value": "}"
-        }
-      ]
-    },
-    "annotation": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "[["
-        },
-        {
-          "type": "FIELD",
-          "name": "name",
-          "content": {
-            "type": "SYMBOL",
-            "name": "identifier"
-          }
-        },
-        {
-          "type": "CHOICE",
+          "type": "SEQ",
           "members": [
             {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "("
-                },
-                {
-                  "type": "REPEAT",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "_expr_part"
-                  }
-                },
-                {
-                  "type": "STRING",
-                  "value": ")"
-                }
-              ]
+              "type": "STRING",
+              "value": "//"
             },
             {
-              "type": "BLANK"
+              "type": "PATTERN",
+              "value": ".*"
             }
           ]
         },
         {
-          "type": "STRING",
-          "value": "]]"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "/*"
+            },
+            {
+              "type": "PATTERN",
+              "value": "[^*]*\\*+([^/*][^*]*\\*+)*"
+            },
+            {
+              "type": "STRING",
+              "value": "/"
+            }
+          ]
         }
       ]
     }

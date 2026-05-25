@@ -1,59 +1,5 @@
 [
   {
-    "type": "annotation",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "annotation",
-          "named": true
-        },
-        {
-          "type": "bracketed",
-          "named": true
-        },
-        {
-          "type": "char_literal",
-          "named": true
-        },
-        {
-          "type": "f_string",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "number",
-          "named": true
-        },
-        {
-          "type": "parenthesized",
-          "named": true
-        },
-        {
-          "type": "string",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "block",
     "named": true,
     "fields": {},
@@ -84,10 +30,6 @@
       "multiple": true,
       "required": false,
       "types": [
-        {
-          "type": "annotation",
-          "named": true
-        },
         {
           "type": "bracketed",
           "named": true
@@ -135,6 +77,12 @@
     }
   },
   {
+    "type": "comment",
+    "named": true,
+    "extra": true,
+    "fields": {}
+  },
+  {
     "type": "expression_statement",
     "named": true,
     "fields": {},
@@ -142,10 +90,6 @@
       "multiple": true,
       "required": false,
       "types": [
-        {
-          "type": "annotation",
-          "named": true
-        },
         {
           "type": "bracketed",
           "named": true
@@ -205,10 +149,6 @@
       "required": false,
       "types": [
         {
-          "type": "annotation",
-          "named": true
-        },
-        {
           "type": "bracketed",
           "named": true
         },
@@ -240,6 +180,11 @@
     }
   },
   {
+    "type": "number",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "parenthesized",
     "named": true,
     "fields": {},
@@ -247,10 +192,6 @@
       "multiple": true,
       "required": false,
       "types": [
-        {
-          "type": "annotation",
-          "named": true
-        },
         {
           "type": "bracketed",
           "named": true
@@ -299,7 +240,22 @@
     }
   },
   {
-    "type": "source_file",
+    "type": "string",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "escape",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "translation_unit",
     "named": true,
     "root": true,
     "fields": {},
@@ -317,21 +273,6 @@
         },
         {
           "type": "preprocessor",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "string",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "escape",
           "named": true
         }
       ]
@@ -438,6 +379,14 @@
     "named": false
   },
   {
+    "type": "/*",
+    "named": false
+  },
+  {
+    "type": "//",
+    "named": false
+  },
+  {
     "type": "/=",
     "named": false
   },
@@ -458,19 +407,7 @@
     "named": false
   },
   {
-    "type": "<<",
-    "named": false
-  },
-  {
-    "type": "<<=",
-    "named": false
-  },
-  {
     "type": "<=",
-    "named": false
-  },
-  {
-    "type": "<=>",
     "named": false
   },
   {
@@ -490,14 +427,6 @@
     "named": false
   },
   {
-    "type": ">>",
-    "named": false
-  },
-  {
-    "type": ">>=",
-    "named": false
-  },
-  {
     "type": "?",
     "named": false
   },
@@ -510,15 +439,7 @@
     "named": false
   },
   {
-    "type": "[[",
-    "named": false
-  },
-  {
     "type": "]",
-    "named": false
-  },
-  {
-    "type": "]]",
     "named": false
   },
   {
@@ -530,27 +451,7 @@
     "named": false
   },
   {
-    "type": "__asm_mfence",
-    "named": false
-  },
-  {
-    "type": "__asm_nop",
-    "named": false
-  },
-  {
-    "type": "__asm_pause",
-    "named": false
-  },
-  {
-    "type": "__asm_rdtsc",
-    "named": false
-  },
-  {
-    "type": "__va_arg",
-    "named": false
-  },
-  {
-    "type": "__va_count",
+    "type": "abstract",
     "named": false
   },
   {
@@ -567,6 +468,10 @@
   },
   {
     "type": "aint8",
+    "named": false
+  },
+  {
+    "type": "array",
     "named": false
   },
   {
@@ -610,11 +515,6 @@
     "named": false
   },
   {
-    "type": "comment",
-    "named": true,
-    "extra": true
-  },
-  {
     "type": "cond_var",
     "named": false
   },
@@ -643,14 +543,6 @@
     "named": false
   },
   {
-    "type": "cpu_t",
-    "named": false
-  },
-  {
-    "type": "decltype",
-    "named": false
-  },
-  {
     "type": "default",
     "named": false
   },
@@ -667,11 +559,11 @@
     "named": false
   },
   {
-    "type": "dll",
+    "type": "do",
     "named": false
   },
   {
-    "type": "do",
+    "type": "double",
     "named": false
   },
   {
@@ -685,14 +577,6 @@
   {
     "type": "escape",
     "named": true
-  },
-  {
-    "type": "explicit",
-    "named": false
-  },
-  {
-    "type": "export",
-    "named": false
   },
   {
     "type": "extern",
@@ -715,6 +599,10 @@
     "named": false
   },
   {
+    "type": "float",
+    "named": false
+  },
+  {
     "type": "float32",
     "named": false
   },
@@ -727,7 +615,11 @@
     "named": false
   },
   {
-    "type": "friend",
+    "type": "function",
+    "named": false
+  },
+  {
+    "type": "get",
     "named": false
   },
   {
@@ -736,10 +628,6 @@
   },
   {
     "type": "hash_set",
-    "named": false
-  },
-  {
-    "type": "http_response_t",
     "named": false
   },
   {
@@ -791,19 +679,11 @@
     "named": false
   },
   {
-    "type": "mat4",
-    "named": false
-  },
-  {
     "type": "match",
     "named": false
   },
   {
     "type": "mixin",
-    "named": false
-  },
-  {
-    "type": "move",
     "named": false
   },
   {
@@ -819,18 +699,6 @@
     "named": false
   },
   {
-    "type": "noescape",
-    "named": false
-  },
-  {
-    "type": "noinline",
-    "named": false
-  },
-  {
-    "type": "noopt",
-    "named": false
-  },
-  {
     "type": "null",
     "named": false
   },
@@ -839,11 +707,7 @@
     "named": false
   },
   {
-    "type": "number",
-    "named": true
-  },
-  {
-    "type": "offsetof",
+    "type": "nullptr",
     "named": false
   },
   {
@@ -859,15 +723,7 @@
     "named": false
   },
   {
-    "type": "packed",
-    "named": false
-  },
-  {
     "type": "private",
-    "named": false
-  },
-  {
-    "type": "proc_t",
     "named": false
   },
   {
@@ -875,15 +731,11 @@
     "named": false
   },
   {
+    "type": "protected",
+    "named": false
+  },
+  {
     "type": "public",
-    "named": false
-  },
-  {
-    "type": "quat",
-    "named": false
-  },
-  {
-    "type": "reflect",
     "named": false
   },
   {
@@ -899,7 +751,15 @@
     "named": false
   },
   {
-    "type": "serialize",
+    "type": "set",
+    "named": false
+  },
+  {
+    "type": "shared",
+    "named": false
+  },
+  {
+    "type": "size_t",
     "named": false
   },
   {
@@ -911,11 +771,7 @@
     "named": false
   },
   {
-    "type": "sound_t",
-    "named": false
-  },
-  {
-    "type": "static_assert",
+    "type": "static",
     "named": false
   },
   {
@@ -963,7 +819,7 @@
     "named": false
   },
   {
-    "type": "udp_t",
+    "type": "typeof",
     "named": false
   },
   {
@@ -1011,19 +867,15 @@
     "named": false
   },
   {
+    "type": "volatile",
+    "named": false
+  },
+  {
     "type": "wchar",
     "named": false
   },
   {
-    "type": "wchar_t",
-    "named": false
-  },
-  {
     "type": "while",
-    "named": false
-  },
-  {
-    "type": "ws_t",
     "named": false
   },
   {
