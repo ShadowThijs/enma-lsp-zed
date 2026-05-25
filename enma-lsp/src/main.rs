@@ -115,27 +115,34 @@ impl LanguageServer for Backend {
                     None
                 };
 
-                for sym in &model.symbols {
-                    if range_contains(&sym.range, pos) {
-                        let type_info = sym.type_name.as_deref().unwrap_or("unknown");
-                        let kind_str = match sym.kind {
-                            semantic::SymbolKind::Function => "function",
-                            semantic::SymbolKind::Variable => "variable",
-                            semantic::SymbolKind::Parameter => "parameter",
-                            semantic::SymbolKind::Struct => "struct",
-                            semantic::SymbolKind::Class => "class",
-                            semantic::SymbolKind::Enum => "enum",
-                            semantic::SymbolKind::Interface => "interface",
-                            semantic::SymbolKind::Namespace => "namespace",
-                            semantic::SymbolKind::TypeAlias => "type alias",
-                        };
-                        return Ok(Some(Hover {
-                            contents: HoverContents::Scalar(
-                                MarkedString::String(format!("{} {}: {}", kind_str, sym.name, type_info))
-                            ),
-                            range: token_range,
-                        }));
-                    }
+                // Find the most specific symbol (smallest range containing pos)
+                let best = model.symbols.iter()
+                    .filter(|s| range_contains(&s.range, pos))
+                    .min_by_key(|s| {
+                        let lines = s.range.end.line - s.range.start.line;
+                        let chars = s.range.end.character as i64 - s.range.start.character as i64;
+                        lines * 1000 + chars.abs()
+                    });
+
+                if let Some(sym) = best {
+                    let type_info = sym.type_name.as_deref().unwrap_or("unknown");
+                    let kind_str = match sym.kind {
+                        semantic::SymbolKind::Function => "function",
+                        semantic::SymbolKind::Variable => "variable",
+                        semantic::SymbolKind::Parameter => "parameter",
+                        semantic::SymbolKind::Struct => "struct",
+                        semantic::SymbolKind::Class => "class",
+                        semantic::SymbolKind::Enum => "enum",
+                        semantic::SymbolKind::Interface => "interface",
+                        semantic::SymbolKind::Namespace => "namespace",
+                        semantic::SymbolKind::TypeAlias => "type alias",
+                    };
+                    return Ok(Some(Hover {
+                        contents: HoverContents::Scalar(
+                            MarkedString::String(format!("{} {}: {}", kind_str, sym.name, type_info))
+                        ),
+                        range: token_range,
+                    }));
                 }
             }
         }
