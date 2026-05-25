@@ -14,31 +14,17 @@ impl zed::Extension for EnmaExtension {
         _server_id: &LanguageServerId,
         _worktree: &Worktree,
     ) -> zed::Result<Command> {
-        // Use compile-time manifest dir for dev extensions.
-        // In production, the binary would be bundled with the extension.
-        let base = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        // CARGO_MANIFEST_DIR = extension root at compile time.
+        // The WASM sandbox can't access the host filesystem to check exists(),
+        // so we construct the path and let Zed handle execution errors.
+        let manifest = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let lsp_path = manifest.join("enma-lsp/target/release/enma-lsp");
 
-        let release_path = base.join("enma-lsp/target/release/enma-lsp");
-        if release_path.exists() {
-            return Ok(Command {
-                command: release_path.to_string_lossy().into_owned(),
-                args: Vec::new(),
-                env: Vec::new(),
-            });
-        }
-
-        let debug_path = base.join("enma-lsp/target/debug/enma-lsp");
-        if debug_path.exists() {
-            return Ok(Command {
-                command: debug_path.to_string_lossy().into_owned(),
-                args: Vec::new(),
-                env: Vec::new(),
-            });
-        }
-
-        Err(format!(
-            "enma-lsp binary not found. Run: cd enma-lsp && cargo build --release"
-        ))
+        Ok(Command {
+            command: lsp_path.to_string_lossy().into_owned(),
+            args: Vec::new(),
+            env: Vec::new(),
+        })
     }
 
     fn language_server_workspace_configuration(

@@ -18,6 +18,3 @@
 (for_each_statement body: (_) @indent)
 (do_statement body: (_) @indent)
 
-; Case/default labels dedent
-(case_clause) @dedent
-(default_clause) @dedent
