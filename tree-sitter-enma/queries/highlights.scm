@@ -1,98 +1,161 @@
-; Enma syntax highlighting — tree-sitter queries for Zed
+; Enma syntax highlighting — flat grammar queries for Zed
 ; ============================================================================
 
 ; ---- Comments ----
 (comment) @comment
 
-; ---- String literals ----
-(string_literal) @string
+; ---- Strings ----
+(string) @string
+(f_string) @string
 
-; ---- Number literals ----
-(number_literal) @number
+; ---- Escape sequences ----
+(escape) @string.escape
 
-; ---- Boolean and null literals ----
-(boolean_literal) @boolean
-(null_literal) @constant.builtin
+; ---- Interpolation delimiters (f"...{expr}...") ----
+(interpolation "{" @punctuation.special "}" @punctuation.special)
 
-; ---- Primitive types ----
-(primitive_type) @type.builtin
+; ---- Character literals ----
+(char_literal) @string
 
-; ---- User-defined types ----
-(type_identifier) @type
+; ---- Numbers ----
+(number) @number
+
+; ---- Boolean and null ----
+"true" @boolean
+"false" @boolean
+"null" @constant.builtin
+
+; ---- this ----
+"this" @variable.builtin
 
 ; ---- Preprocessor ----
-(preprocessor_directive) @preproc
+(preprocessor) @preproc
+(preprocessor "#" @preproc)
 
 ; ---- Annotations ----
 (annotation) @attribute
+(annotation "[" @punctuation.bracket "]" @punctuation.bracket)
 
-; ---- this ----
-(this_expression) @variable.builtin
+; ---- Bracket punctuation ----
+("(" @punctuation.bracket)
+(")" @punctuation.bracket)
+("{" @punctuation.bracket)
+("}" @punctuation.bracket)
+("[" @punctuation.bracket)
+("]" @punctuation.bracket)
 
-; ---- Functions ----
-(function_definition name: (identifier) @function)
-(template_declaration body: (function_definition name: (identifier) @function))
-(coroutine_definition name: (identifier) @function)
+; ---- Delimiter punctuation ----
+(";" @punctuation.delimiter)
+("," @punctuation.delimiter)
+("." @punctuation.delimiter)
+(":" @punctuation.delimiter)
 
-; ---- Function calls ----
-(call_expression function: (identifier) @function.call)
-(call_expression function: (field_expression field: (field_identifier) @function.call))
-(call_expression function: (pointer_expression field: (field_identifier) @function.call))
-
-; ---- Methods ----
-(method_definition name: (field_identifier) @function.method)
-
-; ---- Constructors / Destructors ----
-(constructor_definition name: (identifier) @constructor)
-(destructor_definition name: (identifier) @constructor)
-
-; ---- Parameters ----
-(parameter_declaration name: (identifier) @variable.parameter)
-
-; ---- Field access ----
-(field_expression field: (field_identifier) @property)
-
-; ---- Pointer access ----
-(pointer_expression field: (field_identifier) @property)
-
-; ---- Scope access ----
-(scope_expression name: (identifier) @constant)
-
-; ---- Struct/class/enum/interface names ----
-(struct_definition name: (type_identifier) @type)
-(class_definition name: (type_identifier) @type)
-(enum_definition name: (type_identifier) @type)
-(interface_definition name: (type_identifier) @type)
-
-; ---- Enum members ----
-(enum_definition (identifier) @enum)
-
-; ---- Namespace names ----
-(namespace_definition name: (identifier) @namespace)
-
-; ---- goto labels ----
-(labeled_statement label: (identifier) @label)
-
-; ---- Template declarations ----
-(template_declaration name: (type_identifier) @type)
+; ---- Special punctuation ----
+("::" @punctuation.special)
+("->" @punctuation.special)
+("..." @punctuation.special)
 
 ; ---- Operators ----
-[
+([
+  "=" "+=" "-=" "*=" "/=" "%=" "&=" "|=" "^=" "<<=" ">>="
+  "||" "&&"
+  "==" "!=" "<" ">" "<=" ">=" "<=>"
+  "|" "^" "&"
   "+" "-" "*" "/" "%"
-  "==" "!=" "<" ">" "<=" ">="
-  "&&" "||" "!"
-  "&" "|" "^" "~"
-  "=" "+=" "-=" "*=" "/=" "%="
-  "&=" "|=" "^=" "<<=" ">>="
+  "<<" ">>"
   "++" "--"
-  "->" "=>" "::"
-] @operator
+  "!" "~"
+  "?" "@"
+] @operator)
 
-; ---- Punctuation ----
-[
-  "(" ")" "{" "}" "[" "]" "<" ">"
-] @punctuation.bracket
+; ---- Keywords ----
+([
+  "if" "else" "for" "while" "do"
+  "switch" "case" "default"
+  "break" "continue" "return"
+  "try" "catch" "throw"
+  "defer" "yield" "goto"
+  "match"
+] @keyword)
 
-[
-  "." "," ";" ":"
-] @punctuation.delimiter
+; ---- Module / namespace ----
+([
+  "import" "using" "namespace"
+] @keyword.import)
+
+; ---- OOP ----
+([
+  "class" "struct" "interface" "mixin" "enum"
+  "virtual" "override" "final" "property"
+  "operator"
+] @keyword)
+
+; ---- Templates ----
+([
+  "template" "typename"
+] @keyword)
+
+; ---- Declaration qualifiers ----
+([
+  "const" "constexpr" "auto" "nullable"
+  "extern" "out" "delegate" "coroutine"
+  "static_assert"
+] @keyword)
+
+; ---- Object lifetime ----
+([
+  "new" "delete"
+] @keyword)
+
+; ---- Access ----
+([
+  "private" "public"
+] @keyword)
+
+; ---- Cast / built-in ops ----
+([
+  "cast" "static_cast" "reinterpret_cast" "const_cast"
+  "move" "sizeof" "offsetof" "decltype"
+] @keyword)
+
+; ---- Primitive types ----
+([
+  "bool" "char" "wchar" "wchar_t"
+  "int8" "int16" "int32" "int64"
+  "uint8" "uint16" "uint32" "uint64"
+  "aint8" "aint16" "aint32" "aint64"
+  "float32" "float64"
+  "string" "wstring" "void"
+] @type.builtin)
+
+; ---- Math / addon types ----
+([
+  "vec2" "vec3" "vec4" "quat" "mat4"
+] @type)
+
+; ---- Container types ----
+([
+  "map" "hash_set" "sorted_map" "variant"
+] @type)
+
+; ---- SDK types ----
+([
+  "coroutine_t" "atomic_int32" "atomic_int64"
+  "mutex" "cond_var" "lock_guard"
+  "file_t" "regex" "json_value"
+  "proc_t" "cpu_t" "ws_t" "udp_t"
+  "http_response_t" "sound_t"
+] @type)
+
+; ---- Annotation keywords ----
+([
+  "inline" "noinline" "noopt" "noescape"
+  "packed" "reflect" "serialize" "export"
+  "dll"
+] @attribute)
+
+; ---- Function intrinsics ----
+([
+  "__asm_rdtsc" "__asm_pause" "__asm_mfence" "__asm_nop"
+  "__va_count" "__va_arg"
+] @function.builtin)
