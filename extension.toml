@@ -9,5 +9,4 @@ repository = "https://github.com/shadowthijs/enma-lsp-zed"
 [grammars.enma]
 repository = "https://github.com/shadowthijs/enma-lsp-zed"
 path = "tree-sitter-enma"
-# Run: git rev-parse HEAD  and paste the full SHA below
-rev = "PLACEHOLDER"
+rev = "8e386e11e9540351910033fd98c5902c94f47608"
