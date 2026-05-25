@@ -84,11 +84,12 @@ impl LanguageServer for Backend {
 
         let docs = self.documents.lock().await;
         if let Some(source) = docs.get(&uri) {
-            let ctx = CompletionContext::new(get_db());
-            let items = ctx.complete(source, pos);
-
-            if !items.is_empty() {
-                return Ok(Some(CompletionResponse::Array(items)));
+            if let Some(model) = self.build_model(source).await {
+                let ctx = CompletionContext::new(get_db(), &model);
+                let items = ctx.complete(source, pos);
+                if !items.is_empty() {
+                    return Ok(Some(CompletionResponse::Array(items)));
+                }
             }
         }
         Ok(None)

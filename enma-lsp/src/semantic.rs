@@ -12,6 +12,26 @@ pub struct Symbol {
     pub kind: SymbolKind,
     pub range: Range,
     pub type_name: Option<String>,
+    /// For structs/classes: the fields declared in this type.
+    pub fields: Vec<FieldInfo>,
+    /// For structs/classes: the methods declared in this type.
+    pub methods: Vec<MethodInfo2>,
+    /// For variables: the declared variable type (extracted from the AST).
+    pub var_type: Option<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct FieldInfo {
+    pub name: String,
+    pub field_type: Option<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct MethodInfo2 {
+    pub name: String,
+    pub return_type: Option<String>,
+    pub params: Vec<(String, Option<String>)>,
+    pub range: Range,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -79,8 +99,19 @@ impl<'a> SymbolCollector<'a> {
         self.scope_vars.pop();
     }
 
+    fn empty_symbol(name: String, kind: SymbolKind, range: Range) -> Symbol {
+        Symbol {
+            name,
+            kind,
+            range,
+            type_name: None,
+            fields: Vec::new(),
+            methods: Vec::new(),
+            var_type: None,
+        }
+    }
+
     fn add_symbol(&mut self, sym: Symbol) {
-        // Track in current scope
         if let Some(scope) = self.scope_vars.last_mut() {
             scope.insert(sym.name.clone(), sym.clone());
         }
@@ -122,12 +153,7 @@ impl<'a> SymbolCollector<'a> {
         let name = self.child_text_by_field(node, "name");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            self.add_symbol(Symbol {
-                name,
-                kind: SymbolKind::Function,
-                range,
-                type_name: None,
-            });
+            self.add_symbol(Self::empty_symbol(name, SymbolKind::Function, range));
         }
     }
 
@@ -135,12 +161,9 @@ impl<'a> SymbolCollector<'a> {
         let name = self.child_text_by_field(node, "name");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            self.add_symbol(Symbol {
-                name,
-                kind: SymbolKind::Struct,
-                range,
-                type_name: None,
-            });
+            let mut sym = Self::empty_symbol(name, SymbolKind::Struct, range);
+            self.extract_members(node, &mut sym);
+            self.add_symbol(sym);
         }
     }
 
@@ -148,12 +171,47 @@ impl<'a> SymbolCollector<'a> {
         let name = self.child_text_by_field(node, "name");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            self.add_symbol(Symbol {
-                name,
-                kind: SymbolKind::Class,
-                range,
-                type_name: None,
-            });
+            let mut sym = Self::empty_symbol(name, SymbolKind::Class, range);
+            self.extract_members(node, &mut sym);
+            self.add_symbol(sym);
+        }
+    }
+
+    fn extract_members(&mut self, node: tree_sitter::Node, sym: &mut Symbol) {
+        let mut cursor = node.walk();
+        for child in node.children(&mut cursor) {
+            match child.kind() {
+                "struct_body" | "class_body" => {
+                    self.extract_members(child, sym);
+                }
+                "field_declaration" => {
+                    let fname = self.child_text_by_field(child, "name");
+                    let ftype = self.child_text_by_field(child, "type");
+                    if let Some(n) = fname {
+                        sym.fields.push(FieldInfo { name: n, field_type: ftype });
+                    }
+                }
+                "method_declaration" => {
+                    let mname = self.child_text_by_field(child, "name");
+                    let rtype = self.child_text_by_field(child, "return_type");
+                    if let Some(n) = mname {
+                        let range = self.node_range(&child);
+                        sym.methods.push(MethodInfo2 {
+                            name: n, return_type: rtype, params: Vec::new(), range,
+                        });
+                    }
+                }
+                "constructor_declaration" => {
+                    let cname = self.child_text_by_field(child, "name");
+                    if let Some(n) = cname {
+                        let range = self.node_range(&child);
+                        sym.methods.push(MethodInfo2 {
+                            name: n, return_type: None, params: Vec::new(), range,
+                        });
+                    }
+                }
+                _ => {}
+            }
         }
     }
 
@@ -161,12 +219,7 @@ impl<'a> SymbolCollector<'a> {
         let name = self.child_text_by_field(node, "name");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            self.add_symbol(Symbol {
-                name,
-                kind: SymbolKind::Enum,
-                range,
-                type_name: None,
-            });
+            self.add_symbol(Self::empty_symbol(name, SymbolKind::Enum, range));
         }
     }
 
@@ -174,12 +227,7 @@ impl<'a> SymbolCollector<'a> {
         let name = self.child_text_by_field(node, "name");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            self.add_symbol(Symbol {
-                name,
-                kind: SymbolKind::Interface,
-                range,
-                type_name: None,
-            });
+            self.add_symbol(Self::empty_symbol(name, SymbolKind::Interface, range));
         }
     }
 
@@ -187,42 +235,29 @@ impl<'a> SymbolCollector<'a> {
         let name = self.child_text_by_field(node, "name");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            self.add_symbol(Symbol {
-                name,
-                kind: SymbolKind::Namespace,
-                range,
-                type_name: None,
-            });
+            self.add_symbol(Self::empty_symbol(name, SymbolKind::Namespace, range));
         }
     }
 
     fn collect_variable(&mut self, node: tree_sitter::Node) {
         let name = self.child_text_by_field(node, "name");
         let type_name = self.child_text_by_field(node, "type");
-
         if let Some(name) = name {
             let range = self.node_range(&node);
-            self.add_symbol(Symbol {
-                name,
-                kind: SymbolKind::Variable,
-                range,
-                type_name,
-            });
+            let mut sym = Self::empty_symbol(name, SymbolKind::Variable, range);
+            sym.var_type = type_name;
+            self.add_symbol(sym);
         }
     }
 
     fn collect_parameter(&mut self, node: tree_sitter::Node) {
         let name = self.child_text_by_field(node, "name");
         let type_name = self.child_text_by_field(node, "type");
-
         if let Some(name) = name {
             let range = self.node_range(&node);
-            self.add_symbol(Symbol {
-                name,
-                kind: SymbolKind::Parameter,
-                range,
-                type_name,
-            });
+            let mut sym = Self::empty_symbol(name, SymbolKind::Parameter, range);
+            sym.var_type = type_name;
+            self.add_symbol(sym);
         }
     }
 

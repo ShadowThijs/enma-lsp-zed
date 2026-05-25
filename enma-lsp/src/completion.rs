@@ -1,16 +1,17 @@
+use crate::semantic::SemanticModel;
 use crate::type_db::{FreeFunction, MethodInfo, TypeDatabase};
 use tower_lsp::lsp_types::*;
 
-pub struct CompletionContext {
+pub struct CompletionContext<'a> {
     pub db: &'static TypeDatabase,
+    pub model: &'a SemanticModel,
 }
 
-impl CompletionContext {
-    pub fn new(db: &'static TypeDatabase) -> Self {
-        Self { db }
+impl<'a> CompletionContext<'a> {
+    pub fn new(db: &'static TypeDatabase, model: &'a SemanticModel) -> Self {
+        Self { db, model }
     }
 
-    /// Produce completions at a given position in the parse tree.
     pub fn complete(
         &self,
         source: &str,
@@ -19,13 +20,9 @@ impl CompletionContext {
         let offset = position_to_offset(source, position);
         let before = &source[..offset.min(source.len())];
 
-        // Determine context from the text before cursor
-        if let Some(after_dot) = after_dot(before) {
-            return self.method_completions(after_dot);
-        }
-
-        if before.ends_with("::") || before.contains("::") && !before.ends_with("::") {
-            return self.scope_completions();
+        // After a dot: method/field completions
+        if let Some(identifier) = identifier_before_dot(before) {
+            return self.dot_completions(&identifier);
         }
 
         // Global scope: keywords + type names + free functions
@@ -36,70 +33,119 @@ impl CompletionContext {
         items
     }
 
-    /// Completions after `.` — methods on the left type.
-    fn method_completions(&self, type_name: &str) -> Vec<CompletionItem> {
-        // Check known types
-        if let Some(methods) = self.db.get_methods(type_name) {
-            return methods.iter().map(|m| method_to_item(m)).collect();
+    fn dot_completions(&self, ident: &str) -> Vec<CompletionItem> {
+        let mut items = Vec::new();
+
+        // Look up the identifier in the semantic model to find its type
+        let var_type = self.model.symbols.iter()
+            .find(|s| s.name == ident && s.var_type.is_some())
+            .and_then(|s| s.var_type.as_deref());
+
+        // Also check if it's a type itself (struct/class)
+        let is_type = self.model.symbols.iter()
+            .any(|s| s.name == ident && matches!(s.kind, crate::semantic::SymbolKind::Struct | crate::semantic::SymbolKind::Class));
+
+        // If it's a struct/class, show its fields and methods
+        if is_type {
+            if let Some(type_sym) = self.model.symbols.iter()
+                .find(|s| s.name == ident) {
+                for field in &type_sym.fields {
+                    items.push(CompletionItem {
+                        label: field.name.clone(),
+                        kind: Some(CompletionItemKind::FIELD),
+                        detail: field.field_type.clone(),
+                        ..Default::default()
+                    });
+                }
+                for method in &type_sym.methods {
+                    items.push(CompletionItem {
+                        label: method.name.clone(),
+                        kind: Some(CompletionItemKind::METHOD),
+                        detail: method.return_type.clone(),
+                        ..Default::default()
+                    });
+                }
+            }
         }
 
-        // Check math types
-        if let Some(mt) = self.db.math_types.get(type_name) {
-            let mut items: Vec<_> = mt.fields.iter().map(|f| CompletionItem {
-                label: f.clone(),
-                kind: Some(CompletionItemKind::FIELD),
-                detail: Some(format!("{} (field)", type_name)),
-                ..Default::default()
-            }).collect();
-
-            items.extend(mt.methods.iter().map(|m| method_to_item(m)));
-            return items;
+        // If we know the type, show its methods from the type database
+        if let Some(typ) = var_type {
+            if let Some(methods) = self.db.get_methods(typ) {
+                for m in methods {
+                    items.push(method_to_item(m));
+                }
+            }
+            if let Some(fields) = self.db.get_fields(typ) {
+                for f in fields {
+                    items.push(CompletionItem {
+                        label: f.clone(),
+                        kind: Some(CompletionItemKind::FIELD),
+                        detail: Some(format!("{} field", typ)),
+                        ..Default::default()
+                    });
+                }
+            }
         }
 
+        // Also try the identifier itself as a type name
+        if let Some(methods) = self.db.get_methods(ident) {
+            for m in methods {
+                items.push(method_to_item(m));
+            }
+        }
 
-        Vec::new()
+        items
     }
 
-    /// `::` scope completions — enum values, namespace members.
-    fn scope_completions(&self) -> Vec<CompletionItem> {
-        // For now, return nothing — scope resolution needs semantic analysis
-        Vec::new()
-    }
-
-    /// Keyword completions.
     fn keyword_completions(&self) -> Vec<CompletionItem> {
-        self.db
-            .keywords
-            .iter()
-            .map(|k| CompletionItem {
-                label: k.clone(),
-                kind: Some(CompletionItemKind::KEYWORD),
-                ..Default::default()
-            })
-            .collect()
+        self.db.keywords.iter().map(|k| CompletionItem {
+            label: k.clone(),
+            kind: Some(CompletionItemKind::KEYWORD),
+            ..Default::default()
+        }).collect()
     }
 
-    /// Type name completions.
     fn type_completions(&self) -> Vec<CompletionItem> {
-        self.db
-            .all_type_names
-            .iter()
-            .map(|t| CompletionItem {
-                label: t.clone(),
-                kind: Some(CompletionItemKind::CLASS),
-                detail: Some("type".into()),
-                ..Default::default()
-            })
-            .collect()
+        let mut items: Vec<_> = self.db.all_type_names.iter().map(|t| CompletionItem {
+            label: t.clone(),
+            kind: Some(CompletionItemKind::CLASS),
+            detail: Some("type".into()),
+            ..Default::default()
+        }).collect();
+
+        // Add custom types from the semantic model
+        for sym in &self.model.symbols {
+            if matches!(sym.kind, crate::semantic::SymbolKind::Struct | crate::semantic::SymbolKind::Class) {
+                if !items.iter().any(|i| i.label == sym.name) {
+                    items.push(CompletionItem {
+                        label: sym.name.clone(),
+                        kind: Some(CompletionItemKind::STRUCT),
+                        detail: Some(format!("custom {}", match sym.kind { crate::semantic::SymbolKind::Struct => "struct", _ => "class" })),
+                        ..Default::default()
+                    });
+                }
+            }
+        }
+        items
     }
 
-    /// Free function completions.
     fn function_completions(&self) -> Vec<CompletionItem> {
-        self.db
-            .functions
-            .values()
-            .map(|f| function_to_item(f))
-            .collect()
+        let mut items: Vec<_> = self.db.functions.values().map(|f| function_to_item(f)).collect();
+
+        // Add custom functions from the semantic model
+        for sym in &self.model.symbols {
+            if sym.kind == crate::semantic::SymbolKind::Function {
+                if !items.iter().any(|i| i.label == sym.name) {
+                    items.push(CompletionItem {
+                        label: sym.name.clone(),
+                        kind: Some(CompletionItemKind::FUNCTION),
+                        detail: sym.type_name.clone(),
+                        ..Default::default()
+                    });
+                }
+            }
+        }
+        items
     }
 }
 
@@ -109,11 +155,7 @@ fn method_to_item(m: &MethodInfo) -> CompletionItem {
         label: m.name.clone(),
         kind: Some(CompletionItemKind::METHOD),
         detail: Some(detail),
-        documentation: if m.doc.is_empty() {
-            None
-        } else {
-            Some(Documentation::String(m.doc.clone()))
-        },
+        documentation: if m.doc.is_empty() { None } else { Some(Documentation::String(m.doc.clone())) },
         ..Default::default()
     }
 }
@@ -124,19 +166,13 @@ fn function_to_item(f: &FreeFunction) -> CompletionItem {
         label: f.name.clone(),
         kind: Some(CompletionItemKind::FUNCTION),
         detail: Some(detail.clone()),
-        documentation: if f.doc.is_empty() {
-            None
-        } else {
-            Some(Documentation::String(f.doc.clone()))
-        },
-        // Add snippet-style insert for functions with params
+        documentation: if f.doc.is_empty() { None } else { Some(Documentation::String(f.doc.clone())) },
         insert_text: Some(format!("{}({})", f.name, f.params.iter().map(|p| p.name.as_str()).collect::<Vec<_>>().join(", "))),
         insert_text_format: Some(InsertTextFormat::PLAIN_TEXT),
         ..Default::default()
     }
 }
 
-/// Convert a line/column position to byte offset.
 fn position_to_offset(source: &str, pos: Position) -> usize {
     let mut offset = 0;
     for (i, line) in source.lines().enumerate() {
@@ -144,19 +180,18 @@ fn position_to_offset(source: &str, pos: Position) -> usize {
             offset += pos.character as usize;
             break;
         }
-        offset += line.len() + 1; // +1 for newline
+        offset += line.len() + 1;
     }
     offset.min(source.len())
 }
 
-/// If the text before cursor ends with `.identifier`, return the identifier.
-/// This detects `expr.method|` patterns for method completion.
-fn after_dot(before: &str) -> Option<&str> {
-    // Find the last segment after a dot
-    // Case: `str.|` → we need to know the type of `str`
-    // For now, simple heuristic: look for common patterns
-
-    // TODO: proper type inference from the parse tree
-    // For now, only handle explicit type info from nearby tree-sitter nodes
-    None
+fn identifier_before_dot(before: &str) -> Option<String> {
+    let trimmed = before.trim_end();
+    if !trimmed.ends_with('.') {
+        return None;
+    }
+    let without_dot = &trimmed[..trimmed.len() - 1];
+    // Extract the last identifier before the dot
+    let ident = without_dot.rsplit(|c: char| !c.is_alphanumeric() && c != '_').next()?;
+    if ident.is_empty() { None } else { Some(ident.to_string()) }
 }
