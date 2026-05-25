@@ -859,13 +859,42 @@ module.exports = grammar({
     ),
 
     sdk_type: $ => choice(
+      // Math types
       'vec2', 'vec3', 'vec4', 'quat', 'mat4', 'color',
+      // Containers
       'coroutine_t', 'atomic_int32', 'atomic_int64',
       'mutex', 'cond_var', 'lock_guard',
       'file_t', 'regex', 'json_value',
       'array', 'map', 'hash_set', 'sorted_map', 'variant',
-      'http_response_t', 'ws_t', 'cpu_t', 'proc_t', 'udp_t',
+      // Perception: network
+      'http_response_t', 'ws_t', 'ws_message_t', 'udp_t',
+      // Perception: CPU / process
+      'cpu_t', 'proc_t', 'thread_priority',
+      'module_info_t', 'vad_region_t',
+      // Perception: audio
       'sound_t', 'sound_inst_t',
+      // Perception: window
+      'window_info_t',
+      // Perception: input
+      'key_state_t', 'vk',
+      // Perception: GUI handles
+      'sidebar_section_t', 'label_t', 'button_t', 'checkbox_t',
+      'slider_t', 'slider_icon_t', 'value_input_t',
+      'options_t', 'multi_options_t', 'dropdown_t', 'multi_dropdown_t',
+      'list_t', 'inline_button_t', 'inline_text_input_t',
+      'tabs_t', 'keybind_t', 'progress_bar_t', 'spinner_t',
+      'range_slider_t', 'table_t', 'text_input_t', 'text_editor_t',
+      'colorpicker_t', 'frame_t', 'layer_t', 'widget_t', 'menu_t',
+      'file_picker_t',
+      // Perception: GUI enums
+      'ui_align', 'ui_anchor', 'ui_edge', 'ui_layout',
+      'ui_hook', 'ui_callback', 'ui_color', 'widget_attr',
+      'keybind_mode', 'toast_kind',
+      // Perception: Zydis
+      'zydis_req_t', 'zydis_builder_t',
+      'zydis_machine_mode', 'zydis_branch_type', 'zydis_branch_width',
+      // Perception: Unicorn
+      'uc_reg', 'uc_prot', 'uc_hook',
     ),
 
     pointer_type: $ => prec(15, seq(

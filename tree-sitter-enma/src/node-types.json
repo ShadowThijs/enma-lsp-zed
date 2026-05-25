@@ -137163,6 +137163,10 @@
     "named": false
   },
   {
+    "type": "button_t",
+    "named": false
+  },
+  {
     "type": "case",
     "named": false
   },
@@ -137179,11 +137183,19 @@
     "named": false
   },
   {
+    "type": "checkbox_t",
+    "named": false
+  },
+  {
     "type": "class",
     "named": false
   },
   {
     "type": "color",
+    "named": false
+  },
+  {
+    "type": "colorpicker_t",
     "named": false
   },
   {
@@ -137251,6 +137263,10 @@
     "named": false
   },
   {
+    "type": "dropdown_t",
+    "named": false
+  },
+  {
     "type": "else",
     "named": false
   },
@@ -137283,6 +137299,10 @@
     "named": false
   },
   {
+    "type": "file_picker_t",
+    "named": false
+  },
+  {
     "type": "file_t",
     "named": false
   },
@@ -137304,6 +137324,10 @@
   },
   {
     "type": "for",
+    "named": false
+  },
+  {
+    "type": "frame_t",
     "named": false
   },
   {
@@ -137339,6 +137363,14 @@
     "named": false
   },
   {
+    "type": "inline_button_t",
+    "named": false
+  },
+  {
+    "type": "inline_text_input_t",
+    "named": false
+  },
+  {
     "type": "inout",
     "named": false
   },
@@ -137367,6 +137399,30 @@
     "named": false
   },
   {
+    "type": "key_state_t",
+    "named": false
+  },
+  {
+    "type": "keybind_mode",
+    "named": false
+  },
+  {
+    "type": "keybind_t",
+    "named": false
+  },
+  {
+    "type": "label_t",
+    "named": false
+  },
+  {
+    "type": "layer_t",
+    "named": false
+  },
+  {
+    "type": "list_t",
+    "named": false
+  },
+  {
     "type": "lock_guard",
     "named": false
   },
@@ -137383,11 +137439,27 @@
     "named": false
   },
   {
+    "type": "menu_t",
+    "named": false
+  },
+  {
     "type": "mixin",
     "named": false
   },
   {
+    "type": "module_info_t",
+    "named": false
+  },
+  {
     "type": "move",
+    "named": false
+  },
+  {
+    "type": "multi_dropdown_t",
+    "named": false
+  },
+  {
+    "type": "multi_options_t",
     "named": false
   },
   {
@@ -137423,6 +137495,10 @@
     "named": false
   },
   {
+    "type": "options_t",
+    "named": false
+  },
+  {
     "type": "out",
     "named": false
   },
@@ -137443,6 +137519,10 @@
     "named": false
   },
   {
+    "type": "progress_bar_t",
+    "named": false
+  },
+  {
     "type": "property",
     "named": false
   },
@@ -137456,6 +137536,10 @@
   },
   {
     "type": "quat",
+    "named": false
+  },
+  {
+    "type": "range_slider_t",
     "named": false
   },
   {
@@ -137475,11 +137559,23 @@
     "named": false
   },
   {
+    "type": "sidebar_section_t",
+    "named": false
+  },
+  {
     "type": "size_t",
     "named": false
   },
   {
     "type": "sizeof",
+    "named": false
+  },
+  {
+    "type": "slider_icon_t",
+    "named": false
+  },
+  {
+    "type": "slider_t",
     "named": false
   },
   {
@@ -137492,6 +137588,10 @@
   },
   {
     "type": "sound_t",
+    "named": false
+  },
+  {
+    "type": "spinner_t",
     "named": false
   },
   {
@@ -137519,7 +137619,23 @@
     "named": false
   },
   {
+    "type": "table_t",
+    "named": false
+  },
+  {
+    "type": "tabs_t",
+    "named": false
+  },
+  {
     "type": "template",
+    "named": false
+  },
+  {
+    "type": "text_editor_t",
+    "named": false
+  },
+  {
+    "type": "text_input_t",
     "named": false
   },
   {
@@ -137527,7 +137643,15 @@
     "named": true
   },
   {
+    "type": "thread_priority",
+    "named": false
+  },
+  {
     "type": "throw",
+    "named": false
+  },
+  {
+    "type": "toast_kind",
     "named": false
   },
   {
@@ -137547,7 +137671,47 @@
     "named": false
   },
   {
+    "type": "uc_hook",
+    "named": false
+  },
+  {
+    "type": "uc_prot",
+    "named": false
+  },
+  {
+    "type": "uc_reg",
+    "named": false
+  },
+  {
     "type": "udp_t",
+    "named": false
+  },
+  {
+    "type": "ui_align",
+    "named": false
+  },
+  {
+    "type": "ui_anchor",
+    "named": false
+  },
+  {
+    "type": "ui_callback",
+    "named": false
+  },
+  {
+    "type": "ui_color",
+    "named": false
+  },
+  {
+    "type": "ui_edge",
+    "named": false
+  },
+  {
+    "type": "ui_hook",
+    "named": false
+  },
+  {
+    "type": "ui_layout",
     "named": false
   },
   {
@@ -137571,6 +137735,14 @@
     "named": false
   },
   {
+    "type": "vad_region_t",
+    "named": false
+  },
+  {
+    "type": "value_input_t",
+    "named": false
+  },
+  {
     "type": "variant",
     "named": false
   },
@@ -137591,6 +137763,10 @@
     "named": false
   },
   {
+    "type": "vk",
+    "named": false
+  },
+  {
     "type": "void",
     "named": false
   },
@@ -137607,11 +137783,47 @@
     "named": false
   },
   {
+    "type": "widget_attr",
+    "named": false
+  },
+  {
+    "type": "widget_t",
+    "named": false
+  },
+  {
+    "type": "window_info_t",
+    "named": false
+  },
+  {
+    "type": "ws_message_t",
+    "named": false
+  },
+  {
     "type": "ws_t",
     "named": false
   },
   {
     "type": "wstring",
+    "named": false
+  },
+  {
+    "type": "zydis_branch_type",
+    "named": false
+  },
+  {
+    "type": "zydis_branch_width",
+    "named": false
+  },
+  {
+    "type": "zydis_builder_t",
+    "named": false
+  },
+  {
+    "type": "zydis_machine_mode",
+    "named": false
+  },
+  {
+    "type": "zydis_req_t",
     "named": false
   },
   {

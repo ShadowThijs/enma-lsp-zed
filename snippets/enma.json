@@ -1,0 +1,196 @@
+{
+  "main function": {
+    "prefix": "main",
+    "body": [
+      "int32 main() {",
+      "\t${0}",
+      "\treturn 0;",
+      "}"
+    ],
+    "description": "Entry-point function"
+  },
+  "struct": {
+    "prefix": "struct",
+    "body": [
+      "struct ${1:Name} {",
+      "\t${2:int32 x;}",
+      "}"
+    ],
+    "description": "Struct declaration"
+  },
+  "class with ctor/dtor": {
+    "prefix": "class",
+    "body": [
+      "class ${1:Name} {",
+      "\t${2:int32 value;}",
+      "",
+      "\t${1:Name}(${3}) {",
+      "\t\t${4}",
+      "\t}",
+      "",
+      "\t~${1:Name}() {",
+      "\t\t${0}",
+      "\t}",
+      "}"
+    ],
+    "description": "Class with constructor + destructor"
+  },
+  "function": {
+    "prefix": "fn",
+    "body": [
+      "${1:int32} ${2:name}(${3}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Function declaration"
+  },
+  "for-each loop": {
+    "prefix": "foreach",
+    "body": [
+      "for (${1:int32} ${2:v} : ${3:items}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Range-based for-each"
+  },
+  "for loop": {
+    "prefix": "for",
+    "body": [
+      "for (int32 ${1:i} = 0; ${1:i} < ${2:n}; ${1:i} = ${1:i} + 1) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Counted for loop"
+  },
+  "while loop": {
+    "prefix": "while",
+    "body": [
+      "while (${1:cond}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "While loop"
+  },
+  "if/else": {
+    "prefix": "ifelse",
+    "body": [
+      "if (${1:cond}) {",
+      "\t${2}",
+      "} else {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "If/else block"
+  },
+  "try/catch": {
+    "prefix": "try",
+    "body": [
+      "try {",
+      "\t${1}",
+      "} catch (${2:int32} ${3:e}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Try/catch block"
+  },
+  "namespace": {
+    "prefix": "ns",
+    "body": [
+      "namespace ${1:name} {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Namespace block"
+  },
+  "template function": {
+    "prefix": "tfn",
+    "body": [
+      "template<typename ${1:T}>",
+      "${1:T} ${2:name}(${1:T} ${3:a}, ${1:T} ${4:b}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Generic function with one type parameter"
+  },
+  "lambda (bracket form)": {
+    "prefix": "lambda",
+    "body": [
+      "[${1:capture}](${2:int32 x}) -> ${3:int32} { ${0} }"
+    ],
+    "description": "Lambda — explicit capture + return type"
+  },
+  "lambda (arrow form)": {
+    "prefix": "alambda",
+    "body": [
+      "(${1:int32 x}) => ${0:x * 2}"
+    ],
+    "description": "Lambda — expression-body arrow form"
+  },
+  "defer": {
+    "prefix": "defer",
+    "body": [
+      "defer { ${0} }"
+    ],
+    "description": "Defer — runs at scope exit"
+  },
+  "match expression": {
+    "prefix": "match",
+    "body": [
+      "${1:int32} ${2:result} = match (${3:value}) {",
+      "\t${4:1} => ${5:10},",
+      "\t_ => ${0:0}",
+      "};"
+    ],
+    "description": "Match expression with default arm"
+  },
+  "enum": {
+    "prefix": "enum",
+    "body": [
+      "enum ${1:Name} {",
+      "\t${2:A},",
+      "\t${3:B},",
+      "\t${0:C}",
+      "}"
+    ],
+    "description": "Enum declaration"
+  },
+  "import": {
+    "prefix": "import",
+    "body": [
+      "import \"${1:path/to/module.em}\";"
+    ],
+    "description": "Module import"
+  },
+  "annotation": {
+    "prefix": "annot",
+    "body": [
+      "[[${1:reflect}]]"
+    ],
+    "description": "Attribute annotation"
+  },
+  "pointer + new/delete": {
+    "prefix": "ptrnew",
+    "body": [
+      "${1:Node}* ${2:p} = new ${1:Node}(${3});",
+      "${0}",
+      "delete ${2:p};"
+    ],
+    "description": "Heap allocation pattern with manual delete"
+  },
+  "interface": {
+    "prefix": "interface",
+    "body": [
+      "interface ${1:Name} {",
+      "\t${2:int32 method();}",
+      "}"
+    ],
+    "description": "Interface declaration"
+  },
+  "delegate type": {
+    "prefix": "delegate",
+    "body": [
+      "delegate ${1:int32} ${2:Name}(${3:int32 x});"
+    ],
+    "description": "Delegate (function-pointer) type alias"
+  }
+}
