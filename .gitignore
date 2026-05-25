@@ -11,3 +11,5 @@
 snippet examples/
 grammars/enma/
 extension.wasm
+enma-lsp/target/
+enma-lsp/Cargo.lock
