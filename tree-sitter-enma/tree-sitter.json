@@ -1,0 +1,18 @@
+{
+  "grammars": [
+    {
+      "name": "enma",
+      "camelcase": "Enma",
+      "scope": "source.em",
+      "file-types": ["em"],
+      "highlights": "queries/highlights.scm",
+      "injection-regex": "^enma$"
+    }
+  ],
+  "metadata": {
+    "version": "0.0.1",
+    "license": "MIT",
+    "description": "Enma language grammar for tree-sitter",
+    "authors": [{"name": "ShadowThijs"}]
+  }
+}
