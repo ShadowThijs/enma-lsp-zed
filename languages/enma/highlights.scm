@@ -67,8 +67,17 @@
 ; === ACCESS SPECIFIERS ===
 (access_specifier) @keyword
 
-; === PRIMITIVE AND SDK TYPES ===
+; === PRIMITIVE TYPES ===
 (primitive_type) @type.builtin
+
+; === MATH TYPES (highlighted via pattern match — they parse as identifiers
+;     so they can also be used as constructor calls like vec2(x,y)) ===
+((identifier) @type.builtin
+ (#match? @type.builtin "^(vec2|vec3|vec4|quat|mat4|color)$"))
+
+; === SDK TYPES (highlighted via _t suffix pattern) ===
+((identifier) @type.builtin
+ (#match? @type.builtin "_t$"))
 
 ; === PUNCTUATION ===
 ("(" @punctuation.bracket)
