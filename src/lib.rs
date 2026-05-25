@@ -14,30 +14,20 @@ impl zed::Extension for EnmaExtension {
         _server_id: &LanguageServerId,
         _worktree: &Worktree,
     ) -> zed::Result<Command> {
-        // Look for the LSP binary in the extension directory
-        let extension_dir = std::env::current_dir()
-            .map_err(|e| format!("Failed to get current directory: {}", e))?;
-        let lsp_path = extension_dir
-            .join("enma-lsp")
-            .join("target")
-            .join("release")
-            .join("enma-lsp");
+        // Use compile-time manifest dir for dev extensions.
+        // In production, the binary would be bundled with the extension.
+        let base = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
 
-        if lsp_path.exists() {
+        let release_path = base.join("enma-lsp/target/release/enma-lsp");
+        if release_path.exists() {
             return Ok(Command {
-                command: lsp_path.to_string_lossy().into_owned(),
+                command: release_path.to_string_lossy().into_owned(),
                 args: Vec::new(),
                 env: Vec::new(),
             });
         }
 
-        // Fallback: try debug build
-        let debug_path = extension_dir
-            .join("enma-lsp")
-            .join("target")
-            .join("debug")
-            .join("enma-lsp");
-
+        let debug_path = base.join("enma-lsp/target/debug/enma-lsp");
         if debug_path.exists() {
             return Ok(Command {
                 command: debug_path.to_string_lossy().into_owned(),
@@ -47,9 +37,7 @@ impl zed::Extension for EnmaExtension {
         }
 
         Err(format!(
-            "enma-lsp binary not found at {} or {}. Run `cargo build --release` in the enma-lsp/ directory.",
-            lsp_path.display(),
-            debug_path.display()
+            "enma-lsp binary not found. Run: cd enma-lsp && cargo build --release"
         ))
     }
 
