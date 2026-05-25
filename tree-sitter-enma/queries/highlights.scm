@@ -69,7 +69,6 @@
 
 ; === PRIMITIVE AND SDK TYPES ===
 (primitive_type) @type.builtin
-(sdk_type) @type.builtin
 
 ; === PUNCTUATION ===
 ("(" @punctuation.bracket)
