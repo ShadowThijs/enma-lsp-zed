@@ -7,6 +7,10 @@ edition = "2021"
 name = "enma-lsp"
 path = "src/main.rs"
 
+[[bin]]
+name = "test-lsp"
+path = "src/cli.rs"
+
 [build-dependencies]
 cc = "1"
 

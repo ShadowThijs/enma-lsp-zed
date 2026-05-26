@@ -1308,6 +1308,23 @@
           ],
           "r": "void",
           "doc": "Copy all entries from other map into this one"
+        },
+        {
+          "n": "has",
+          "p": [
+            {
+              "n": "k",
+              "t": "string"
+            }
+          ],
+          "r": "bool",
+          "doc": "True if key exists. Alias of contains."
+        },
+        {
+          "n": "length",
+          "p": [],
+          "r": "int64",
+          "doc": "Number of entries. Alias of size."
         }
       ],
       "doc": "String-keyed hash map `map<string, V>`. Supports subscript access m[\"key\"] and for-each iteration (for string k, V v : m)."
@@ -1533,6 +1550,17 @@
           "doc": "True if any element equals x. Alias: has."
         },
         {
+          "n": "has",
+          "p": [
+            {
+              "n": "x",
+              "t": "T"
+            }
+          ],
+          "r": "bool",
+          "doc": "True if any element equals x. Alias of contains."
+        },
+        {
           "n": "index_of",
           "p": [
             {
@@ -1589,6 +1617,17 @@
           ],
           "r": "void",
           "doc": "Append every element of other list to this one"
+        },
+        {
+          "n": "at",
+          "p": [
+            {
+              "n": "i",
+              "t": "int64"
+            }
+          ],
+          "r": "T",
+          "doc": "Element at index i (0-based). Alias of get."
         }
       ],
       "doc": "Double-ended container `list<T>`. O(1) push_back/pop_back and random access. O(n) push_front/pop_front. Supports subscript lst[idx] and for-each iteration."
@@ -1706,6 +1745,17 @@
           ],
           "r": "bool",
           "doc": "True if both contain exactly the same elements"
+        },
+        {
+          "n": "has",
+          "p": [
+            {
+              "n": "x",
+              "t": "T"
+            }
+          ],
+          "r": "bool",
+          "doc": "True if element exists. Alias of contains."
         }
       ],
       "doc": "Hash set `hash_set<T>`. T must fit in 64 bits and compare by raw bits. string elements work (hashed by content, not pointer). Supports set operations: union, intersect, diff, subset check."
@@ -1869,6 +1919,17 @@
           ],
           "r": "array",
           "doc": "Values for keys in [lo, hi)"
+        },
+        {
+          "n": "has",
+          "p": [
+            {
+              "n": "k",
+              "t": "K"
+            }
+          ],
+          "r": "bool",
+          "doc": "True if key exists. Alias of contains."
         }
       ],
       "doc": "Ordered map `sorted_map<K, V>`. O(log n) operations. Keys iterate in sorted order. K and V must fit in 64 bits and order/equate by raw bits."
@@ -3480,6 +3541,151 @@
           ],
           "r": "vad_region_t",
           "doc": "Query virtual memory region at address"
+        },
+        {
+          "n": "r128",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "array<uint8>",
+          "doc": "Read 16 bytes (SSE sized) from process memory."
+        },
+        {
+          "n": "r256",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "array<uint8>",
+          "doc": "Read 32 bytes (AVX sized) from process memory."
+        },
+        {
+          "n": "get_vad_snapshot",
+          "p": [
+            {
+              "n": "heap_only",
+              "t": "bool"
+            }
+          ],
+          "r": "array<vad_region_t>",
+          "doc": "Snapshot of virtual address descriptors."
+        },
+        {
+          "n": "scan_u32",
+          "p": [
+            {
+              "n": "value",
+              "t": "uint32"
+            },
+            {
+              "n": "heap_only",
+              "t": "bool"
+            }
+          ],
+          "r": "array<int64>",
+          "doc": "Scan process memory for a uint32 value."
+        },
+        {
+          "n": "scan_wstring",
+          "p": [
+            {
+              "n": "value",
+              "t": "string"
+            },
+            {
+              "n": "heap_only",
+              "t": "bool"
+            }
+          ],
+          "r": "array<int64>",
+          "doc": "Scan process memory for a wide string."
+        },
+        {
+          "n": "wu8",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "uint8"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write uint8 to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "wf32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "float32"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write float32 to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "ws",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "string"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write string to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "wvm",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "bytes",
+              "t": "array<uint8>"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write byte array to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "alloc_vm",
+          "p": [
+            {
+              "n": "size",
+              "t": "int64"
+            }
+          ],
+          "r": "int64",
+          "doc": "Allocate virtual memory in the target process. Requires virtual_memory_operations permission."
+        },
+        {
+          "n": "free_vm",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "bool",
+          "doc": "Free virtual memory in the target process. Requires virtual_memory_operations permission."
         }
       ]
     },

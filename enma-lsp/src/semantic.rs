@@ -24,6 +24,8 @@ pub struct Symbol {
     pub return_type: Option<String>,
     /// For enums: variant names.
     pub enum_variants: Vec<String>,
+    /// For methods/functions inside a struct/class: the owning type's name.
+    pub owner_type: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -109,6 +111,8 @@ struct SymbolCollector<'a> {
     imports: Vec<String>,
     /// Track variables in function scopes to detect re-declarations and type mismatches.
     scope_vars: Vec<HashMap<String, Symbol>>,
+    /// When walking inside a struct/class body, this tracks the owning type name.
+    current_owner: Option<String>,
 }
 
 impl<'a> SymbolCollector<'a> {
@@ -118,6 +122,7 @@ impl<'a> SymbolCollector<'a> {
             symbols: Vec::new(),
             imports: Vec::new(),
             scope_vars: vec![HashMap::new()],
+            current_owner: None,
         }
     }
 
@@ -186,6 +191,7 @@ impl<'a> SymbolCollector<'a> {
             params: Vec::new(),
             return_type: None,
             enum_variants: Vec::new(),
+            owner_type: None,
         }
     }
 
@@ -210,8 +216,22 @@ impl<'a> SymbolCollector<'a> {
             "function_definition" => self.collect_function(node),
             "function_declaration" => self.collect_function(node),
             "method_declaration" => self.collect_function(node),
-            "struct_declaration" => self.collect_struct(node),
-            "class_declaration" => self.collect_class(node),
+            "struct_declaration" => {
+                let saved = self.current_owner.clone();
+                self.current_owner = self.child_text_by_field(node, "name");
+                self.collect_struct(node);
+                self.walk_children(node);
+                self.current_owner = saved;
+                return;
+            }
+            "class_declaration" => {
+                let saved = self.current_owner.clone();
+                self.current_owner = self.child_text_by_field(node, "name");
+                self.collect_class(node);
+                self.walk_children(node);
+                self.current_owner = saved;
+                return;
+            }
             "enum_declaration" => self.collect_enum(node),
             "interface_declaration" => self.collect_interface(node),
             "namespace_definition" => self.collect_namespace(node),
@@ -220,20 +240,33 @@ impl<'a> SymbolCollector<'a> {
             // expression_statement can contain variable-like declarations when the
             // grammar doesn't recognize a custom type name.
             "expression_statement" => {
-                // Gather children info BEFORE borrowing self.source
+                // Collect info for children: (kind, start_byte, end_byte, child_count)
                 let mut cursor = node.walk();
                 let child_info: Vec<_> = node.children(&mut cursor).map(|c| {
                     (c.kind().to_string(), c.start_byte(), c.end_byte(), c.child_count())
                 }).collect();
                 if child_info.len() >= 2 && child_info[0].0 == "identifier" {
                     let type_name = self.source[child_info[0].1..child_info[0].2].to_string();
-                    let second = &child_info[1];
-                    let name_opt = if second.0 == "identifier" {
-                        Some(self.source[second.1..second.2].to_string())
-                    } else if second.0 == "ERROR" && second.3 > 0 {
-                        // The ERROR node wraps an identifier — extract text directly
-                        let err_text = &self.source[second.1..second.2];
-                        // Find the first identifier-like word
+                    // Find the variable name — may be after `<...>` for generic types
+                    let name_opt = if child_info[1].0 == "identifier" {
+                        Some(self.source[child_info[1].1..child_info[1].2].to_string())
+                    } else if child_info[1].0 == "<" {
+                        // Generic type: `array < string > varname`
+                        // Skip past matching angle brackets to find the variable name
+                        let mut depth = 1;
+                        let mut idx = 2;
+                        while idx < child_info.len() && depth > 0 {
+                            if child_info[idx].0 == "<" { depth += 1; }
+                            else if child_info[idx].0 == ">" { depth -= 1; }
+                            idx += 1;
+                        }
+                        if idx < child_info.len() && child_info[idx].0 == "identifier" {
+                            Some(self.source[child_info[idx].1..child_info[idx].2].to_string())
+                        } else {
+                            None
+                        }
+                    } else if child_info[1].0 == "ERROR" && child_info[1].3 > 0 {
+                        let err_text = &self.source[child_info[1].1..child_info[1].2];
                         err_text.split_whitespace().next().map(|s| s.to_string())
                     } else {
                         None
@@ -278,7 +311,7 @@ impl<'a> SymbolCollector<'a> {
             let mut sym = Self::empty_symbol(name.clone(), SymbolKind::Function, range);
             sym.return_type = return_type;
             sym.params = params;
-            // type_name shows the full signature summary
+            sym.owner_type = self.current_owner.clone();
             sym.type_name = Some(self.function_sig_summary(&name, &sym.return_type, &sym.params));
             self.add_symbol(sym);
         }
@@ -379,11 +412,11 @@ impl<'a> SymbolCollector<'a> {
                     }
                 }
                 "destructor_declaration" => {
-                    // Destructors have a 'name' field with the class name prefixed by '~'
+                    // The 'name' field returns just the class name; prepend '~' to distinguish
                     if let Some(dtor_name) = self.child_text_by_field(child, "name") {
                         let range = self.node_range(&child);
                         sym.methods.push(MethodInfo2 {
-                            name: dtor_name, return_type: None, params: Vec::new(), range,
+                            name: format!("~{}", dtor_name), return_type: None, params: Vec::new(), range,
                         });
                     }
                 }
@@ -486,11 +519,13 @@ impl<'a> SymbolCollector<'a> {
     }
 
     /// Check for type errors in the collected symbols.
-    /// Performs: duplicate detection, generic type validation, and basic type mismatch checks.
+    /// Performs: duplicate detection, generic type validation, basic type mismatch checks,
+    /// and method call validation.
     fn check_type_errors(&self, db: &TypeDatabase) -> Vec<Diagnostic> {
         let mut diags = self.check_duplicates();
         diags.extend(self.check_generic_params());
         diags.extend(self.check_type_mismatches(db));
+        diags.extend(self.check_method_calls(db));
         diags
     }
 
@@ -530,6 +565,14 @@ impl<'a> SymbolCollector<'a> {
                 let other = &self.symbols[j];
                 if !def_kinds.contains(&other.kind) { continue; }
                 if sym.name == other.name && sym.kind == other.kind {
+                    // Methods in different classes/structs are NOT duplicates
+                    if sym.kind == SymbolKind::Function
+                        && sym.owner_type.is_some()
+                        && other.owner_type.is_some()
+                        && sym.owner_type != other.owner_type
+                    {
+                        continue;
+                    }
                     // Avoid duplicate diagnostics for the same pair
                     let already = diags.iter().any(|d| d.range == other.range);
                     if !already {
@@ -593,7 +636,7 @@ impl<'a> SymbolCollector<'a> {
     }
 
     /// Detect type mismatches: declared variable type vs known function return type.
-    /// Uses the type database to look up function return types.
+    /// Checks both built-in functions (type DB) and user-defined functions (semantic model).
     fn check_type_mismatches(&self, db: &TypeDatabase) -> Vec<Diagnostic> {
         let mut diags = Vec::new();
         for sym in &self.symbols {
@@ -609,8 +652,16 @@ impl<'a> SymbolCollector<'a> {
             let rhs = decl_text[eq_pos + 1..].trim();
             let Some(open_paren) = rhs.find('(') else { continue };
             let fn_name = rhs[..open_paren].trim().trim_end_matches(';').trim_end_matches(')');
-            let Some(func) = db.functions.get(fn_name) else { continue };
-            let ret_type = &func.r#return;
+            // First check built-in functions
+            let ret_type: Option<&str> = if let Some(func) = db.functions.get(fn_name) {
+                Some(func.r#return.as_str())
+            } else {
+                // Check user-defined functions in the semantic model
+                self.symbols.iter()
+                    .find(|s| s.kind == SymbolKind::Function && s.name == fn_name)
+                    .and_then(|f| f.return_type.as_deref())
+            };
+            let Some(ret_type) = ret_type else { continue };
             // void return assigned to non-void variable is a mismatch
             if ret_type == "void" {
                 if vt != "void" {
@@ -631,6 +682,8 @@ impl<'a> SymbolCollector<'a> {
             // Normalize both types
             let norm_decl = strip_generic(vt);
             let norm_ret = strip_generic(ret_type);
+            // auto is type inference; any compatible RHS type is valid.
+            if norm_decl == "auto" { continue; }
             if norm_decl != norm_ret {
                 // Skip if there's an explicit cast
                 if rhs.contains(&format!("cast<{}>", vt)) { continue; }
@@ -648,6 +701,171 @@ impl<'a> SymbolCollector<'a> {
             }
         }
         diags
+    }
+
+    /// Find a variable's declared type by name, preferring the declaration
+    /// closest to `at_byte` (to handle shadowing across functions/scopes).
+    fn resolve_var_type(&self, var_name: &str, at_byte: usize) -> Option<String> {
+        self.symbols.iter()
+            .filter(|s| s.name == var_name)
+            .filter(|s| matches!(s.kind, SymbolKind::Variable | SymbolKind::Parameter))
+            .filter(|s| self.pos_to_byte(s.range.start) <= at_byte)
+            .max_by_key(|s| self.pos_to_byte(s.range.start))
+            .and_then(|s| s.var_type.clone())
+    }
+
+    /// Check whether a method exists on a given type (built-in or custom).
+    fn method_exists_on_type(&self, db: &TypeDatabase, method_name: &str, type_name: &str) -> bool {
+        let normalized = strip_generic(type_name);
+        // Check math types (fields + methods) — must check before db.get_methods()
+        // because get_methods merges math_type methods but NOT math_type fields.
+        if let Some(mt) = db.math_types.get(normalized) {
+            if mt.methods.iter().any(|m| m.name == method_name) {
+                return true;
+            }
+            if mt.fields.iter().any(|f| f == method_name) {
+                return true;
+            }
+            return false;
+        }
+        if let Some(methods) = db.get_methods(normalized) {
+            return methods.iter().any(|m| m.name == method_name);
+        }
+        for sym in &self.symbols {
+            if sym.name == normalized && (sym.kind == SymbolKind::Struct || sym.kind == SymbolKind::Class) {
+                if sym.methods.iter().any(|m| m.name == method_name) {
+                    return true;
+                }
+                if sym.fields.iter().any(|f| f.name == method_name) {
+                    return true;
+                }
+                return false;
+            }
+        }
+        if db.is_primitive(normalized) {
+            return false;
+        }
+        true
+    }
+
+    /// Check whether a position in source is inside a string literal.
+    fn is_inside_string(&self, byte_pos: usize) -> bool {
+        let before = &self.source[..byte_pos];
+        let mut quote_count = 0usize;
+        let mut chars = before.chars();
+        while let Some(ch) = chars.next() {
+            if ch == '\\' {
+                chars.next(); // skip escaped character
+            } else if ch == '"' {
+                quote_count += 1;
+            }
+        }
+        quote_count % 2 != 0
+    }
+
+    /// Scan source for `.methodName(` patterns and check if the method exists on the
+    /// receiver's declared type. Emits errors for method calls on incompatible types.
+    fn check_method_calls(&self, db: &TypeDatabase) -> Vec<Diagnostic> {
+        let mut diags = Vec::new();
+        let source = self.source;
+        let mut search_start = 0;
+
+        while let Some(dot_pos) = source[search_start..].find('.') {
+            let abs_dot = search_start + dot_pos;
+            search_start = abs_dot + 1;
+
+            // Skip dots inside string literals — they're data, not code
+            if self.is_inside_string(abs_dot) {
+                continue;
+            }
+
+            // Extract the identifier immediately after the dot
+            let after_dot = &source[abs_dot + 1..];
+            let method_name: String = after_dot.chars()
+                .take_while(|c| c.is_alphanumeric() || *c == '_')
+                .collect();
+            if method_name.is_empty() {
+                continue;
+            }
+
+            // Must be followed by '(' (with optional whitespace)
+            let after_method = &after_dot[method_name.len()..];
+            if !after_method.trim_start().starts_with('(') {
+                continue;
+            }
+
+            // Extract receiver name before the dot
+            let before_dot = &source[..abs_dot];
+            // Handle subscript: cs[0].inc() → strip the subscript part
+            let before_clean = if let Some(bracket) = before_dot.rfind('[') {
+                let between = &before_dot[bracket + 1..];
+                if !between.contains('.') {
+                    before_dot[..bracket].to_string()
+                } else {
+                    before_dot.to_string()
+                }
+            } else {
+                before_dot.to_string()
+            };
+
+            let receiver = before_clean.trim_end()
+                .rsplit(|c: char| !c.is_alphanumeric() && c != '_')
+                .next()
+                .unwrap_or("")
+                .to_string();
+
+            // Skip numeric receivers (e.g. 0.5, 1.0)
+            if receiver.is_empty() || receiver.chars().all(|c| c.is_numeric()) {
+                continue;
+            }
+
+            // Look up receiver type
+            if let Some(receiver_type) = self.resolve_var_type(&receiver, abs_dot) {
+                let normalized = strip_generic(&receiver_type);
+                let type_is_known = db.is_primitive(normalized)
+                    || db.is_type(normalized)
+                    || db.math_types.contains_key(normalized)
+                    || self.symbols.iter().any(|s|
+                        s.name == normalized
+                        && (s.kind == SymbolKind::Struct || s.kind == SymbolKind::Class));
+
+                // auto is type inference; skip method existence checks since we
+                // don't know the concrete type at compile time.
+                if normalized == "auto" { continue; }
+
+                if type_is_known && !self.method_exists_on_type(db, &method_name, &receiver_type) {
+                    let (line, col) = self.byte_to_line_col(abs_dot);
+                    diags.push(Diagnostic {
+                        range: Range {
+                            start: Position { line, character: col },
+                            end: Position { line, character: col + method_name.len() as u32 + 1 },
+                        },
+                        severity: Some(DiagnosticSeverity::ERROR),
+                        code: Some(NumberOrString::String("method-not-found".into())),
+                        source: Some("enma-lsp".into()),
+                        message: format!(
+                            "Method '{}()' not found on type '{}'",
+                            method_name, normalized
+                        ),
+                        ..Default::default()
+                    });
+                }
+            }
+        }
+        diags
+    }
+
+    fn byte_to_line_col(&self, byte: usize) -> (u32, u32) {
+        let mut line = 0u32;
+        let mut col = 0u32;
+        let mut pos = 0usize;
+        for ch in self.source.chars() {
+            if pos >= byte { break; }
+            if ch == '\n' { line += 1; col = 0; }
+            else { col += 1; }
+            pos += ch.len_utf8();
+        }
+        (line, col)
     }
 
     fn pos_to_byte(&self, pos: Position) -> usize {
@@ -685,9 +903,14 @@ impl<'a> SymbolCollector<'a> {
     }
 }
 
-/// Strip generic parameters and array brackets from a type name.
+/// Strip generic parameters, array brackets, pointers, and references from a type name.
+/// "int64[]" → "array" (T[] is syntactic sugar for array<T>)
+/// "Cell*" → "Cell", "int64&" → "int64"
 fn strip_generic(type_name: &str) -> &str {
-    let s = type_name.trim_end_matches("[]");
+    let s = type_name.trim_end_matches('*').trim_end_matches('&');
+    if s.ends_with("[]") {
+        return "array";
+    }
     if let Some(pos) = s.find('<') { &s[..pos] } else { s }
 }
 
@@ -970,5 +1193,289 @@ int64 main() {
         }
         assert!(found_len, "FAIL: no types have 'length' method");
         eprintln!("TEST 5 PASS: method lookup works for 'length'");
+    }
+
+    #[test]
+    fn test_cross_class_method_no_duplicate_error() {
+        // Methods with the same name in DIFFERENT classes should NOT be flagged as duplicates
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = r#"class T24_A {
+    int64 av;
+    T24_A() { av = 1; }
+    int64 sig() { return 10; }
+}
+class T24_B {
+    int64 bv;
+    T24_B() { bv = 2; }
+    int64 sig() { return 20; }
+    int64 take(int64 v) { return v + bv; }
+}
+class T24_C {
+    T24_C() { }
+    int64 sig() { return 999; }
+    int64 take(int64 v) { return v + 1000; }
+}
+"#;
+        let tree = parser.parse(source.as_bytes(), None).unwrap();
+        let db = TypeDatabase::load();
+        let model = SemanticModel::build(tree.root_node(), source, &db);
+
+        eprintln!("Symbols ({}):", model.symbols.len());
+        for sym in &model.symbols {
+            eprintln!("  {:?} '{}' owner={:?}", sym.kind, sym.name, sym.owner_type);
+        }
+        eprintln!("Diagnostics:");
+        for d in &model.diagnostics {
+            eprintln!("  {}: {}", d.code.as_ref().map(|c| match c { NumberOrString::String(s) => s.as_str(), _ => "?" }).unwrap_or("?"), d.message);
+        }
+
+        // Should NOT have duplicate errors for sig() across T24_A, T24_B, T24_C
+        let dup_errors: Vec<_> = model.diagnostics.iter()
+            .filter(|d| d.message.contains("Duplicate") && d.message.contains("sig"))
+            .collect();
+        assert!(dup_errors.is_empty(),
+            "FAIL: sig() in different classes should not be duplicates. Got: {:?}",
+            dup_errors.iter().map(|d| &d.message).collect::<Vec<_>>());
+
+        // Should NOT have duplicate errors for take() across T24_B, T24_C
+        let take_errors: Vec<_> = model.diagnostics.iter()
+            .filter(|d| d.message.contains("Duplicate") && d.message.contains("take"))
+            .collect();
+        assert!(take_errors.is_empty(),
+            "FAIL: take() in different classes should not be duplicates. Got: {:?}",
+            take_errors.iter().map(|d| &d.message).collect::<Vec<_>>());
+
+        eprintln!("PASS: cross-class methods with same name are not flagged as duplicates");
+    }
+
+    #[test]
+    fn test_custom_function_return_type_mismatch() {
+        // User-defined function returning one type assigned to different-typed variable
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = r#"array<window_info_t> test_random() {
+    return (0);
+}
+
+int64 main() {
+    string test = test_random();
+    return 0;
+}
+"#;
+        let tree = parser.parse(source.as_bytes(), None).unwrap();
+        let db = TypeDatabase::load();
+        let model = SemanticModel::build(tree.root_node(), source, &db);
+
+        eprintln!("Symbols:");
+        for sym in &model.symbols {
+            eprintln!("  {:?} '{}' ret={:?} var_type={:?}", sym.kind, sym.name, sym.return_type, sym.var_type);
+        }
+        eprintln!("Diagnostics:");
+        for d in &model.diagnostics {
+            eprintln!("  {}: {}", d.code.as_ref().map(|c| match c { NumberOrString::String(s) => s.as_str(), _ => "?" }).unwrap_or("?"), d.message);
+        }
+
+        // Should detect: string test = test_random(); → test_random() returns array<window_info_t>, not string
+        let mismatch = model.diagnostics.iter().any(|d| {
+            d.message.contains("Type mismatch")
+            && d.message.contains("test_random")
+            && d.message.contains("string")
+            && d.message.contains("array")
+        });
+        assert!(mismatch,
+            "FAIL: should detect type mismatch for 'string test = test_random()' where test_random returns array<window_info_t>. Diagnostics: {:?}",
+            model.diagnostics.iter().map(|d| &d.message).collect::<Vec<_>>());
+        eprintln!("PASS: custom function return type mismatch detected");
+    }
+
+    #[test]
+    fn test_method_not_found_on_primitive() {
+        // int64 value; value.length(); → error: length() not on int64
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = r#"int64 main() {
+    int64 value = 42;
+    int64 n = value.length();
+    return n;
+}
+"#;
+        let tree = parser.parse(source.as_bytes(), None).unwrap();
+        let db = TypeDatabase::load();
+        let model = SemanticModel::build(tree.root_node(), source, &db);
+
+        eprintln!("Diagnostics:");
+        for d in &model.diagnostics {
+            eprintln!("  {}: {}", d.code.as_ref().map(|c| match c { NumberOrString::String(s) => s.as_str(), _ => "?" }).unwrap_or("?"), d.message);
+        }
+
+        let has_error = model.diagnostics.iter().any(|d| {
+            d.message.contains("not found on type") && d.message.contains("length") && d.message.contains("int64")
+        });
+        assert!(has_error,
+            "FAIL: should error that length() is not found on int64. Diagnostics: {:?}",
+            model.diagnostics.iter().map(|d| &d.message).collect::<Vec<_>>());
+        eprintln!("PASS: method-not-found error for int64.length()");
+    }
+
+    #[test]
+    fn test_delete_tokenization() {
+        // Verify how delete and delete[] are tokenized by the parser
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = "int64 main() { int64* p = new int64; delete p; delete[] p; return 0; }";
+        let tree = parser.parse(source.as_bytes(), None).unwrap();
+        let root = tree.root_node();
+
+        fn find_tokens(node: tree_sitter::Node, source: &str, depth: usize) {
+            if node.child_count() == 0 {
+                let text = &source[node.start_byte()..node.end_byte()];
+                if text.contains("delete") || text == "[" || text == "]" {
+                    eprintln!("  {:indent$}kind='{}' text='{}'", "", node.kind(), text, indent=depth*2);
+                }
+            }
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                find_tokens(child, source, depth + 1);
+            }
+        }
+        eprintln!("Token tree for delete/delete[] test:");
+        find_tokens(root, source, 0);
+
+        // Check that the source contains delete and delete[]
+        assert!(source.contains("delete p"), "source should contain 'delete p'");
+        assert!(source.contains("delete[] p"), "source should contain 'delete[] p'");
+        eprintln!("PASS: delete[] tokenization dump complete");
+    }
+
+    #[test]
+    fn test_string_literal_method_scan_skipped() {
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = r#"int64 main() {
+    map<int64, string> m;
+    array<string> ks = m.keys();
+    array<int64>  vs = m.values();
+    check("keys().length() == size()", ks.length() == m.size());
+    check("values().length() == size()", vs.length() == m.size());
+    return 0;
+}
+"#;
+        let tree = parser.parse(source.as_bytes(), None).unwrap();
+        let db = TypeDatabase::load();
+        let model = SemanticModel::build(tree.root_node(), source, &db);
+
+        eprintln!("Diagnostics:");
+        for d in &model.diagnostics {
+            eprintln!("  {}: {}", d.code.as_ref().map(|c| match c { NumberOrString::String(s) => s.as_str(), _ => "?" }).unwrap_or("?"), d.message);
+        }
+
+        let method_errors: Vec<_> = model.diagnostics.iter()
+            .filter(|d| d.message.contains("not found on type"))
+            .collect();
+        assert!(method_errors.is_empty(),
+            "FAIL: false method-not-found errors from string literals. Got: {:?}",
+            method_errors.iter().map(|d| &d.message).collect::<Vec<_>>());
+        eprintln!("PASS: method calls inside string literals are correctly skipped");
+    }
+
+    #[test]
+    fn test_cpu_methods_not_flagged() {
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = r#"int64 main() {
+    cpu_t cpu = cpu_create();
+    int64 result = cpu.start(0x1000, 0x1100, 0, 2);
+    check("cpu.start(...) returns 0 (UC_ERR_OK)", result == 0);
+    int64 rax = cpu.reg_read64(uc_reg::rax);
+    return rax;
+}
+"#;
+        let tree = parser.parse(source.as_bytes(), None).unwrap();
+        let db = TypeDatabase::load();
+        let model = SemanticModel::build(tree.root_node(), source, &db);
+
+        eprintln!("Symbols:");
+        for sym in &model.symbols {
+            eprintln!("  {:?} '{}' var_type={:?}", sym.kind, sym.name, sym.var_type);
+        }
+        eprintln!("Diagnostics:");
+        for d in &model.diagnostics {
+            eprintln!("  {}: {}", d.code.as_ref().map(|c| match c { NumberOrString::String(s) => s.as_str(), _ => "?" }).unwrap_or("?"), d.message);
+        }
+
+        let false_errors: Vec<_> = model.diagnostics.iter()
+            .filter(|d| d.message.contains("not found on type"))
+            .filter(|d| d.message.contains("start") || d.message.contains("reg_read64"))
+            .collect();
+        assert!(false_errors.is_empty(),
+            "FAIL: cpu_t methods incorrectly flagged. Got: {:?}",
+            false_errors.iter().map(|d| &d.message).collect::<Vec<_>>());
+        eprintln!("PASS: cpu_t methods not flagged as errors");
+    }
+
+    #[test]
+    fn test_generic_expression_statement_parse() {
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = "int64 main() { array<string> ks = m.keys(); return 0; }";
+        let tree = parser.parse(source.as_bytes(), None).unwrap();
+        let root = tree.root_node();
+
+        fn dump_kids(node: tree_sitter::Node, source: &str, depth: usize) {
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                let text = &source[child.start_byte()..child.end_byte()];
+                let short = if text.len() > 50 { &text[..50] } else { text };
+                eprintln!("{:indent$}{} [{}] '{}'", "", child.kind(), child.child_count(), short.replace('\n', "\\n"), indent=depth*2);
+                if child.child_count() > 0 {
+                    dump_kids(child, source, depth + 1);
+                }
+            }
+        }
+        eprintln!("Parse tree for 'array<string> ks = m.keys();':");
+        dump_kids(root, source, 0);
+
+        let db = TypeDatabase::load();
+        let model = SemanticModel::build(tree.root_node(), source, &db);
+        eprintln!("\nCollected symbols:");
+        for sym in &model.symbols {
+            eprintln!("  {:?} '{}' var_type={:?}", sym.kind, sym.name, sym.var_type);
+        }
+
+        let ks = model.symbols.iter().find(|s| s.name == "ks");
+        if let Some(ks) = ks {
+            eprintln!("ks collected: var_type={:?}", ks.var_type);
+        } else {
+            eprintln!("ks NOT collected — generic type parse issue");
+        }
     }
 }
