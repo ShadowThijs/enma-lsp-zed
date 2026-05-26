@@ -174,8 +174,6 @@ impl LanguageServer for Backend {
                     let node = find_named_leaf(tree.root_node(), pos);
                     if node.kind() == "identifier" {
                         let name = &source[node.start_byte()..node.end_byte()];
-                        // Find a symbol definition with this name (not at this position)
-                        // Also search struct/class methods
                         for sym in &model.symbols {
                             if sym.name == name && !range_contains(&sym.range, pos) {
                                 return Ok(Some(GotoDefinitionResponse::Scalar(Location {
@@ -184,7 +182,6 @@ impl LanguageServer for Backend {
                                 })));
                             }
                         }
-                        // Also search struct/class methods for the name
                         for sym in &model.symbols {
                             for m in &sym.methods {
                                 if m.name == name && !range_contains(&m.range, pos) {
@@ -227,8 +224,8 @@ impl LanguageServer for Backend {
                         semantic::SymbolKind::Namespace => SymbolKind::NAMESPACE,
                         semantic::SymbolKind::Variable => SymbolKind::VARIABLE,
                         semantic::SymbolKind::Parameter => SymbolKind::VARIABLE,
-                        semantic::SymbolKind::TypeAlias => SymbolKind::TYPE_PARAMETER,
                     };
+                    #[allow(deprecated)]
                     DocumentSymbol {
                         name: sym.name.clone(),
                         detail: sym.type_name.clone(),
@@ -356,12 +353,6 @@ impl Backend {
         }
     }
 
-    async fn build_model(&self, source: &str) -> Option<SemanticModel> {
-        let mut parser = self.parser.lock().await;
-        let tree = parser.parse(source.as_bytes())?;
-        Some(SemanticModel::build(tree.root_node(), source, get_db()))
-    }
-
     async fn publish_diagnostics(&self, uri: &Url, text: &str) {
         let mut parser = self.parser.lock().await;
         let tree = parser.parse(text.as_bytes());
@@ -388,7 +379,7 @@ impl Backend {
                     }
                 }
             }
-            diags.extend(model.diagnostics());
+            diags.extend(model.diagnostics.clone());
             diags
         } else {
             vec![Diagnostic {

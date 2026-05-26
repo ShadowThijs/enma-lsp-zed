@@ -157,11 +157,13 @@ impl TypeDatabase {
         self.primitive_names.contains(&name.to_string())
     }
 
+    #[allow(dead_code)]
     pub fn method_detail(m: &MethodInfo) -> String {
         let params: Vec<String> = m.params.iter().map(|p| format!("{}: {}", p.name, p.r#type)).collect();
         format!("{}({}) -> {}", m.name, params.join(", "), m.r#return)
     }
 
+    #[allow(dead_code)]
     pub fn function_detail(f: &FreeFunction) -> String {
         let params: Vec<String> = f.params.iter().map(|p| format!("{}: {}", p.name, p.r#type)).collect();
         let suffix = if f.variadic { ", ..." } else { "" };

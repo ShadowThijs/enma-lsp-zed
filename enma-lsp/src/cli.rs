@@ -117,7 +117,6 @@ fn main() {
                 semantic::SymbolKind::Enum => "ENUM",
                 semantic::SymbolKind::Interface => "IFACE",
                 semantic::SymbolKind::Namespace => "NS",
-                semantic::SymbolKind::TypeAlias => "ALIAS",
             };
             println!("  [{kind}] '{}' @ L{}:C{}  type={:?}  var_type={:?}  ret={:?}  fields={}  methods={}  owner={:?}",
                 sym.name,

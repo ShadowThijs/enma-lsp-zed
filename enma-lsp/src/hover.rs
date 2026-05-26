@@ -15,7 +15,6 @@ pub fn format_local_symbol_hover(sym: &semantic::Symbol) -> String {
         semantic::SymbolKind::Enum => "enum",
         semantic::SymbolKind::Interface => "interface",
         semantic::SymbolKind::Namespace => "namespace",
-        semantic::SymbolKind::TypeAlias => "type alias",
     };
 
     match sym.kind {
@@ -521,7 +520,6 @@ pub fn detect_context(node: tree_sitter::Node, source: &str) -> HoverContext {
     let byte = node.start_byte();
     if byte == 0 { return HoverContext::BareIdentifier; }
 
-    let current_text = &source[node.start_byte()..node.end_byte()];
     let before = &source[..byte];
 
     let mut search_end = byte;
@@ -682,7 +680,6 @@ pub fn resolve_hover(
                 semantic::SymbolKind::Namespace => 2,
                 semantic::SymbolKind::Variable => 1,
                 semantic::SymbolKind::Parameter => 0,
-                semantic::SymbolKind::TypeAlias => 2,
             });
         if let Some(sym) = ref_match {
             let def_md = format_local_symbol_hover(sym);
@@ -696,7 +693,6 @@ pub fn resolve_hover(
                     semantic::SymbolKind::Enum => "enum",
                     semantic::SymbolKind::Interface => "interface",
                     semantic::SymbolKind::Namespace => "namespace",
-                    semantic::SymbolKind::TypeAlias => "type alias",
                 };
                 let md = format!("*reference to {}*\n\n{}", kind_str, def_md);
                 return Some((md, format!("ref-site {:?}", sym.kind)));
@@ -730,6 +726,7 @@ pub fn range_contains(range: &Range, pos: Position) -> bool {
     pos >= range.start && pos <= range.end
 }
 
+#[allow(dead_code)]
 pub fn find_named_leaf(node: tree_sitter::Node, pos: Position) -> tree_sitter::Node {
     let target = Position { line: pos.line, character: pos.character };
     let mut cursor = node.walk();
@@ -745,6 +742,7 @@ pub fn find_named_leaf(node: tree_sitter::Node, pos: Position) -> tree_sitter::N
     node
 }
 
+#[allow(dead_code)]
 pub fn node_range(node: &tree_sitter::Node) -> Range {
     let start = node.start_position();
     let end = node.end_position();
@@ -908,7 +906,7 @@ int64 main() {
         let ctx = HoverContext::MethodAccess { receiver: Some("wins".into()) };
         let result = resolve_hover("length", pos, true, &ctx, &model, &db);
         assert!(result.is_some());
-        let (md, path) = result.unwrap();
+        let (md, _path) = result.unwrap();
         assert!(md.contains("array::length") || md.contains("array.length"));
         let count = md.matches("::length").count();
         assert!(count <= 2);

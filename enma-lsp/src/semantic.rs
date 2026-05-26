@@ -18,11 +18,8 @@ pub struct Symbol {
     pub methods: Vec<MethodInfo2>,
     /// For variables: the declared variable type (extracted from the AST).
     pub var_type: Option<String>,
-    /// For functions: parameter list.
     pub params: Vec<(String, Option<String>)>,
-    /// For functions: return type.
     pub return_type: Option<String>,
-    /// For enums: variant names.
     pub enum_variants: Vec<String>,
     /// For methods/functions inside a struct/class: the owning type's name.
     pub owner_type: Option<String>,
@@ -39,6 +36,7 @@ pub struct MethodInfo2 {
     pub name: String,
     pub return_type: Option<String>,
     pub params: Vec<(String, Option<String>)>,
+    #[allow(dead_code)]
     pub range: Range,
 }
 
@@ -52,7 +50,6 @@ pub enum SymbolKind {
     Enum,
     Interface,
     Namespace,
-    TypeAlias,
 }
 
 /// The semantic model for a file: all symbols, their scopes, and any type errors.
@@ -78,7 +75,7 @@ impl SemanticModel {
 
     /// Merge symbols from an imported module into this model.
     /// Prefixes are not added - Enma uses `using` for namespace imports.
-    pub fn merge_import(&mut self, other: SemanticModel, source_path: &str) {
+    pub fn merge_import(&mut self, other: SemanticModel, _source_path: &str) {
         // Recurse into nested imports
         for import_path in &other.imports {
             // Track transitive imports - they get resolved by the caller
@@ -96,13 +93,6 @@ impl SemanticModel {
         self.diagnostics.extend(other.diagnostics);
     }
 
-    pub fn empty() -> Self {
-        Self { symbols: Vec::new(), diagnostics: Vec::new(), imports: Vec::new() }
-    }
-
-    pub fn diagnostics(&self) -> Vec<Diagnostic> {
-        self.diagnostics.clone()
-    }
 }
 
 struct SymbolCollector<'a> {
@@ -1075,7 +1065,7 @@ int64 main() {
 
         // Find 'add' function
         let add_sym = model.symbols.iter().find(|s| s.name == "add").unwrap();
-        let main_sym = model.symbols.iter().find(|s| s.name == "main").unwrap();
+        let _main_sym = model.symbols.iter().find(|s| s.name == "main").unwrap();
 
         // Simulate cursor at 'add' call site: line 5, the 'add' in 'add(3, 4)'
         // Line 5 in 0-indexed: row=5
