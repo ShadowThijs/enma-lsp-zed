@@ -117,21 +117,21 @@
     "body": [
       "[${1:capture}](${2:int32 x}) -> ${3:int32} { ${0} }"
     ],
-    "description": "Lambda — explicit capture + return type"
+    "description": "Lambda - explicit capture + return type"
   },
   "lambda (arrow form)": {
     "prefix": "alambda",
     "body": [
       "(${1:int32 x}) => ${0:x * 2}"
     ],
-    "description": "Lambda — expression-body arrow form"
+    "description": "Lambda - expression-body arrow form"
   },
   "defer": {
     "prefix": "defer",
     "body": [
       "defer { ${0} }"
     ],
-    "description": "Defer — runs at scope exit"
+    "description": "Defer - runs at scope exit"
   },
   "match expression": {
     "prefix": "match",

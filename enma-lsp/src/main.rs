@@ -126,7 +126,7 @@ impl LanguageServer for Backend {
                         let result = resolve_hover(&text, pos, is_ident, &ctx, &model, db);
                         match &result {
                             Some((_, path)) => eprintln!("[hover] RESOLVED via {}", path),
-                            None => eprintln!("[hover] NO MATCH — func={} type={} prim={} kw={}",
+                            None => eprintln!("[hover] NO MATCH - func={} type={} prim={} kw={}",
                                 db.functions.contains_key(&text),
                                 db.is_type(&text),
                                 db.is_primitive(&text),

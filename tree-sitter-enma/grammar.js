@@ -383,7 +383,7 @@ module.exports = grammar({
       ';',
     ),
 
-    // Types valid in local variable declarations — excludes bare identifier
+    // Types valid in local variable declarations - excludes bare identifier
     // to avoid ambiguity with assignment expressions
     _local_type: $ => choice(
       $.primitive_type,
@@ -541,7 +541,7 @@ module.exports = grammar({
       $._binary_expression_4,
     ),
 
-    // Equality / Comparison (dynamic — resolves identifier-vs-type ambiguity at runtime)
+    // Equality / Comparison (dynamic - resolves identifier-vs-type ambiguity at runtime)
     _binary_expression_4: $ => choice(
       prec.left(4, seq(field('left', $._binary_expression_4), field('operator', choice('==', '!=', '<', '>', '<=', '>=', '<=>')), field('right', $._binary_expression_5))),
       $._binary_expression_5,

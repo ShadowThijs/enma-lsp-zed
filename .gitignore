@@ -14,3 +14,4 @@ extension.wasm
 enma-lsp/target/
 enma-lsp/Cargo.lock
 tree-sitter-enma/target/
+/tools

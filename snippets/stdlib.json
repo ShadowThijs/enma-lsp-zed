@@ -43,7 +43,7 @@
   "math sin/cos/tan": {
     "prefix": "trig",
     "body": "sin(${1:x})",
-    "description": "Sine — paste then change to cos/tan as needed"
+    "description": "Sine - paste then change to cos/tan as needed"
   },
   "math lerp": {
     "prefix": "lerp",
@@ -68,7 +68,7 @@
   "math min/max": {
     "prefix": "minmax",
     "body": "imin(${1:a}, ${2:b})",
-    "description": "Min — change to imax / fmin / fmax as needed"
+    "description": "Min - change to imax / fmin / fmax as needed"
   },
 
   "vec2": {

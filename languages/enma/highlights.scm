@@ -1,4 +1,4 @@
-; Enma syntax highlighting — structured grammar queries for Zed
+; Enma syntax highlighting - structured grammar queries for Zed
 
 ; === COMMENTS ===
 (comment) @comment
@@ -70,7 +70,7 @@
 ; === PRIMITIVE TYPES ===
 (primitive_type) @type.builtin
 
-; === MATH TYPES (highlighted via pattern match — they parse as identifiers
+; === MATH TYPES (highlighted via pattern match - they parse as identifiers
 ;     so they can also be used as constructor calls like vec2(x,y)) ===
 ((identifier) @type.builtin
  (#match? @type.builtin "^(vec2|vec3|vec4|quat|mat4|color)$"))
@@ -109,7 +109,7 @@
   "++" "--" "!" "~" "?"
 ] @operator
 
-; === KEYWORDS — Control Flow ===
+; === KEYWORDS - Control Flow ===
 [
   "if" "else" "for" "while" "do"
   "switch" "case" "default"
@@ -118,41 +118,41 @@
   "defer" "goto" "match"
 ] @keyword
 
-; === KEYWORDS — Module / Import ===
+; === KEYWORDS - Module / Import ===
 [
   "import" "using" "namespace"
 ] @keyword.import
 
-; === KEYWORDS — OOP ===
+; === KEYWORDS - OOP ===
 [
   "class" "struct" "interface" "mixin" "enum"
   "virtual" "override" "final" "property"
 ] @keyword
 
-; === KEYWORDS — Templates ===
+; === KEYWORDS - Templates ===
 [
   "template" "typename"
 ] @keyword
 
-; === KEYWORDS — Qualifiers / Storage ===
+; === KEYWORDS - Qualifiers / Storage ===
 [
   "const" "constexpr" "auto" "nullable"
   "extern" "out" "delegate" "coroutine"
   "static" "inline"
 ] @keyword
 
-; === KEYWORDS — Memory ===
+; === KEYWORDS - Memory ===
 [
   "new" "delete" "delete[]"
 ] @keyword
 
-; === KEYWORDS — Cast / Built-in ===
+; === KEYWORDS - Cast / Built-in ===
 [
   "cast" "static_cast" "reinterpret_cast" "const_cast"
   "sizeof" "move" "offsetof" "decltype" "static_assert"
 ] @keyword
 
-; === KEYWORDS — Access ===
+; === KEYWORDS - Access ===
 [
   "private" "public" "protected"
 ] @keyword

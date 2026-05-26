@@ -1,4 +1,4 @@
-; Enma outline queries — structured grammar
+; Enma outline queries - structured grammar
 
 (function_definition
   name: (identifier) @name) @item

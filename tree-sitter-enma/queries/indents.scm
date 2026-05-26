@@ -1,4 +1,4 @@
-; Enma indentation queries — structured grammar
+; Enma indentation queries - structured grammar
 
 ; Indent after opening braces
 (block "{" @indent)
@@ -17,4 +17,3 @@
 (for_statement body: (_) @indent)
 (for_each_statement body: (_) @indent)
 (do_statement body: (_) @indent)
-

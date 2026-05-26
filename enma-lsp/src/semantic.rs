@@ -77,11 +77,11 @@ impl SemanticModel {
     }
 
     /// Merge symbols from an imported module into this model.
-    /// Prefixes are not added — Enma uses `using` for namespace imports.
+    /// Prefixes are not added - Enma uses `using` for namespace imports.
     pub fn merge_import(&mut self, other: SemanticModel, source_path: &str) {
         // Recurse into nested imports
         for import_path in &other.imports {
-            // Track transitive imports — they get resolved by the caller
+            // Track transitive imports - they get resolved by the caller
             if !self.imports.contains(import_path) {
                 self.imports.push(import_path.clone());
             }
@@ -247,7 +247,7 @@ impl<'a> SymbolCollector<'a> {
                 }).collect();
                 if child_info.len() >= 2 && child_info[0].0 == "identifier" {
                     let type_name = self.source[child_info[0].1..child_info[0].2].to_string();
-                    // Find the variable name — may be after `<...>` for generic types
+                    // Find the variable name - may be after `<...>` for generic types
                     let name_opt = if child_info[1].0 == "identifier" {
                         Some(self.source[child_info[1].1..child_info[1].2].to_string())
                     } else if child_info[1].0 == "<" {
@@ -563,7 +563,7 @@ impl<'a> SymbolCollector<'a> {
         }
 
         // Also check for duplicate top-level definitions (struct/class/enum).
-        // Functions are NOT checked here — function overloading is valid in Enma,
+        // Functions are NOT checked here - function overloading is valid in Enma,
         // and the scope-based check above already catches exact duplicates.
         let def_kinds = [SymbolKind::Struct, SymbolKind::Class,
                          SymbolKind::Enum, SymbolKind::Interface, SymbolKind::Namespace];
@@ -679,7 +679,7 @@ impl<'a> SymbolCollector<'a> {
             };
             let Some(ret_type) = ret_type else { continue };
             // Skip user-defined functions with bogus return types (GLR artifacts
-            // that parse assignments as function definitions — return type is a
+            // that parse assignments as function definitions - return type is a
             // variable name, not a real type).
             if !db.functions.contains_key(fn_name) && !is_valid_type_name(ret_type, db, self) {
                 continue;
@@ -690,7 +690,7 @@ impl<'a> SymbolCollector<'a> {
             {
                 continue;
             }
-            // coroutine_t is a handle type — any int assignment is valid
+            // coroutine_t is a handle type - any int assignment is valid
             if vt == "coroutine_t" { continue; }
             // void return assigned to non-void variable is a mismatch
             if ret_type == "void" {
@@ -747,7 +747,7 @@ impl<'a> SymbolCollector<'a> {
     /// Check whether a method exists on a given type (built-in or custom).
     fn method_exists_on_type(&self, db: &TypeDatabase, method_name: &str, type_name: &str) -> bool {
         let normalized = strip_generic(type_name);
-        // Check math types (fields + methods) — must check before db.get_methods()
+        // Check math types (fields + methods) - must check before db.get_methods()
         // because get_methods merges math_type methods but NOT math_type fields.
         if let Some(mt) = db.math_types.get(normalized) {
             if mt.methods.iter().any(|m| m.name == method_name) {
@@ -804,7 +804,7 @@ impl<'a> SymbolCollector<'a> {
             let abs_dot = search_start + dot_pos;
             search_start = abs_dot + 1;
 
-            // Skip dots inside string literals — they're data, not code
+            // Skip dots inside string literals - they're data, not code
             if self.is_inside_string(abs_dot) {
                 continue;
             }
@@ -1530,7 +1530,7 @@ int64 main() {
         if let Some(ks) = ks {
             eprintln!("ks collected: var_type={:?}", ks.var_type);
         } else {
-            eprintln!("ks NOT collected — generic type parse issue");
+            eprintln!("ks NOT collected - generic type parse issue");
         }
     }
 
@@ -1696,7 +1696,7 @@ int64 main() {
             func_spans(full_root, &full_source);
 
             // Test em dash in string
-            let em_source = "int32 main() { string s = \"hello — world\"; return 0; }";
+            let em_source = "int32 main() { string s = \"hello - world\"; return 0; }";
             let em_tree = parser.parse(em_source.as_bytes(), None).unwrap();
             let em_root = em_tree.root_node();
             eprintln!("\nERROR leaves for em dash string:");

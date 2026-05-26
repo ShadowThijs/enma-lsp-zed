@@ -96,7 +96,7 @@ pub fn format_local_symbol_hover(sym: &semantic::Symbol) -> String {
             md.push_str(&format!("**{}** `{}`", kind_str, sym.name));
             let fc = sym.fields.len();
             let mc = sym.methods.len();
-            md.push_str(&format!(" — {} field{}, {} method{}",
+            md.push_str(&format!(" - {} field{}, {} method{}",
                 fc, if fc == 1 { "" } else { "s" },
                 mc, if mc == 1 { "" } else { "s" }));
             md.push('\n');
@@ -135,7 +135,7 @@ pub fn format_local_symbol_hover(sym: &semantic::Symbol) -> String {
                     md.push_str("\n**Cleanup:**\n");
                     for d in &dtors {
                         let clean_name = d.name.trim_start_matches('~');
-                        md.push_str(&format!("- `~{}()` — destructor, runs when `delete` is called\n", clean_name));
+                        md.push_str(&format!("- `~{}()` - destructor, runs when `delete` is called\n", clean_name));
                     }
                 }
             }
@@ -151,7 +151,7 @@ pub fn format_local_symbol_hover(sym: &semantic::Symbol) -> String {
             md.push_str(&format!("**enum** `{}`", sym.name));
             let vc = sym.enum_variants.len();
             if vc > 0 {
-                md.push_str(&format!(" — {} variant{}", vc, if vc == 1 { "" } else { "s" }));
+                md.push_str(&format!(" - {} variant{}", vc, if vc == 1 { "" } else { "s" }));
             }
             md.push('\n');
             if !sym.enum_variants.is_empty() {
@@ -340,7 +340,7 @@ pub fn format_method_hover_all(db: &TypeDatabase, method_name: &str) -> String {
     md
 }
 
-/// Type database hover for bare identifiers — functions, types, primitives, keywords.
+/// Type database hover for bare identifiers - functions, types, primitives, keywords.
 /// Does NOT search methods (methods only fire for .access context).
 pub fn format_type_db_hover_bare(db: &TypeDatabase, name: &str) -> String {
     format_type_db_hover_inner(db, name, false)
@@ -409,7 +409,7 @@ fn format_type_db_hover_inner(db: &TypeDatabase, name: &str, include_methods: bo
                         md.push_str(&format!(" → `{}`", m.r#return));
                     }
                     if !m.doc.is_empty() {
-                        md.push_str(&format!(" — {}", m.doc));
+                        md.push_str(&format!(" - {}", m.doc));
                     }
                     md.push('\n');
                 }
@@ -510,9 +510,9 @@ fn format_type_db_hover_inner(db: &TypeDatabase, name: &str, include_methods: bo
 
 #[derive(Debug)]
 pub enum HoverContext {
-    /// Preceded by `.` — identifier is a method/property name on a receiver.
+    /// Preceded by `.` - identifier is a method/property name on a receiver.
     MethodAccess { receiver: Option<String> },
-    /// Bare identifier — could be variable, function, type, or keyword reference.
+    /// Bare identifier - could be variable, function, type, or keyword reference.
     BareIdentifier,
 }
 
@@ -536,7 +536,7 @@ pub fn detect_context(node: tree_sitter::Node, source: &str) -> HoverContext {
             let base = if let Some(bracket_pos) = before_dot.rfind('[') {
                 let between_bracket_and_dot = &before_dot[bracket_pos..];
                 if between_bracket_and_dot.contains('\n') || between_bracket_and_dot.contains(';') {
-                    // Bracket is from a different statement — don't strip
+                    // Bracket is from a different statement - don't strip
                     before_dot.to_string()
                 } else {
                     before_dot[..bracket_pos].trim_end().to_string()
@@ -574,7 +574,7 @@ pub fn normalize_type_name(type_name: &str) -> &str {
 }
 
 pub fn resolve_type_of_name(name: &str, model: &SemanticModel, pos: Position) -> Option<String> {
-    // Prefer the declaration closest to (but before) pos — handles shadowing
+    // Prefer the declaration closest to (but before) pos - handles shadowing
     model.symbols.iter()
         .filter(|s| s.name == name)
         .filter(|s| matches!(s.kind, SymbolKind::Variable | SymbolKind::Parameter | SymbolKind::Struct | SymbolKind::Class | SymbolKind::Enum | SymbolKind::Interface))
@@ -592,7 +592,7 @@ pub fn resolve_type_of_name(name: &str, model: &SemanticModel, pos: Position) ->
         })
 }
 
-/// Standalone hover resolution — testable without the LSP server.
+/// Standalone hover resolution - testable without the LSP server.
 pub fn resolve_hover(
     name: &str,
     pos: Position,
@@ -636,7 +636,7 @@ pub fn resolve_hover(
             return Some((method_md, path));
         }
 
-        // Method not found — check if it's a field on the receiver's type
+        // Method not found - check if it's a field on the receiver's type
         if let Some(ref recv) = receiver {
             if let Some(recv_type) = resolve_type_of_name(recv, model, pos) {
                 if let Some(field_md) = format_field_access(model, name, &recv_type) {

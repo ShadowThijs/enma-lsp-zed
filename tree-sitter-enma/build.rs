@@ -8,7 +8,7 @@ fn main() {
         .flag_if_supported("-std=c11")
         .file(src_dir.join("parser.c"));
 
-    // scanner.c is optional — only add if it exists
+    // scanner.c is optional - only add if it exists
     let scanner = src_dir.join("scanner.c");
     if scanner.exists() {
         build.file(&scanner);
