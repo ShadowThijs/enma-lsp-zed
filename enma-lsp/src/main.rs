@@ -1186,6 +1186,44 @@ int64 main() {
     }
 
     #[test]
+    fn test_window_info_t_first_method_pid() {
+        // window_info_t first = ...; first.pid() → should show ONLY window_info_t::pid
+        let source = r#"int64 main() {
+    window_info_t first;
+    int64 p = first.pid();
+    return p;
+}
+"#;
+        let (model, db) = setup_test(source);
+        // Debug: show all collected symbols
+        eprintln!("Symbols in model:");
+        for sym in &model.symbols {
+            eprintln!("  {:?} name='{}' var_type={:?} range={}:{}..{}:{}",
+                sym.kind, sym.name, sym.var_type,
+                sym.range.start.line, sym.range.start.character,
+                sym.range.end.line, sym.range.end.character);
+        }
+        // Hover over 'pid' in first.pid()
+        let pos = Position { line: 2, character: 20 };
+        let ctx = HoverContext::MethodAccess { receiver: Some("first".into()) };
+        let result = resolve_hover("pid", pos, true, &ctx, &model, &db);
+        assert!(result.is_some(), "FAIL: 'pid' method on first not resolved");
+        let (md, path) = result.unwrap();
+        eprintln!("Path: {}", path);
+        eprintln!("Markdown:\n{}", md);
+        // Should resolve specifically to window_info_t.pid, NOT proc_t.pid
+        assert!(md.contains("window_info_t::pid") || md.contains("window_info_t.pid"),
+            "FAIL: should show window_info_t::pid, got path={} md={}", path, md);
+        // Should NOT show proc_t.pid
+        let proc_count = md.matches("proc_t::pid").count();
+        assert_eq!(proc_count, 0, "FAIL: should NOT show proc_t::pid, got {} occurrences.\nMD:\n{}", proc_count, md);
+        // Should only show ONE type's pid method
+        let total_pid = md.matches("::pid").count();
+        assert!(total_pid <= 2, "FAIL: too many pid listings ({}), should be window_info_t-specific.\nMD:\n{}", total_pid, md);
+        eprintln!("PASS: first.pid() resolves to window_info_t::pid ONLY (path: {})", path);
+    }
+
+    #[test]
     fn test_bare_identifier_never_shows_methods() {
         // A bare identifier (not preceded by .) should NEVER match type methods,
         // even if the name happens to be a common method name

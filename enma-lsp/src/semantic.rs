@@ -139,6 +139,36 @@ impl<'a> SymbolCollector<'a> {
             "namespace_definition" => self.collect_namespace(node),
             "global_variable_declaration" => self.collect_variable(node),
             "declaration_statement" => self.collect_variable(node),
+            // expression_statement can contain variable-like declarations when the
+            // grammar doesn't recognize a custom type name.
+            "expression_statement" => {
+                // Gather children info BEFORE borrowing self.source
+                let mut cursor = node.walk();
+                let child_info: Vec<_> = node.children(&mut cursor).map(|c| {
+                    (c.kind().to_string(), c.start_byte(), c.end_byte(), c.child_count())
+                }).collect();
+                if child_info.len() >= 2 && child_info[0].0 == "identifier" {
+                    let type_name = self.source[child_info[0].1..child_info[0].2].to_string();
+                    let second = &child_info[1];
+                    let name_opt = if second.0 == "identifier" {
+                        Some(self.source[second.1..second.2].to_string())
+                    } else if second.0 == "ERROR" && second.3 > 0 {
+                        // The ERROR node wraps an identifier — extract text directly
+                        let err_text = &self.source[second.1..second.2];
+                        // Find the first identifier-like word
+                        err_text.split_whitespace().next().map(|s| s.to_string())
+                    } else {
+                        None
+                    };
+                    if let Some(name) = name_opt {
+                        let range = self.node_range(&node);
+                        let mut sym = Self::empty_symbol(name, SymbolKind::Variable, range);
+                        sym.var_type = Some(type_name.clone());
+                        sym.type_name = Some(type_name);
+                        self.add_symbol(sym);
+                    }
+                }
+            }
             "parameter_declaration" => self.collect_parameter(node),
             "block" | "struct_body" | "class_body" => {
                 self.push_scope();
@@ -267,6 +297,15 @@ impl<'a> SymbolCollector<'a> {
                         });
                     }
                 }
+                "destructor_declaration" => {
+                    // Destructors have a 'name' field with the class name prefixed by '~'
+                    if let Some(dtor_name) = self.child_text_by_field(child, "name") {
+                        let range = self.node_range(&child);
+                        sym.methods.push(MethodInfo2 {
+                            name: dtor_name, return_type: None, params: Vec::new(), range,
+                        });
+                    }
+                }
                 _ => {}
             }
         }
@@ -314,14 +353,42 @@ impl<'a> SymbolCollector<'a> {
     }
 
     fn collect_variable(&mut self, node: tree_sitter::Node) {
-        let name = self.child_text_by_field(node, "name");
         let type_name = self.child_text_by_field(node, "type");
-        if let Some(name) = name {
+        // Try direct 'name' field first (parameter-style declarations)
+        let direct_name = self.child_text_by_field(node, "name");
+        if let Some(name) = direct_name {
             let range = self.node_range(&node);
             let mut sym = Self::empty_symbol(name.clone(), SymbolKind::Variable, range);
             sym.var_type = type_name.clone();
-            sym.type_name = type_name;
+            sym.type_name = type_name.clone();
             self.add_symbol(sym);
+            return;
+        }
+        // Try 'declarator' field (Enma grammar nests name inside init_declarator)
+        if let Some(decl) = node.child_by_field_name("declarator") {
+            let name = self.child_text_by_field(decl, "name");
+            if let Some(name) = name {
+                let range = self.node_range(&node);
+                let mut sym = Self::empty_symbol(name.clone(), SymbolKind::Variable, range);
+                sym.var_type = type_name.clone();
+                sym.type_name = type_name.clone();
+                self.add_symbol(sym);
+            }
+        } else {
+            // Walk children to find init_declarator nodes
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                if child.kind() == "init_declarator" {
+                    let name = self.child_text_by_field(child, "name");
+                    if let Some(name) = name {
+                        let range = self.node_range(&node);
+                        let mut sym = Self::empty_symbol(name.clone(), SymbolKind::Variable, range);
+                        sym.var_type = type_name.clone();
+                        sym.type_name = type_name.clone();
+                        self.add_symbol(sym);
+                    }
+                }
+            }
         }
     }
 

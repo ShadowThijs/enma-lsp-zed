@@ -143,7 +143,7 @@
 
 ; === KEYWORDS — Memory ===
 [
-  "new" "delete"
+  "new" "delete" "delete[]"
 ] @keyword
 
 ; === KEYWORDS — Cast / Built-in ===
