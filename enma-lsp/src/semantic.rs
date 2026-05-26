@@ -1533,4 +1533,28 @@ int64 main() {
             eprintln!("ks NOT collected — generic type parse issue");
         }
     }
+
+    #[test]
+    fn test_uint8_array_variable_collected() {
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = "int32 main() { uint8[] rgba_tex; rgba_tex.push(255); return 0; }";
+        let tree = parser.parse(source.as_bytes(), None).unwrap();
+        let db = TypeDatabase::load();
+        let model = SemanticModel::build(tree.root_node(), source, &db);
+        eprintln!("Symbols:");
+        for sym in &model.symbols {
+            eprintln!("  {:?} '{}' var_type={:?}", sym.kind, sym.name, sym.var_type);
+        }
+        let rgba = model.symbols.iter().find(|s| s.name == "rgba_tex");
+        assert!(rgba.is_some(), "FAIL: rgba_tex not collected. Symbols: {:?}",
+            model.symbols.iter().map(|s| format!("{}:{:?}", s.name, s.kind)).collect::<Vec<_>>());
+        if let Some(rgba) = rgba {
+            eprintln!("rgba_tex var_type={:?}", rgba.var_type);
+        }
+    }
 }

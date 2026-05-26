@@ -5260,6 +5260,18 @@
                 "members": [
                   {
                     "type": "PATTERN",
+                    "value": "[uU]"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "PATTERN",
                     "value": "_[A-Za-z_][A-Za-z0-9_]*"
                   },
                   {
@@ -5278,6 +5290,18 @@
               {
                 "type": "PATTERN",
                 "value": "0[bB][01_]+"
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "[uU]"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
               },
               {
                 "type": "CHOICE",
@@ -5350,6 +5374,18 @@
               {
                 "type": "PATTERN",
                 "value": "\\d[\\d_]*"
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "[uU]"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
               },
               {
                 "type": "CHOICE",
