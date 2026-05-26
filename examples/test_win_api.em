@@ -72,6 +72,9 @@ void test_routine(int64 data) {
 
     test.length();
 
+    array test2;
+    string test3 = get_all_hwnds();
+
     array<window_info_t> wins = get_all_hwnds();
     check("get_all_hwnds().length() > 0", wins.length() > 0);
     print_console("  enumerated " + cast<string>(wins.length()) + " windows");

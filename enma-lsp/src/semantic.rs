@@ -58,22 +58,44 @@ pub enum SymbolKind {
 pub struct SemanticModel {
     pub symbols: Vec<Symbol>,
     pub diagnostics: Vec<Diagnostic>,
+    pub imports: Vec<String>,
 }
 
 impl SemanticModel {
     /// Build the semantic model from a tree-sitter tree + source text.
-    pub fn build(root: tree_sitter::Node, source: &str, _db: &TypeDatabase) -> Self {
+    pub fn build(root: tree_sitter::Node, source: &str, db: &TypeDatabase) -> Self {
         let mut collector = SymbolCollector::new(source);
         collector.walk(root);
-        let diagnostics = collector.check_type_errors();
+        let diagnostics = collector.check_type_errors(db);
         Self {
             symbols: collector.symbols,
             diagnostics,
+            imports: collector.imports,
         }
     }
 
+    /// Merge symbols from an imported module into this model.
+    /// Prefixes are not added — Enma uses `using` for namespace imports.
+    pub fn merge_import(&mut self, other: SemanticModel, source_path: &str) {
+        // Recurse into nested imports
+        for import_path in &other.imports {
+            // Track transitive imports — they get resolved by the caller
+            if !self.imports.contains(import_path) {
+                self.imports.push(import_path.clone());
+            }
+        }
+        // Merge symbols, avoiding exact duplicates
+        for sym in other.symbols {
+            let is_dup = self.symbols.iter().any(|s| s.name == sym.name && s.kind == sym.kind);
+            if !is_dup {
+                self.symbols.push(sym);
+            }
+        }
+        self.diagnostics.extend(other.diagnostics);
+    }
+
     pub fn empty() -> Self {
-        Self { symbols: Vec::new(), diagnostics: Vec::new() }
+        Self { symbols: Vec::new(), diagnostics: Vec::new(), imports: Vec::new() }
     }
 
     pub fn diagnostics(&self) -> Vec<Diagnostic> {
@@ -84,6 +106,7 @@ impl SemanticModel {
 struct SymbolCollector<'a> {
     source: &'a str,
     symbols: Vec<Symbol>,
+    imports: Vec<String>,
     /// Track variables in function scopes to detect re-declarations and type mismatches.
     scope_vars: Vec<HashMap<String, Symbol>>,
 }
@@ -93,6 +116,7 @@ impl<'a> SymbolCollector<'a> {
         Self {
             source,
             symbols: Vec::new(),
+            imports: Vec::new(),
             scope_vars: vec![HashMap::new()],
         }
     }
@@ -129,6 +153,15 @@ impl<'a> SymbolCollector<'a> {
 
     fn walk(&mut self, node: tree_sitter::Node) {
         match node.kind() {
+            "import_statement" => {
+                // import "path/file.em" or import "path/file" as alias
+                if let Some(path_node) = node.child_by_field_name("path") {
+                    let path = self.source[path_node.start_byte()..path_node.end_byte()].to_string();
+                    // Strip quotes
+                    let clean = path.trim_matches('"').to_string();
+                    self.imports.push(clean);
+                }
+            }
             "function_definition" => self.collect_function(node),
             "function_declaration" => self.collect_function(node),
             "method_declaration" => self.collect_function(node),
@@ -405,7 +438,15 @@ impl<'a> SymbolCollector<'a> {
     }
 
     /// Check for type errors in the collected symbols.
-    fn check_type_errors(&self) -> Vec<Diagnostic> {
+    /// Performs: duplicate detection, generic type validation, and basic type mismatch checks.
+    fn check_type_errors(&self, db: &TypeDatabase) -> Vec<Diagnostic> {
+        let mut diags = self.check_duplicates();
+        diags.extend(self.check_generic_params());
+        diags.extend(self.check_type_mismatches(db));
+        diags
+    }
+
+    fn check_duplicates(&self) -> Vec<Diagnostic> {
         let mut diags = Vec::new();
 
         // Check for duplicate definitions in the same scope
@@ -478,6 +519,82 @@ impl<'a> SymbolCollector<'a> {
             .map(|n| self.source[n.start_byte()..n.end_byte()].to_string())
     }
 
+    /// Check for generic types used without required parameters.
+    /// e.g., `array test2;` should error because array requires <T>.
+    fn check_generic_params(&self) -> Vec<Diagnostic> {
+        let mut diags = Vec::new();
+        let generic_types = ["array", "map", "list", "hash_set", "sorted_map", "imap"];
+        for sym in &self.symbols {
+            if sym.kind == SymbolKind::Variable || sym.kind == SymbolKind::Parameter {
+                if let Some(ref vt) = sym.var_type {
+                    let base = vt.trim_end_matches("[]");
+                    if generic_types.contains(&base) && !vt.contains('<') {
+                        diags.push(Diagnostic {
+                            range: sym.range,
+                            severity: Some(DiagnosticSeverity::ERROR),
+                            code: Some(NumberOrString::String("missing-generic-params".into())),
+                            source: Some("enma-lsp".into()),
+                            message: format!("Type '{}' requires generic parameters, e.g. '{}<T>'", base, base),
+                            ..Default::default()
+                        });
+                    }
+                }
+            }
+        }
+        diags
+    }
+
+    /// Detect type mismatches: declared variable type vs known function return type.
+    /// Uses the type database to look up function return types.
+    fn check_type_mismatches(&self, db: &TypeDatabase) -> Vec<Diagnostic> {
+        let mut diags = Vec::new();
+        for sym in &self.symbols {
+            if sym.kind != SymbolKind::Variable { continue; }
+            let Some(ref vt) = sym.var_type else { continue };
+            // Extract the RHS of the declaration from source text
+            let range = &sym.range;
+            let start_byte = self.pos_to_byte(range.start);
+            let end_byte = self.pos_to_byte(range.end).min(self.source.len());
+            if start_byte >= self.source.len() { continue; }
+            let decl_text = &self.source[start_byte..end_byte];
+            let Some(eq_pos) = decl_text.find('=') else { continue };
+            let rhs = decl_text[eq_pos + 1..].trim();
+            let Some(open_paren) = rhs.find('(') else { continue };
+            let fn_name = rhs[..open_paren].trim().trim_end_matches(';').trim_end_matches(')');
+            let Some(func) = db.functions.get(fn_name) else { continue };
+            let ret_type = &func.r#return;
+            if ret_type == "void" { continue; }
+            // Normalize both types
+            let norm_decl = strip_generic(vt);
+            let norm_ret = strip_generic(ret_type);
+            if norm_decl != norm_ret {
+                // Skip if there's an explicit cast
+                if rhs.contains(&format!("cast<{}>", vt)) { continue; }
+                diags.push(Diagnostic {
+                    range: sym.range,
+                    severity: Some(DiagnosticSeverity::ERROR),
+                    code: Some(NumberOrString::String("type-mismatch".into())),
+                    source: Some("enma-lsp".into()),
+                    message: format!(
+                        "Type mismatch: '{}' declared as '{}' but '{}()' returns '{}'",
+                        sym.name, vt, fn_name, ret_type
+                    ),
+                    ..Default::default()
+                });
+            }
+        }
+        diags
+    }
+
+    fn pos_to_byte(&self, pos: Position) -> usize {
+        let mut offset = 0usize;
+        for (i, line) in self.source.lines().enumerate() {
+            if (i as u32) < pos.line { offset += line.len() + 1; }
+            else { break; }
+        }
+        (offset + pos.character as usize).min(self.source.len())
+    }
+
     fn node_range(&self, node: &tree_sitter::Node) -> Range {
         let start = node.start_position();
         let end = node.end_position();
@@ -486,6 +603,12 @@ impl<'a> SymbolCollector<'a> {
             end: Position { line: end.row as u32, character: end.column as u32 },
         }
     }
+}
+
+/// Strip generic parameters and array brackets from a type name.
+fn strip_generic(type_name: &str) -> &str {
+    let s = type_name.trim_end_matches("[]");
+    if let Some(pos) = s.find('<') { &s[..pos] } else { s }
 }
 
 #[cfg(test)]

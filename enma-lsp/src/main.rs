@@ -84,7 +84,7 @@ impl LanguageServer for Backend {
 
         let docs = self.documents.lock().await;
         if let Some(source) = docs.get(&uri) {
-            if let Some(model) = self.build_model(source).await {
+            if let Some(model) = self.build_model_with_imports(source, &uri).await {
                 let ctx = CompletionContext::new(get_db(), &model);
                 let items = ctx.complete(source, pos);
                 if !items.is_empty() {
@@ -101,7 +101,7 @@ impl LanguageServer for Backend {
 
         let docs = self.documents.lock().await;
         if let Some(source) = docs.get(&uri) {
-            let model = self.build_model(source).await;
+            let model = self.build_model_with_imports(source, &uri).await;
             let has_model = model.is_some();
             let sym_count = model.as_ref().map(|m| m.symbols.len()).unwrap_or(0);
             eprintln!("[hover] L{}:C{} | model={} syms={}", pos.line, pos.character, has_model, sym_count);
@@ -203,7 +203,7 @@ impl LanguageServer for Backend {
         let uri = params.text_document.uri.clone();
         let docs = self.documents.lock().await;
         if let Some(source) = docs.get(&uri) {
-            if let Some(model) = self.build_model(source).await {
+            if let Some(model) = self.build_model_with_imports(source, &uri).await {
                 let symbols: Vec<DocumentSymbol> = model.symbols.iter().map(|sym| {
                     let kind = match sym.kind {
                         semantic::SymbolKind::Function => SymbolKind::FUNCTION,
@@ -242,6 +242,83 @@ impl LanguageServer for Backend {
 }
 
 impl Backend {
+    /// Try to load a file from disk, given a directory and relative path.
+    fn load_file_from_disk(base_dir: &std::path::Path, import_path: &str) -> Option<String> {
+        let full = base_dir.join(import_path);
+        // Try exact path first, then with .em extension
+        if full.exists() {
+            std::fs::read_to_string(&full).ok()
+        } else {
+            let with_em = base_dir.join(format!("{}.em", import_path));
+            std::fs::read_to_string(&with_em).ok()
+        }
+    }
+
+    /// Build a semantic model with import resolution. Loads imported files
+    /// from disk or from already-opened documents. Resolves imports recursively
+    /// with cycle detection (max 10 levels deep).
+    async fn build_model_with_imports(
+        &self,
+        source: &str,
+        uri: &Url,
+    ) -> Option<SemanticModel> {
+        let mut parser = self.parser.lock().await;
+        let tree = parser.parse(source.as_bytes())?;
+        let mut model = SemanticModel::build(tree.root_node(), source, get_db());
+        // Release parser lock before doing I/O
+        drop(parser);
+
+        // Resolve the base directory from the URI
+        let base_dir = if uri.scheme() == "file" {
+            if let Some(path_str) = uri.to_file_path().ok() {
+                path_str.parent().map(|p| p.to_path_buf())
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        if let Some(base_dir) = base_dir {
+            let imports = model.imports.clone();
+            self.resolve_imports(&mut model, &base_dir, &imports).await;
+        }
+
+        Some(model)
+    }
+
+    async fn resolve_imports(
+        &self,
+        model: &mut SemanticModel,
+        base_dir: &std::path::Path,
+        initial_paths: &[String],
+    ) {
+        let mut to_process: Vec<String> = initial_paths.to_vec();
+        let mut resolved: std::collections::HashSet<String> = std::collections::HashSet::new();
+        let mut depth = 0;
+
+        while !to_process.is_empty() && depth < 10 {
+            let current: Vec<String> = to_process.drain(..).collect();
+            for path in &current {
+                if resolved.contains(path) { continue; }
+                resolved.insert(path.clone());
+
+                let src = Self::load_file_from_disk(base_dir, path);
+                if let Some(src) = src {
+                    let mut parser = self.parser.lock().await;
+                    if let Some(import_tree) = parser.parse(src.as_bytes()) {
+                        let import_model = SemanticModel::build(import_tree.root_node(), &src, get_db());
+                        let nested = import_model.imports.clone();
+                        model.merge_import(import_model, path);
+                        drop(parser);
+                        to_process.extend(nested);
+                    }
+                }
+            }
+            depth += 1;
+        }
+    }
+
     async fn build_model(&self, source: &str) -> Option<SemanticModel> {
         let mut parser = self.parser.lock().await;
         let tree = parser.parse(source.as_bytes())?;
@@ -254,7 +331,26 @@ impl Backend {
 
         let diagnostics = if let Some(tree) = &tree {
             let mut diags = self.collect_syntax_errors(tree.root_node());
-            let model = SemanticModel::build(tree.root_node(), text, get_db());
+            let mut model = SemanticModel::build(tree.root_node(), text, get_db());
+            // Try to resolve imports for diagnostics
+            let base_dir = if uri.scheme() == "file" {
+                uri.to_file_path().ok().and_then(|p| p.parent().map(|p| p.to_path_buf()))
+            } else { None };
+            if let Some(ref base) = base_dir {
+                let imports = model.imports.clone();
+                let mut resolved: std::collections::HashSet<String> = std::collections::HashSet::new();
+                for path in &imports {
+                    if !resolved.contains(path) {
+                        resolved.insert(path.clone());
+                        if let Some(src) = Self::load_file_from_disk(base, path) {
+                            if let Some(import_tree) = parser.parse(src.as_bytes()) {
+                                let im = SemanticModel::build(import_tree.root_node(), &src, get_db());
+                                model.merge_import(im, path);
+                            }
+                        }
+                    }
+                }
+            }
             diags.extend(model.diagnostics());
             diags
         } else {

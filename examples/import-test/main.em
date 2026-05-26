@@ -1,5 +1,9 @@
 import "lib/lib.em";
 
+void print_console() {
+	print("test");
+}
+
 int32 main() {
 	Cell* cs = new Cell[4];
 	cs[0].inc();
