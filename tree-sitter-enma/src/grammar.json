@@ -4566,6 +4566,26 @@
           "name": "number_literal"
         },
         {
+          "type": "PREC",
+          "value": 2,
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "string_literal"
+              },
+              {
+                "type": "REPEAT1",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "string_literal"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "SYMBOL",
           "name": "string_literal"
         },
@@ -5940,10 +5960,6 @@
       "_type"
     ],
     [
-      "_primary_expression",
-      "generic_type"
-    ],
-    [
       "scope_resolution",
       "scope_type"
     ],
@@ -5974,22 +5990,6 @@
     ],
     [
       "_unary_expression"
-    ],
-    [
-      "expression_statement",
-      "declaration_statement"
-    ],
-    [
-      "expression_statement",
-      "function_definition"
-    ],
-    [
-      "_binary_expression_3",
-      "_binary_expression_4"
-    ],
-    [
-      "generic_type",
-      "_binary_expression_4"
     ]
   ],
   "precedences": [],

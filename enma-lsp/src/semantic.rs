@@ -1638,6 +1638,63 @@ int64 main() {
                 covered, total_bytes,
                 if total_bytes > 0 { covered * 100 / total_bytes } else { 0 });
 
+            // === DIAGNOSTIC: scan ALL check() calls ===
+            eprintln!("\n=== ALL check() call parent types ===");
+            fn all_check_parents(node: tree_sitter::Node, source: &str,
+                                  results: &mut Vec<(usize, String, String)>) {
+                if node.kind() == "identifier" {
+                    let text = &source[node.start_byte()..node.end_byte()];
+                    if text == "check" {
+                        let pkind = node.parent()
+                            .map(|p| p.kind().to_string())
+                            .unwrap_or_default();
+                        let gpk = node.parent().and_then(|p| p.parent())
+                            .map(|p| p.kind().to_string())
+                            .unwrap_or_default();
+                        let ptxt: String = node.parent()
+                            .map(|p| &source[p.start_byte()..p.end_byte()])
+                            .unwrap_or("").to_string();
+                        results.push((node.start_position().row, pkind,
+                            format!("gp={} |{}", gpk,
+                                ptxt.chars().take(55).collect::<String>().replace('\n', " "))));
+                    }
+                }
+                let mut cursor = node.walk();
+                for child in node.children(&mut cursor) {
+                    all_check_parents(child, source, results);
+                }
+            }
+            let mut all = Vec::new();
+            all_check_parents(full_root, &full_source, &mut all);
+            let mut prev = String::new();
+            for (row, pkind, detail) in &all {
+                if *pkind != prev {
+                    eprintln!("  --- parent={} at L{} ---", pkind, row);
+                    prev = pkind.clone();
+                }
+                eprintln!("    L{}: parent={} {}", row, pkind, detail);
+            }
+            eprintln!("  Total: {} check() call sites", all.len());
+
+            // === DIAGNOSTIC: function spans ===
+            eprintln!("\n=== function_definition spans ===");
+            fn func_spans(node: tree_sitter::Node, source: &str) {
+                if node.kind() == "function_definition" {
+                    if let Some(name) = node.child_by_field_name("name") {
+                        let n = &source[name.start_byte()..name.end_byte()];
+                        let bi = node.child_by_field_name("body")
+                            .map(|b| format!("body L{}-L{}", b.start_position().row, b.end_position().row))
+                            .unwrap_or_else(|| "NO BODY".to_string());
+                        eprintln!("  fn '{}' L{}-L{} {}", n, node.start_position().row, node.end_position().row, bi);
+                    }
+                }
+                let mut cursor = node.walk();
+                for child in node.children(&mut cursor) {
+                    func_spans(child, source);
+                }
+            }
+            func_spans(full_root, &full_source);
+
             // Test em dash in string
             let em_source = "int32 main() { string s = \"hello — world\"; return 0; }";
             let em_tree = parser.parse(em_source.as_bytes(), None).unwrap();

@@ -13,7 +13,6 @@ module.exports = grammar({
 
   conflicts: $ => [
     [$._primary_expression, $._type],
-    [$._primary_expression, $.generic_type],
     [$.scope_resolution, $.scope_type],
     [$._cast_expression, $._primary_expression, $._type],
     [$._cast_expression, $._type],
@@ -22,10 +21,6 @@ module.exports = grammar({
     [$._type, $.generic_type],
     [$._postfix_expression],
     [$._unary_expression],
-    [$.expression_statement, $.declaration_statement],
-    [$.expression_statement, $.function_definition],
-    [$._binary_expression_3, $._binary_expression_4],
-    [$.generic_type, $._binary_expression_4]
   ],
 
   rules: {
@@ -691,6 +686,8 @@ module.exports = grammar({
     _primary_expression: $ => choice(
       $.identifier,
       $.number_literal,
+      // String concatenation: "a" "b" "c" (adjacent string literals)
+      prec(2, seq($.string_literal, repeat1($.string_literal))),
       $.string_literal,
       $.f_string_literal,
       $.char_literal,
