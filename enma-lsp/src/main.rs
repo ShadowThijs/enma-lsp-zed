@@ -575,6 +575,48 @@ fn format_local_symbol_hover(sym: &semantic::Symbol) -> String {
     }
 }
 
+/// Format hover for a method on a CUSTOM struct/class from the semantic model.
+fn format_custom_struct_method(model: &SemanticModel, method_name: &str, type_name: &str) -> String {
+    // Find the struct/class symbol in the model
+    for sym in &model.symbols {
+        if sym.name == type_name && (sym.kind == semantic::SymbolKind::Struct || sym.kind == semantic::SymbolKind::Class) {
+            // Search its methods for the hovered name
+            for m in &sym.methods {
+                if m.name == method_name {
+                    let kind_str = if sym.kind == semantic::SymbolKind::Struct { "struct" } else { "class" };
+                    let mut md = format!("```enma\n{}.{}(", type_name, m.name);
+                    let pstrs: Vec<String> = m.params.iter()
+                        .map(|(n, t)| if let Some(ty) = t { format!("{}: {}", n, ty) } else { n.clone() })
+                        .collect();
+                    md.push_str(&pstrs.join(", "));
+                    if let Some(ref rt) = m.return_type {
+                        md.push_str(&format!(") -> {}", rt));
+                    } else {
+                        md.push(')');
+                    }
+                    md.push_str(&format!("\n```\n**method** `{}::{}`", type_name, m.name));
+                    if let Some(ref rt) = m.return_type {
+                        md.push_str(&format!(" → `{}`", rt));
+                    }
+                    md.push_str(&format!("\n\nDefined in {} `{}`", kind_str, type_name));
+                    if !m.params.is_empty() {
+                        md.push_str("\n\n**Parameters:**\n");
+                        for (pn, pt) in &m.params {
+                            if let Some(ty) = pt {
+                                md.push_str(&format!("- `{}: {}`\n", pn, ty));
+                            } else {
+                                md.push_str(&format!("- `{}`\n", pn));
+                            }
+                        }
+                    }
+                    return md;
+                }
+            }
+        }
+    }
+    String::new()
+}
+
 /// Format hover for a method on a SPECIFIC type (receiver type known).
 fn format_method_hover_for_type(db: &TypeDatabase, method_name: &str, type_name: &str) -> String {
     let mut md = String::new();
@@ -856,8 +898,14 @@ fn detect_context(node: tree_sitter::Node, source: &str) -> HoverContext {
             let between = &before[dot_pos + 1..];
             if between.trim().is_empty() {
                 let before_dot = &before[..dot_pos].trim_end();
-                // Extract the last identifier-like token before the dot
-                let receiver = before_dot
+                // Strip trailing subscript expressions: cs[0] → cs, arr[1][2] → arr
+                let base = if let Some(bracket_pos) = before_dot.rfind('[') {
+                    before_dot[..bracket_pos].trim_end().to_string()
+                } else {
+                    before_dot.to_string()
+                };
+                // Extract the last identifier-like token
+                let receiver = base
                     .rsplit(|c: char| !c.is_alphanumeric() && c != '_')
                     .next()
                     .unwrap_or("")
@@ -929,13 +977,22 @@ fn resolve_hover(
         let method_md = if let Some(ref rt) = receiver_type {
             let md = format_method_hover_for_type(db, name, rt);
             if !md.is_empty() { md }
-            else { format_method_hover_all(db, name) }
+            else {
+                // Type not in DB — check if it's a custom struct/class in the model
+                let custom = format_custom_struct_method(model, name, rt);
+                if !custom.is_empty() { custom }
+                else { format_method_hover_all(db, name) }
+            }
         } else {
             // No receiver type resolved — try the receiver name directly as a type
             if let Some(ref recv) = receiver {
                 let md = format_method_hover_for_type(db, name, recv);
                 if !md.is_empty() { md }
-                else { format_method_hover_all(db, name) }
+                else {
+                    let custom = format_custom_struct_method(model, name, recv);
+                    if !custom.is_empty() { custom }
+                    else { format_method_hover_all(db, name) }
+                }
             } else {
                 format_method_hover_all(db, name)
             }
