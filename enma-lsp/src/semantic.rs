@@ -1557,4 +1557,79 @@ int64 main() {
             eprintln!("rgba_tex var_type={:?}", rgba.var_type);
         }
     }
+
+    #[test]
+    fn test_render_api_parse_errors() {
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = r#"int32 main() {
+    uint8[] rgba_tex;
+    rgba_tex.push(255);
+    rgba_tex.push(128);
+    return 0;
+}
+"#;
+        let tree = parser.parse(source.as_bytes(), None).unwrap();
+        let root = tree.root_node();
+        fn dump_errors(node: tree_sitter::Node, source: &str) {
+            if node.is_error() && node.child_count() == 0 {
+                let text = &source[node.start_byte()..node.end_byte()];
+                eprintln!("  ERROR leaf L{}:C{} '{}' (kind={})",
+                    node.start_position().row, node.start_position().column,
+                    text, node.kind());
+            }
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                dump_errors(child, source);
+            }
+        }
+        eprintln!("ERROR leaves in minimal render_api reproduction:");
+        dump_errors(root, source);
+
+        // Test: does create_constant_buffer(64) parse?
+        let source2 = "int32 main() { int64 x = create_constant_buffer(64); return 0; }";
+        let tree2 = parser.parse(source2.as_bytes(), None).unwrap();
+        let root2 = tree2.root_node();
+        eprintln!("\nERROR leaves for create_constant_buffer(64):");
+        dump_errors(root2, source2);
+
+        // Test: does integer argument to a method call parse?
+        let source3 = "int32 main() { int64 cb; cb = create_constant_buffer(64); return 0; }";
+        let tree3 = parser.parse(source3.as_bytes(), None).unwrap();
+        let root3 = tree3.root_node();
+        eprintln!("\nERROR leaves for cb = create_constant_buffer(64):");
+        dump_errors(root3, source3);
+
+        // Also test with full render_api.em
+        let full_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../test/perception Api/render_api.em");
+        if full_path.exists() {
+            let full_source = std::fs::read_to_string(&full_path).unwrap();
+            let full_tree = parser.parse(full_source.as_bytes(), None).unwrap();
+            let full_root = full_tree.root_node();
+            eprintln!("\nERROR leaves in FULL render_api.em (first 30):");
+            let mut count = 0;
+            fn dump_errors2(node: tree_sitter::Node, source: &str, count: &mut i32) {
+                if node.is_error() && node.child_count() == 0 {
+                    if *count < 30 {
+                        let text = &source[node.start_byte()..node.end_byte()];
+                        eprintln!("  ERROR L{}:C{} '{}'",
+                            node.start_position().row, node.start_position().column,
+                            text.replace('\n', "\\n"));
+                    }
+                    *count += 1;
+                }
+                let mut cursor = node.walk();
+                for child in node.children(&mut cursor) {
+                    dump_errors2(child, source, count);
+                }
+            }
+            dump_errors2(full_root, &full_source, &mut count);
+            eprintln!("  ... {} total ERROR leaves", count);
+        }
+    }
 }

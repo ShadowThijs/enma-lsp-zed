@@ -367,7 +367,7 @@ impl Backend {
         let tree = parser.parse(text.as_bytes());
 
         let diagnostics = if let Some(tree) = &tree {
-            let mut diags = self.collect_syntax_errors(tree.root_node());
+            let mut diags = self.collect_syntax_errors(tree.root_node(), text);
             let mut model = SemanticModel::build(tree.root_node(), text, get_db());
             // Try to resolve imports for diagnostics
             let base_dir = if uri.scheme() == "file" {
@@ -407,31 +407,39 @@ impl Backend {
     fn collect_syntax_errors(
         &self,
         node: tree_sitter::Node,
+        source: &str,
     ) -> Vec<Diagnostic> {
         let mut results = Vec::new();
 
         if node.is_error() || node.is_missing() {
-            // Only report leaf errors — skip large ERROR nodes that contain
-            // children (those children will be reported individually).
             if node.child_count() == 0 {
-                results.push(Diagnostic {
-                    range: node_range(&node),
-                    severity: Some(DiagnosticSeverity::ERROR),
-                    code: Some(NumberOrString::String("syntax-error".into())),
-                    source: Some("enma-lsp".into()),
-                    message: if node.is_missing() {
-                        format!("Missing: {}", node.kind())
-                    } else {
-                        "Syntax error".into()
-                    },
-                    ..Default::default()
-                });
+                // GLR parser may produce leaf ERROR nodes for valid tokens
+                // (numbers, identifiers) when a wrong parse branch is taken.
+                // Only report if the text looks like a genuine syntax error.
+                let text = &source[node.start_byte()..node.end_byte()];
+                let is_glr_artifact = text.chars().all(|c| {
+                    c.is_alphanumeric() || c == '_' || c == '.' || c == 'f' || c == 'x' || c == 'X'
+                }) || text.trim().is_empty();
+                if !is_glr_artifact {
+                    results.push(Diagnostic {
+                        range: node_range(&node),
+                        severity: Some(DiagnosticSeverity::ERROR),
+                        code: Some(NumberOrString::String("syntax-error".into())),
+                        source: Some("enma-lsp".into()),
+                        message: if node.is_missing() {
+                            format!("Missing: {}", node.kind())
+                        } else {
+                            "Syntax error".into()
+                        },
+                        ..Default::default()
+                    });
+                }
             }
         }
 
         let mut cursor = node.walk();
         for child in node.children(&mut cursor) {
-            results.extend(self.collect_syntax_errors(child));
+            results.extend(self.collect_syntax_errors(child, source));
         }
 
         results
