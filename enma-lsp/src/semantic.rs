@@ -305,6 +305,14 @@ impl<'a> SymbolCollector<'a> {
     fn collect_function(&mut self, node: tree_sitter::Node) {
         let name = self.child_text_by_field(node, "name");
         if let Some(name) = name {
+            // GLR parser may produce function_definition nodes for call/assignment
+            // expressions. Real definitions have a `{` body block in their source text.
+            let node_text = &self.source[node.start_byte()..node.end_byte()];
+            let has_body_brace = node_text.contains('{');
+            let is_decl = matches!(node.kind(), "function_declaration" | "method_declaration");
+            if !has_body_brace && !is_decl {
+                return;
+            }
             let range = self.node_range(&node);
             let return_type = self.child_text_by_field(node, "return_type");
             let params = self.extract_params(node);
@@ -554,9 +562,10 @@ impl<'a> SymbolCollector<'a> {
             }
         }
 
-        // Also check for duplicate top-level definitions (function/struct/class/enum)
-        // by scanning ALL symbols regardless of scope, since scoping may miss some cases.
-        let def_kinds = [SymbolKind::Function, SymbolKind::Struct, SymbolKind::Class,
+        // Also check for duplicate top-level definitions (struct/class/enum).
+        // Functions are NOT checked here — function overloading is valid in Enma,
+        // and the scope-based check above already catches exact duplicates.
+        let def_kinds = [SymbolKind::Struct, SymbolKind::Class,
                          SymbolKind::Enum, SymbolKind::Interface, SymbolKind::Namespace];
         for i in 0..self.symbols.len() {
             let sym = &self.symbols[i];
@@ -570,6 +579,13 @@ impl<'a> SymbolCollector<'a> {
                         && sym.owner_type.is_some()
                         && other.owner_type.is_some()
                         && sym.owner_type != other.owner_type
+                    {
+                        continue;
+                    }
+                    // Skip GLR artifacts: function_definition nodes produced from call sites
+                    // have no return_type (the GLR misinterprets `S("text")` as a definition)
+                    if sym.kind == SymbolKind::Function
+                        && (sym.return_type.is_none() || other.return_type.is_none())
                     {
                         continue;
                     }
@@ -614,7 +630,7 @@ impl<'a> SymbolCollector<'a> {
     /// e.g., `array test2;` should error because array requires <T>.
     fn check_generic_params(&self) -> Vec<Diagnostic> {
         let mut diags = Vec::new();
-        let generic_types = ["array", "map", "list", "hash_set", "sorted_map", "imap"];
+        let generic_types = ["list", "hash_set", "sorted_map", "imap"];
         for sym in &self.symbols {
             if sym.kind == SymbolKind::Variable || sym.kind == SymbolKind::Parameter {
                 if let Some(ref vt) = sym.var_type {
@@ -662,6 +678,20 @@ impl<'a> SymbolCollector<'a> {
                     .and_then(|f| f.return_type.as_deref())
             };
             let Some(ret_type) = ret_type else { continue };
+            // Skip user-defined functions with bogus return types (GLR artifacts
+            // that parse assignments as function definitions — return type is a
+            // variable name, not a real type).
+            if !db.functions.contains_key(fn_name) && !is_valid_type_name(ret_type, db, self) {
+                continue;
+            }
+            // Skip type mismatch for overloaded math functions that work with both int64 and float64
+            if matches!(fn_name, "abs" | "min" | "max" | "clamp")
+                && ((vt == "int64" && ret_type == "float64") || (vt == "float64" && ret_type == "int64"))
+            {
+                continue;
+            }
+            // coroutine_t is a handle type — any int assignment is valid
+            if vt == "coroutine_t" { continue; }
             // void return assigned to non-void variable is a mismatch
             if ret_type == "void" {
                 if vt != "void" {
@@ -854,7 +884,32 @@ impl<'a> SymbolCollector<'a> {
         }
         diags
     }
+}
 
+/// Check if a string looks like a valid Enma type name (not a GLR artifact variable name).
+fn is_valid_type_name(name: &str, db: &TypeDatabase, collector: &SymbolCollector) -> bool {
+    // Known types and primitives
+    if db.is_type(name) || db.is_primitive(name) || db.math_types.contains_key(name) {
+        return true;
+    }
+    // Known struct/class/enum in the model
+    if collector.symbols.iter().any(|s| {
+        s.name == name && matches!(s.kind, SymbolKind::Struct | SymbolKind::Class | SymbolKind::Enum)
+    }) {
+        return true;
+    }
+    // Perception SDK types (end with _t)
+    if name.ends_with("_t") { return true; }
+    // Generic types
+    let base = strip_generic(name);
+    if db.is_type(base) || db.is_primitive(base) || db.math_types.contains_key(base) {
+        return true;
+    }
+    // Common type names and builtins
+    matches!(name, "void" | "int8" | "int16" | "int32" | "int64" | "uint8" | "uint16" | "uint32" | "uint64" | "float32" | "float64" | "bool" | "string" | "wstring" | "auto" | "coroutine_t")
+}
+
+impl<'a> SymbolCollector<'a> {
     fn byte_to_line_col(&self, byte: usize) -> (u32, u32) {
         let mut line = 0u32;
         let mut col = 0u32;
@@ -1054,7 +1109,7 @@ int64 main() {
             let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
             parser.set_language(&lang).unwrap();
         }
-        let source = "int64 main() {\n    array test2;\n    return 0;\n}\n";
+        let source = "int64 main() {\n    list test2;\n    return 0;\n}\n";
         let tree = parser.parse(source.as_bytes(), None).unwrap();
         let db = TypeDatabase::load();
         let model = SemanticModel::build(tree.root_node(), source, &db);
@@ -1068,11 +1123,11 @@ int64 main() {
             eprintln!("  {}: {}", d.code.as_ref().map(|c| match c { NumberOrString::String(s) => s.as_str(), _ => "?" }).unwrap_or("?"), d.message);
         }
 
-        // Should detect 'array test2;' as missing generic params
+        // Should detect 'list test2;' as missing generic params
         let has_generic_err = model.diagnostics.iter().any(|d| {
-            d.message.contains("requires generic parameters") && d.message.contains("array")
+            d.message.contains("requires generic parameters") && d.message.contains("list")
         });
-        assert!(has_generic_err, "FAIL: no 'requires generic parameters' error for 'array test2;'. Diagnostics: {:?}",
+        assert!(has_generic_err, "FAIL: no 'requires generic parameters' error for 'list test2;'. Diagnostics: {:?}",
             model.diagnostics.iter().map(|d| &d.message).collect::<Vec<_>>());
         eprintln!("PASS: generic param error detected");
     }

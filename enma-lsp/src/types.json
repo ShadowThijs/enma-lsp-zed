@@ -1628,6 +1628,29 @@
           ],
           "r": "T",
           "doc": "Element at index i (0-based). Alias of get."
+        },
+        {
+          "n": "push",
+          "p": [
+            {
+              "n": "x",
+              "t": "T"
+            }
+          ],
+          "r": "void",
+          "doc": "Alias of push_back."
+        },
+        {
+          "n": "pop",
+          "p": [],
+          "r": "T",
+          "doc": "Alias of pop_back. Returns 0 if empty."
+        },
+        {
+          "n": "length",
+          "p": [],
+          "r": "int64",
+          "doc": "Number of elements. Alias of size."
         }
       ],
       "doc": "Double-ended container `list<T>`. O(1) push_back/pop_back and random access. O(n) push_front/pop_front. Supports subscript lst[idx] and for-each iteration."
@@ -2016,6 +2039,17 @@
           ],
           "r": "array",
           "doc": "[full_match, group1, group2, ...] capture groups array"
+        },
+        {
+          "n": "get",
+          "p": [
+            {
+              "n": "i",
+              "t": "int64"
+            }
+          ],
+          "r": "string",
+          "doc": "Capture group by index (0 = full match)."
         }
       ],
       "doc": "ECMAScript regex engine. Construct with `regex re(\"pattern\");`. Bad patterns produce null handle (0)."
@@ -3686,6 +3720,491 @@
           ],
           "r": "bool",
           "doc": "Free virtual memory in the target process. Requires virtual_memory_operations permission."
+        },
+        {
+          "n": "read_vec2_fl32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "vec2",
+          "doc": "Read vec2 as two float32 values from process memory."
+        },
+        {
+          "n": "read_vec2_fl64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "vec2",
+          "doc": "Read vec2 as two float64 values from process memory."
+        },
+        {
+          "n": "read_vec3_fl32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "vec3",
+          "doc": "Read vec3 as three float32 values from process memory."
+        },
+        {
+          "n": "read_vec3_fl64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "vec3",
+          "doc": "Read vec3 as three float64 values from process memory."
+        },
+        {
+          "n": "read_vec4_fl32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "vec4",
+          "doc": "Read vec4 as four float32 values from process memory."
+        },
+        {
+          "n": "read_vec4_fl64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "vec4",
+          "doc": "Read vec4 as four float64 values from process memory."
+        },
+        {
+          "n": "read_quat_fl32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "quat",
+          "doc": "Read quat as four float32 values from process memory."
+        },
+        {
+          "n": "read_quat_fl64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "quat",
+          "doc": "Read quat as four float64 values from process memory."
+        },
+        {
+          "n": "read_mat4_fl32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "mat4",
+          "doc": "Read mat4 as sixteen float32 values from process memory."
+        },
+        {
+          "n": "r512",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            }
+          ],
+          "r": "array<uint8>",
+          "doc": "Read 64 bytes (AVX-512 sized) from process memory."
+        },
+        {
+          "n": "wu16",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "uint16"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write uint16 to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "wu32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "uint32"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write uint32 to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "wu64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "uint64"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write uint64 to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "w8",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "int8"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write int8 to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "w16",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "int16"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write int16 to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "w32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "int32"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write int32 to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "w64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "int64"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write int64 to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "wf64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "float64"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write float64 to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "wws",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "value",
+              "t": "string"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write wide string to process memory. Requires write_memory permission."
+        },
+        {
+          "n": "write_vec2_fl32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "v",
+              "t": "vec2"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write vec2 as two float32 to process memory."
+        },
+        {
+          "n": "write_vec2_fl64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "v",
+              "t": "vec2"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write vec2 as two float64 to process memory."
+        },
+        {
+          "n": "write_vec3_fl32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "v",
+              "t": "vec3"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write vec3 as three float32 to process memory."
+        },
+        {
+          "n": "write_vec3_fl64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "v",
+              "t": "vec3"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write vec3 as three float64 to process memory."
+        },
+        {
+          "n": "write_vec4_fl32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "v",
+              "t": "vec4"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write vec4 as four float32 to process memory."
+        },
+        {
+          "n": "write_vec4_fl64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "v",
+              "t": "vec4"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write vec4 as four float64 to process memory."
+        },
+        {
+          "n": "write_quat_fl32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "q",
+              "t": "quat"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write quat as four float32 to process memory."
+        },
+        {
+          "n": "write_quat_fl64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "q",
+              "t": "quat"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write quat as four float64 to process memory."
+        },
+        {
+          "n": "write_mat4_fl32",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "m",
+              "t": "mat4"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write mat4 as sixteen float32 to process memory."
+        },
+        {
+          "n": "write_mat4_fl64",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "m",
+              "t": "mat4"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write mat4 as sixteen float64 to process memory."
+        },
+        {
+          "n": "w128",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "bytes",
+              "t": "array<uint8>"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write 16 bytes (SSE sized) to process memory."
+        },
+        {
+          "n": "w256",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "bytes",
+              "t": "array<uint8>"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write 32 bytes (AVX sized) to process memory."
+        },
+        {
+          "n": "w512",
+          "p": [
+            {
+              "n": "addr",
+              "t": "int64"
+            },
+            {
+              "n": "bytes",
+              "t": "array<uint8>"
+            }
+          ],
+          "r": "bool",
+          "doc": "Write 64 bytes (AVX-512 sized) to process memory."
+        },
+        {
+          "n": "get_import_rdata_address",
+          "p": [
+            {
+              "n": "mod_base",
+              "t": "int64"
+            },
+            {
+              "n": "name",
+              "t": "string"
+            }
+          ],
+          "r": "int64",
+          "doc": "Get address of import in .rdata section."
+        },
+        {
+          "n": "scan_float",
+          "p": [
+            {
+              "n": "value",
+              "t": "float32"
+            },
+            {
+              "n": "heap_only",
+              "t": "bool"
+            }
+          ],
+          "r": "array<int64>",
+          "doc": "Scan process memory for a float32 value."
+        },
+        {
+          "n": "scan_double",
+          "p": [
+            {
+              "n": "value",
+              "t": "float64"
+            },
+            {
+              "n": "heap_only",
+              "t": "bool"
+            }
+          ],
+          "r": "array<int64>",
+          "doc": "Scan process memory for a float64 value."
         }
       ]
     },
@@ -5561,6 +6080,12 @@
           ],
           "r": "vec2",
           "doc": "Rotate counter-clockwise by rad radians"
+        },
+        {
+          "n": "neg",
+          "p": [],
+          "r": "vec2",
+          "doc": "Unary negate. Alias of negate."
         }
       ]
     },
@@ -5723,6 +6248,12 @@
           ],
           "r": "vec3",
           "doc": "Rodrigues rotation; axis is normalized internally"
+        },
+        {
+          "n": "neg",
+          "p": [],
+          "r": "vec3",
+          "doc": "Unary negate. Alias of negate."
         }
       ]
     },
@@ -5827,6 +6358,12 @@
           ],
           "r": "vec4",
           "doc": "Component-wise linear interpolation"
+        },
+        {
+          "n": "neg",
+          "p": [],
+          "r": "vec4",
+          "doc": "Unary negate. Alias of negate."
         }
       ]
     },
@@ -5938,6 +6475,12 @@
           ],
           "r": "quat",
           "doc": "Spherical interpolation along shorter great-circle arc"
+        },
+        {
+          "n": "neg",
+          "p": [],
+          "r": "quat",
+          "doc": "Unary negate. Alias of negate."
         }
       ]
     },
