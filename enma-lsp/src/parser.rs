@@ -11,6 +11,9 @@ impl EnmaParser {
         let lang_fn = unsafe { tree_sitter_enma() };
         let language = unsafe { tree_sitter::Language::from_raw(lang_fn as *const _) };
         parser.set_language(&language)?;
+        // Give the GLR parser ample time to resolve ambiguities in large files.
+        // Default timeout is too short and causes degraded parses with wrong branch selection.
+        parser.set_timeout_micros(5_000_000); // 5 seconds
         Ok(Self { parser })
     }
 

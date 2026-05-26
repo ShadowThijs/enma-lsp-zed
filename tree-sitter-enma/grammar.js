@@ -23,6 +23,7 @@ module.exports = grammar({
     [$._postfix_expression],
     [$._unary_expression],
     [$.expression_statement, $.declaration_statement],
+    [$.expression_statement, $.function_definition],
     [$._binary_expression_3, $._binary_expression_4],
     [$.generic_type, $._binary_expression_4]
   ],

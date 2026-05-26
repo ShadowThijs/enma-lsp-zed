@@ -5980,6 +5980,10 @@
       "declaration_statement"
     ],
     [
+      "expression_statement",
+      "function_definition"
+    ],
+    [
       "_binary_expression_3",
       "_binary_expression_4"
     ],

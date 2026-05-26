@@ -1630,6 +1630,20 @@ int64 main() {
             }
             dump_errors2(full_root, &full_source, &mut count);
             eprintln!("  ... {} total ERROR leaves", count);
+
+            // Check if parse covers the full file
+            let total_bytes = full_source.len();
+            let covered = full_root.end_byte();
+            eprintln!("\nParse coverage: {}/{} bytes ({}%)",
+                covered, total_bytes,
+                if total_bytes > 0 { covered * 100 / total_bytes } else { 0 });
+
+            // Test em dash in string
+            let em_source = "int32 main() { string s = \"hello — world\"; return 0; }";
+            let em_tree = parser.parse(em_source.as_bytes(), None).unwrap();
+            let em_root = em_tree.root_node();
+            eprintln!("\nERROR leaves for em dash string:");
+            dump_errors(em_root, em_source);
         }
     }
 }
