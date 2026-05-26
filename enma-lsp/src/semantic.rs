@@ -121,6 +121,51 @@ impl<'a> SymbolCollector<'a> {
         }
     }
 
+    /// Scan a block's children for ERROR(identifier) + expression_statement patterns
+    /// which indicate unrecognized custom type declarations like `array test2;`
+    fn scan_error_decls(&mut self, block: tree_sitter::Node) {
+        // Collect child info as (kind, start_byte, end_byte, child_count) tuples
+        let mut cursor = block.walk();
+        let kids: Vec<(String, usize, usize, usize)> = block.children(&mut cursor).map(|c| {
+            (c.kind().to_string(), c.start_byte(), c.end_byte(), c.child_count())
+        }).collect();
+
+        let mut i = 0;
+        while i + 1 < kids.len() {
+            let ckind = &kids[i].0;
+            let cs = kids[i].1;
+            let ce = kids[i].2;
+            let ccount = kids[i].3;
+            let nkind = &kids[i + 1].0;
+            let ns = kids[i + 1].1;
+            let ne = kids[i + 1].2;
+
+            if ckind == "ERROR" && ccount > 0 {
+                let err_text = &self.source[cs..ce];
+                if let Some(type_name) = err_text.split_whitespace().next() {
+                    let type_name = type_name.to_string();
+                    let name_opt = if nkind == "expression_statement" {
+                        let text = &self.source[ns..ne];
+                        text.trim_end_matches(';').trim().split_whitespace().next().map(|s| s.to_string())
+                    } else if nkind == "identifier" {
+                        Some(self.source[ns..ne].to_string())
+                    } else {
+                        None
+                    };
+                    if let Some(name) = name_opt {
+                        let range = self.range_from_bytes(cs, ce);
+                        let mut sym = Self::empty_symbol(name, SymbolKind::Variable, range);
+                        sym.var_type = Some(type_name.clone());
+                        sym.type_name = Some(type_name);
+                        self.add_symbol(sym);
+                    }
+                    i += 1;
+                }
+            }
+            i += 1;
+        }
+    }
+
     fn push_scope(&mut self) {
         self.scope_vars.push(HashMap::new());
     }
@@ -205,6 +250,9 @@ impl<'a> SymbolCollector<'a> {
             "parameter_declaration" => self.collect_parameter(node),
             "block" | "struct_body" | "class_body" => {
                 self.push_scope();
+                // Scan for ERROR(identifier) + expression_statement(identifier) patterns
+                // which represent unrecognized type declarations like `array test2;`
+                self.scan_error_decls(node);
                 self.walk_children(node);
                 self.pop_scope();
                 return;
@@ -563,7 +611,23 @@ impl<'a> SymbolCollector<'a> {
             let fn_name = rhs[..open_paren].trim().trim_end_matches(';').trim_end_matches(')');
             let Some(func) = db.functions.get(fn_name) else { continue };
             let ret_type = &func.r#return;
-            if ret_type == "void" { continue; }
+            // void return assigned to non-void variable is a mismatch
+            if ret_type == "void" {
+                if vt != "void" {
+                    diags.push(Diagnostic {
+                        range: sym.range,
+                        severity: Some(DiagnosticSeverity::ERROR),
+                        code: Some(NumberOrString::String("type-mismatch".into())),
+                        source: Some("enma-lsp".into()),
+                        message: format!(
+                            "Type mismatch: '{}' declared as '{}' but '{}()' returns 'void'",
+                            sym.name, vt, fn_name
+                        ),
+                        ..Default::default()
+                    });
+                }
+                continue;
+            }
             // Normalize both types
             let norm_decl = strip_generic(vt);
             let norm_ret = strip_generic(ret_type);
@@ -593,6 +657,22 @@ impl<'a> SymbolCollector<'a> {
             else { break; }
         }
         (offset + pos.character as usize).min(self.source.len())
+    }
+
+    fn range_from_bytes(&self, start_byte: usize, end_byte: usize) -> Range {
+        let mut line = 0u32;
+        let mut col = 0u32;
+        let mut pos = 0usize;
+        for ch in self.source.chars() {
+            if pos >= start_byte { break; }
+            if ch == '\n' { line += 1; col = 0; }
+            else { col += 1; }
+            pos += ch.len_utf8();
+        }
+        let start = Position { line, character: col };
+        // Approximate end position (not perfectly accurate for multi-line ranges)
+        let end = Position { line, character: col + (end_byte - start_byte) as u32 };
+        Range { start, end }
     }
 
     fn node_range(&self, node: &tree_sitter::Node) -> Range {
@@ -741,6 +821,37 @@ int64 main() {
         assert_eq!(add_sym.return_type, Some("int64".to_string()));
         assert_eq!(add_sym.params.len(), 2);
         eprintln!("'add' signature: params={} ret={:?}", add_sym.params.len(), add_sym.return_type);
+    }
+
+    #[test]
+    fn test_generic_param_errors() {
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = "int64 main() {\n    array test2;\n    return 0;\n}\n";
+        let tree = parser.parse(source.as_bytes(), None).unwrap();
+        let db = TypeDatabase::load();
+        let model = SemanticModel::build(tree.root_node(), source, &db);
+
+        eprintln!("Symbols:");
+        for sym in &model.symbols {
+            eprintln!("  {:?} '{}' var_type={:?}", sym.kind, sym.name, sym.var_type);
+        }
+        eprintln!("Diagnostics:");
+        for d in &model.diagnostics {
+            eprintln!("  {}: {}", d.code.as_ref().map(|c| match c { NumberOrString::String(s) => s.as_str(), _ => "?" }).unwrap_or("?"), d.message);
+        }
+
+        // Should detect 'array test2;' as missing generic params
+        let has_generic_err = model.diagnostics.iter().any(|d| {
+            d.message.contains("requires generic parameters") && d.message.contains("array")
+        });
+        assert!(has_generic_err, "FAIL: no 'requires generic parameters' error for 'array test2;'. Diagnostics: {:?}",
+            model.diagnostics.iter().map(|d| &d.message).collect::<Vec<_>>());
+        eprintln!("PASS: generic param error detected");
     }
 
     #[test]

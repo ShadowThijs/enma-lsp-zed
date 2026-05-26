@@ -507,23 +507,32 @@ fn format_local_symbol_hover(sym: &semantic::Symbol) -> String {
                 }
             }
             if !sym.methods.is_empty() {
-                md.push_str("\n**Methods:**\n");
-                for m in &sym.methods {
-                    md.push_str(&format!("- `{}`", m.name));
-                    if !m.params.is_empty() {
-                        let pstrs: Vec<String> = m.params.iter()
-                            .map(|(n, t)| {
-                                if let Some(ty) = t { format!("{}: {}", n, ty) } else { n.clone() }
-                            })
-                            .collect();
-                        md.push_str(&format!("({})", pstrs.join(", ")));
-                    } else {
-                        md.push_str("()");
+                let (dtors, regular): (Vec<_>, Vec<_>) = sym.methods.iter()
+                    .partition(|m| m.name.starts_with('~'));
+                if !regular.is_empty() {
+                    md.push_str(&format!("\n**{} method{}:**\n", regular.len(), if regular.len() == 1 { "" } else { "s" }));
+                    for m in &regular {
+                        md.push_str(&format!("- `{}`", m.name));
+                        if !m.params.is_empty() {
+                            let pstrs: Vec<String> = m.params.iter()
+                                .map(|(n, t)| if let Some(ty) = t { format!("{}: {}", n, ty) } else { n.clone() })
+                                .collect();
+                            md.push_str(&format!("({})", pstrs.join(", ")));
+                        } else {
+                            md.push_str("()");
+                        }
+                        if let Some(ref rt) = m.return_type {
+                            md.push_str(&format!(" → {}", rt));
+                        }
+                        md.push('\n');
                     }
-                    if let Some(ref rt) = m.return_type {
-                        md.push_str(&format!(" → {}", rt));
+                }
+                if !dtors.is_empty() {
+                    md.push_str("\n**Cleanup:**\n");
+                    for d in &dtors {
+                        let clean_name = d.name.trim_start_matches('~');
+                        md.push_str(&format!("- `~{}()` — destructor, runs when `delete` is called\n", clean_name));
                     }
-                    md.push('\n');
                 }
             }
             md
