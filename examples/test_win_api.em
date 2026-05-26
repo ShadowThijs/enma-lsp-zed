@@ -44,10 +44,17 @@ void check(string label, bool ok) {
     }
 }
 
+void print_console(string input)
+{
+	print(input);
+}
+
 void section(string title) {
     print_console("");
     print_console("--- " + title + " ---");
 }
+
+window_info_t test;
 
 void test_routine(int64 data) {
     if (g_done != 0) return;
@@ -60,6 +67,10 @@ void test_routine(int64 data) {
     // have at least a handful.
     // -----------------------------------------------------------------------
     section("get_all_hwnds + window_info_t");
+
+    array<string> test;
+
+    test.length();
 
     array<window_info_t> wins = get_all_hwnds();
     check("get_all_hwnds().length() > 0", wins.length() > 0);
