@@ -768,13 +768,28 @@ fn detect_context(node: tree_sitter::Node, source: &str) -> HoverContext {
 
 /// Find a local symbol and return its declared type name (var_type for variables/params,
 /// name for struct/class/enum). Used to resolve receiver types for method calls.
+/// Strip generic parameters and array brackets from a type name.
+/// "array<window_info_t>" → "array", "int64[]" → "int64", "map<string,int64>" → "map"
+fn normalize_type_name(type_name: &str) -> &str {
+    let s = type_name;
+    // Strip trailing [] (array brackets)
+    let s = s.trim_end_matches("[]");
+    // Strip generic parameters <...>
+    if let Some(pos) = s.find('<') {
+        &s[..pos]
+    } else {
+        s
+    }
+}
+
 fn resolve_type_of_name(name: &str, model: &SemanticModel, _pos: Position) -> Option<String> {
     // Look for a symbol matching this name anywhere in the file
     for sym in &model.symbols {
         if sym.name == name {
             match sym.kind {
                 semantic::SymbolKind::Variable | semantic::SymbolKind::Parameter => {
-                    return sym.var_type.clone();
+                    // Normalize the type: array<window_info_t> → array, int64[] → int64
+                    return sym.var_type.as_ref().map(|t| normalize_type_name(t).to_string());
                 }
                 semantic::SymbolKind::Struct | semantic::SymbolKind::Class |
                 semantic::SymbolKind::Enum | semantic::SymbolKind::Interface => {
@@ -803,12 +818,22 @@ fn resolve_hover(
         let receiver_type = receiver.as_ref()
             .and_then(|r| resolve_type_of_name(r, model, pos));
 
-        // Search methods — if we know the receiver type, only search that type
+        // Search methods — if we know the receiver type, only search that type.
+        // Try the resolved type name first; if no methods found, also try
+        // the raw receiver name in case it IS a type name (e.g., struct instances).
         let method_md = if let Some(ref rt) = receiver_type {
-            format_method_hover_for_type(db, name, rt)
+            let md = format_method_hover_for_type(db, name, rt);
+            if !md.is_empty() { md }
+            else { format_method_hover_all(db, name) }
         } else {
-            // Fall back to searching all types, but mark it clearly
-            format_method_hover_all(db, name)
+            // No receiver type resolved — try the receiver name directly as a type
+            if let Some(ref recv) = receiver {
+                let md = format_method_hover_for_type(db, name, recv);
+                if !md.is_empty() { md }
+                else { format_method_hover_all(db, name) }
+            } else {
+                format_method_hover_all(db, name)
+            }
         };
 
         if !method_md.is_empty() {
@@ -1121,6 +1146,43 @@ int64 main() {
         let length_count = md.matches("::length").count();
         assert!(length_count <= 2, "FAIL: too many 'length' method listings ({}), should be string-specific.\nMarkdown:\n{}", length_count, md);
         eprintln!("PASS: method 'length' resolved for string type specifically (path: {})", path);
+    }
+
+    #[test]
+    fn test_generic_type_method_resolution() {
+        // array<window_info_t> wins = ...; wins.length() → should show array::length ONLY
+        let source = r#"int64 main() {
+    array<window_info_t> wins;
+    int64 n = wins.length();
+    return n;
+}
+"#;
+        let (model, db) = setup_test(source);
+        // Hover over 'length' in wins.length()
+        let pos = Position { line: 2, character: 18 };
+        let ctx = HoverContext::MethodAccess { receiver: Some("wins".into()) };
+        let result = resolve_hover("length", pos, true, &ctx, &model, &db);
+        assert!(result.is_some(), "FAIL: 'length' method on wins not resolved. Symbols: {:?}",
+            model.symbols.iter().map(|s| format!("{}:{:?}", s.name, s.kind)).collect::<Vec<_>>());
+        let (md, path) = result.unwrap();
+        // Should resolve specifically to array.length
+        assert!(md.contains("array::length") || md.contains("array.length"),
+            "FAIL: should show array::length for generic array<window_info_t>, got path={}, md={}", path, md);
+        // Should NOT list length from every other type
+        let count = md.matches("::length").count();
+        assert!(count <= 2, "FAIL: too many length listings ({}), should only be array::length.\nMD:\n{}", count, md);
+        eprintln!("PASS: generic type array<window_info_t> method length → array::length (path: {})", path);
+    }
+
+    #[test]
+    fn test_normalize_type_name() {
+        assert_eq!(normalize_type_name("array<window_info_t>"), "array");
+        assert_eq!(normalize_type_name("map<string,int64>"), "map");
+        assert_eq!(normalize_type_name("int64[]"), "int64");
+        assert_eq!(normalize_type_name("string[][]"), "string");
+        assert_eq!(normalize_type_name("window_info_t"), "window_info_t");
+        assert_eq!(normalize_type_name("vec3"), "vec3");
+        eprintln!("PASS: type name normalization works correctly");
     }
 
     #[test]
