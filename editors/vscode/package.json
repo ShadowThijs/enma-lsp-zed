@@ -1,0 +1,56 @@
+{
+  "name": "enma-lsp",
+  "displayName": "Enma Language Support",
+  "version": "0.1.0",
+  "description": "Language support for the Enma scripting language — syntax highlighting, completions, hover, and diagnostics",
+  "publisher": "shadowthijs",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:enma"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "enma",
+        "aliases": ["Enma", "enma"],
+        "extensions": [".em"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "enma",
+        "scopeName": "source.enma",
+        "path": "./syntaxes/enma.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "enma",
+        "path": "./snippets/enma.code-snippets"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "node build.mjs",
+    "watch": "tsc -watch -p ./",
+    "package": "node build.mjs && vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.0"
+  }
+}

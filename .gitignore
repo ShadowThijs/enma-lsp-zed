@@ -15,3 +15,9 @@ enma-lsp/target/
 enma-lsp/Cargo.lock
 tree-sitter-enma/target/
 /tools
+editors/dist/
+editors/vscode/out/
+editors/vscode/node_modules/
+editors/vscode/enma-lsp
+editors/vscode/enma-lsp.exe
+editors/vscode/*.vsix

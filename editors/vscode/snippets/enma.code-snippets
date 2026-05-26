@@ -1,0 +1,497 @@
+{
+  "main function": {
+    "prefix": "main",
+    "body": [
+      "int32 main() {",
+      "\t${0}",
+      "\treturn 0;",
+      "}"
+    ],
+    "description": "Entry-point function"
+  },
+  "struct": {
+    "prefix": "struct",
+    "body": [
+      "struct ${1:Name} {",
+      "\t${2:int32 x;}",
+      "}"
+    ],
+    "description": "Struct declaration"
+  },
+  "class with ctor/dtor": {
+    "prefix": "class",
+    "body": [
+      "class ${1:Name} {",
+      "\t${2:int32 value;}",
+      "",
+      "\t${1:Name}(${3}) {",
+      "\t\t${4}",
+      "\t}",
+      "",
+      "\t~${1:Name}() {",
+      "\t\t${0}",
+      "\t}",
+      "}"
+    ],
+    "description": "Class with constructor + destructor"
+  },
+  "function": {
+    "prefix": "fn",
+    "body": [
+      "${1:int32} ${2:name}(${3}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Function declaration"
+  },
+  "for-each loop": {
+    "prefix": "foreach",
+    "body": [
+      "for (${1:int32} ${2:v} : ${3:items}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Range-based for-each"
+  },
+  "for loop": {
+    "prefix": "for",
+    "body": [
+      "for (int32 ${1:i} = 0; ${1:i} < ${2:n}; ${1:i} = ${1:i} + 1) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Counted for loop"
+  },
+  "while loop": {
+    "prefix": "while",
+    "body": [
+      "while (${1:cond}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "While loop"
+  },
+  "if/else": {
+    "prefix": "ifelse",
+    "body": [
+      "if (${1:cond}) {",
+      "\t${2}",
+      "} else {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "If/else block"
+  },
+  "try/catch": {
+    "prefix": "try",
+    "body": [
+      "try {",
+      "\t${1}",
+      "} catch (${2:int32} ${3:e}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Try/catch block"
+  },
+  "namespace": {
+    "prefix": "ns",
+    "body": [
+      "namespace ${1:name} {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Namespace block"
+  },
+  "template function": {
+    "prefix": "tfn",
+    "body": [
+      "template<typename ${1:T}>",
+      "${1:T} ${2:name}(${1:T} ${3:a}, ${1:T} ${4:b}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Generic function with one type parameter"
+  },
+  "lambda (bracket form)": {
+    "prefix": "lambda",
+    "body": [
+      "[${1:capture}](${2:int32 x}) -> ${3:int32} { ${0} }"
+    ],
+    "description": "Lambda — explicit capture + return type"
+  },
+  "lambda (arrow form)": {
+    "prefix": "alambda",
+    "body": [
+      "(${1:int32 x}) => ${0:x * 2}"
+    ],
+    "description": "Lambda — expression-body arrow form"
+  },
+  "defer": {
+    "prefix": "defer",
+    "body": [
+      "defer { ${0} }"
+    ],
+    "description": "Defer — runs at scope exit"
+  },
+  "match expression": {
+    "prefix": "match",
+    "body": [
+      "${1:int32} ${2:result} = match (${3:value}) {",
+      "\t${4:1} => ${5:10},",
+      "\t_ => ${0:0}",
+      "};"
+    ],
+    "description": "Match expression with default arm"
+  },
+  "enum": {
+    "prefix": "enum",
+    "body": [
+      "enum ${1:Name} {",
+      "\t${2:A},",
+      "\t${3:B},",
+      "\t${0:C}",
+      "}"
+    ],
+    "description": "Enum declaration"
+  },
+  "import": {
+    "prefix": "import",
+    "body": [
+      "import \"${1:path/to/module.em}\";"
+    ],
+    "description": "Module import"
+  },
+  "annotation": {
+    "prefix": "annot",
+    "body": [
+      "[[${1:reflect}]]"
+    ],
+    "description": "Attribute annotation"
+  },
+  "pointer + new/delete": {
+    "prefix": "ptrnew",
+    "body": [
+      "${1:Node}* ${2:p} = new ${1:Node}(${3});",
+      "${0}",
+      "delete ${2:p};"
+    ],
+    "description": "Heap allocation pattern with manual delete"
+  },
+  "interface": {
+    "prefix": "interface",
+    "body": [
+      "interface ${1:Name} {",
+      "\t${2:int32 method();}",
+      "}"
+    ],
+    "description": "Interface declaration"
+  },
+  "delegate type": {
+    "prefix": "delegate",
+    "body": [
+      "delegate ${1:int32} ${2:Name}(${3:int32 x});"
+    ],
+    "description": "Delegate (function-pointer) type alias"
+  },
+  "println": {
+    "prefix": "println",
+    "body": "println(${1:\"hello\"});",
+    "description": "Print a value followed by newline"
+  },
+  "print": {
+    "prefix": "print",
+    "body": "print(${1:\"hello\"});",
+    "description": "Print without newline"
+  },
+  "format string": {
+    "prefix": "format",
+    "body": "format(\"${1:x = {d}, y = {f}}\", ${2:args})",
+    "description": "Format a string (printf-like)"
+  },
+  "f-string": {
+    "prefix": "fstr",
+    "body": "f\"${1:value} = {${2:x}}\"",
+    "description": "Interpolated string"
+  },
+  "assert": {
+    "prefix": "assert",
+    "body": "assert(${1:cond});",
+    "description": "Runtime assertion"
+  },
+  "static_assert": {
+    "prefix": "sassert",
+    "body": "static_assert(${1:cond}, \"${2:message}\");",
+    "description": "Compile-time assertion"
+  },
+  "math sqrt": {
+    "prefix": "sqrt",
+    "body": "sqrt(${1:x})",
+    "description": "Square root"
+  },
+  "math pow": {
+    "prefix": "pow",
+    "body": "pow(${1:base}, ${2:exp})",
+    "description": "Power"
+  },
+  "math sin/cos/tan": {
+    "prefix": "trig",
+    "body": "sin(${1:x})",
+    "description": "Sine — paste then change to cos/tan as needed"
+  },
+  "math lerp": {
+    "prefix": "lerp",
+    "body": "lerp(${1:a}, ${2:b}, ${3:t})",
+    "description": "Linear interpolation"
+  },
+  "math clamp": {
+    "prefix": "clamp",
+    "body": "fclamp(${1:x}, ${2:0.0}, ${3:1.0})",
+    "description": "Clamp float (use iclamp for int)"
+  },
+  "math rand": {
+    "prefix": "rand",
+    "body": "rand_int(${1:0}, ${2:100})",
+    "description": "Uniform random integer in [lo, hi]"
+  },
+  "math abs": {
+    "prefix": "abs",
+    "body": "iabs(${1:x})",
+    "description": "Absolute value (iabs/fabs)"
+  },
+  "math min/max": {
+    "prefix": "minmax",
+    "body": "imin(${1:a}, ${2:b})",
+    "description": "Min — change to imax / fmin / fmax as needed"
+  },
+  "vec2": {
+    "prefix": "vec2",
+    "body": "vec2(${1:0.0}, ${2:0.0})",
+    "description": "2D float vector"
+  },
+  "vec3": {
+    "prefix": "vec3",
+    "body": "vec3(${1:0.0}, ${2:0.0}, ${3:0.0})",
+    "description": "3D float vector"
+  },
+  "quat identity": {
+    "prefix": "quati",
+    "body": "quat ${1:q} = quat_identity();",
+    "description": "Identity quaternion"
+  },
+  "quat from axis-angle": {
+    "prefix": "quataxis",
+    "body": "quat ${1:q} = quat_from_axis_angle(${2:axis}, ${3:rad});",
+    "description": "Quaternion from axis + angle (radians)"
+  },
+  "quat from euler": {
+    "prefix": "quateuler",
+    "body": "quat ${1:q} = quat_from_euler(${2:yaw}, ${3:pitch}, ${4:roll});",
+    "description": "Quaternion from Tait-Bryan ZYX Euler angles"
+  },
+  "mat4 identity": {
+    "prefix": "mat4i",
+    "body": "mat4 ${1:m} = mat4_identity();",
+    "description": "Identity 4x4 matrix"
+  },
+  "mat4 perspective": {
+    "prefix": "mat4persp",
+    "body": "mat4 ${1:proj} = mat4_perspective(${2:fov_rad}, ${3:aspect}, ${4:near}, ${5:far});",
+    "description": "RH perspective projection"
+  },
+  "mat4 look at": {
+    "prefix": "mat4look",
+    "body": "mat4 ${1:view} = mat4_look_at(${2:eye}, ${3:target}, ${4:up});",
+    "description": "RH look-at view matrix"
+  },
+  "list new + push": {
+    "prefix": "listnew",
+    "body": [
+      "list<${1:int32}> ${2:lst};",
+      "${2:lst}.push_back(${3:value});"
+    ],
+    "description": "Create a list and push an element"
+  },
+  "imap new + set": {
+    "prefix": "imapnew",
+    "body": [
+      "imap<${1:int64}> ${2:m};",
+      "${2:m}.set(${3:key}, ${4:value});"
+    ],
+    "description": "Int-keyed map with first entry"
+  },
+  "move (ownership transfer)": {
+    "prefix": "move",
+    "body": "move(${1:x})",
+    "description": "Transfer ownership; nullifies the source slot"
+  },
+  "vec4": {
+    "prefix": "vec4",
+    "body": "vec4(${1:0.0}, ${2:0.0}, ${3:0.0}, ${4:0.0})",
+    "description": "4D float vector / quaternion-shaped"
+  },
+  "vec dot": {
+    "prefix": "vdot",
+    "body": "${1:a}.dot(${2:b})",
+    "description": "Vector dot product"
+  },
+  "vec cross": {
+    "prefix": "vcross",
+    "body": "${1:a}.cross(${2:b})",
+    "description": "Vector cross product (vec3 only)"
+  },
+  "vec normalize": {
+    "prefix": "vnorm",
+    "body": "${1:v}.normalize()",
+    "description": "Unit-length vector"
+  },
+  "time now_ms": {
+    "prefix": "nowms",
+    "body": "int64 ${1:t} = now_ms();",
+    "description": "Current monotonic milliseconds"
+  },
+  "time now_us": {
+    "prefix": "nowus",
+    "body": "int64 ${1:t} = now_us();",
+    "description": "Current monotonic microseconds"
+  },
+  "time sleep_ms": {
+    "prefix": "sleepms",
+    "body": "sleep_ms(${1:100});",
+    "description": "Sleep for N milliseconds"
+  },
+  "file open + read": {
+    "prefix": "fileread",
+    "body": [
+      "file_t ${1:f} = file_open(\"${2:path.txt}\", \"r\");",
+      "if (${1:f}.is_open()) {",
+      "\tstring ${3:text} = ${1:f}.read_all();",
+      "\t${1:f}.close();",
+      "}"
+    ],
+    "description": "Open + read all + close"
+  },
+  "file write": {
+    "prefix": "filewrite",
+    "body": "file_write(\"${1:path.txt}\", ${2:contents});",
+    "description": "One-shot write to a file"
+  },
+  "file exists": {
+    "prefix": "fileexists",
+    "body": "if (file_exists(\"${1:path}\")) {\n\t${0}\n}",
+    "description": "Test for file existence"
+  },
+  "regex match": {
+    "prefix": "regex",
+    "body": [
+      "regex ${1:re} = regex(\"${2:[0-9]+}\");",
+      "if (${1:re}.has_match(${3:text})) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Compile + test regex"
+  },
+  "regex find_all": {
+    "prefix": "regexall",
+    "body": [
+      "regex ${1:re} = regex(\"${2:[0-9]+}\");",
+      "array<string> ${3:hits} = ${1:re}.find_all(${4:text});"
+    ],
+    "description": "Compile + collect all matches"
+  },
+  "json parse": {
+    "prefix": "jsonparse",
+    "body": "json_value ${1:j} = json_parse(${2:text});",
+    "description": "Parse JSON text"
+  },
+  "json object build": {
+    "prefix": "jsonobj",
+    "body": [
+      "json_value ${1:obj} = json_object();",
+      "${1:obj}.set_key(\"${2:name}\", json_parse(\"${3:\\\"value\\\"}\"));"
+    ],
+    "description": "Construct + populate a JSON object"
+  },
+  "map create": {
+    "prefix": "mapnew",
+    "body": [
+      "map<${1:string}, ${2:int64}> ${3:m} = map_create();",
+      "${3:m}.set(${4:key}, ${5:value});"
+    ],
+    "description": "Create a map and seed an entry"
+  },
+  "array literal": {
+    "prefix": "arrlit",
+    "body": "${1:int32}[] ${2:nums} = { ${3:1, 2, 3} };",
+    "description": "Inline array literal"
+  },
+  "array iterate": {
+    "prefix": "arrfor",
+    "body": [
+      "for (${1:int32} ${2:v} : ${3:items}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Range-based loop over an array"
+  },
+  "mutex + lock_guard": {
+    "prefix": "lock",
+    "body": [
+      "{",
+      "\tlock_guard ${1:g}(${2:m});",
+      "\t${0}",
+      "}"
+    ],
+    "description": "RAII-locked critical section"
+  },
+  "atomic int32": {
+    "prefix": "atomic",
+    "body": [
+      "atomic_int32 ${1:counter}(${2:0});",
+      "${1:counter}.add(${3:1});"
+    ],
+    "description": "Atomic counter + bump"
+  },
+  "coroutine + drive": {
+    "prefix": "coro",
+    "body": [
+      "coroutine ${1:int32} ${2:gen}(${3:int32 start}) {",
+      "\t${1:int32} ${4:i} = ${5:start};",
+      "\twhile (true) {",
+      "\t\tyield ${4:i};",
+      "\t\t${4:i} = ${4:i} + 1;",
+      "\t}",
+      "}",
+      "",
+      "coroutine_t ${6:c} = ${2:gen}(${5:0});",
+      "while (${6:c}.next() == 1) {",
+      "\tprintln(${6:c}.value());",
+      "}"
+    ],
+    "description": "Coroutine generator + driver loop"
+  },
+  "annotation reflect": {
+    "prefix": "areflect",
+    "body": "[[reflect]]",
+    "description": "Generate runtime introspection metadata"
+  },
+  "annotation serialize": {
+    "prefix": "aserialize",
+    "body": "[[serialize]]",
+    "description": "Auto-generate to_bytes / from_bytes"
+  },
+  "annotation packed": {
+    "prefix": "apacked",
+    "body": "[[packed]]",
+    "description": "Remove field padding"
+  },
+  "annotation align": {
+    "prefix": "aalign",
+    "body": "[[align(${1:16})]]",
+    "description": "Custom alignment in bytes"
+  },
+  "annotation dll": {
+    "prefix": "adll",
+    "body": "[[dll(\"${1:user32.dll}\")]]\nextern ${2:int32} ${3:Func}(${4});",
+    "description": "FFI declaration to a native DLL"
+  }
+}

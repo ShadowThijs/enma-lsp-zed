@@ -1,0 +1,167 @@
+{
+  "name": "Enma",
+  "scopeName": "source.enma",
+  "fileTypes": ["em"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#preprocessor" },
+    { "include": "#annotations" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#keywords" },
+    { "include": "#types" },
+    { "include": "#constants" },
+    { "include": "#operators" },
+    { "include": "#function-call" },
+    { "include": "#identifiers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.enma",
+          "match": "//.*$" },
+        { "name": "comment.block.enma",
+          "begin": "/\\*", "end": "\\*/",
+          "patterns": [{ "name": "comment.block.enma", "match": "." }] }
+      ]
+    },
+    "preprocessor": {
+      "patterns": [
+        { "name": "keyword.control.preprocessor.enma",
+          "match": "^[ \\t]*#\\s*(define|undef|ifdef|ifndef|if|else|elif|endif|include|pragma|error|line)\\b" }
+      ]
+    },
+    "annotations": {
+      "patterns": [
+        { "name": "entity.other.attribute-name.enma",
+          "begin": "\\[\\[", "end": "\\]\\]",
+          "patterns": [
+            { "name": "support.function.attribute.enma",
+              "match": "\\b(reflect|serialize|packed|align|dll)\\b" },
+            { "name": "constant.numeric.enma",
+              "match": "\\d+" }
+          ] }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.enma",
+          "begin": "f?\"", "end": "\"",
+          "beginCaptures": { "0": { "name": "string.quoted.double.enma" } },
+          "endCaptures": { "0": { "name": "string.quoted.double.enma" } },
+          "patterns": [
+            { "name": "constant.character.escape.enma",
+              "match": "\\\\[\\\\nrt0\"'abfv?]" },
+            { "name": "constant.character.escape.hex.enma",
+              "match": "\\\\x[0-9a-fA-F]{2}" },
+            { "name": "constant.character.escape.unicode.enma",
+              "match": "\\\\u[0-9a-fA-F]{4}" },
+            { "name": "variable.other.interpolation.enma",
+              "begin": "\\{", "end": "\\}",
+              "patterns": [{ "include": "#expressions" }] }
+          ] },
+        { "name": "string.quoted.single.enma",
+          "match": "'(\\\\.|[^'\\\\])*'" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.hex.enma",
+          "match": "\\b0[xX][0-9a-fA-F_]+(_[a-zA-Z_]\\w*)?(u|i8|i16|i32|i64|u8|u16|u32|u64|f32|f64)?\\b" },
+        { "name": "constant.numeric.binary.enma",
+          "match": "\\b0[bB][01_]+(_[a-zA-Z_]\\w*)?(u|i8|i16|i32|i64|u8|u16|u32|u64)?\\b" },
+        { "name": "constant.numeric.float.enma",
+          "match": "\\b\\d+\\.\\d+([eE][+-]?\\d+)?(f32|f64|f)?\\b" },
+        { "name": "constant.numeric.float.enma",
+          "match": "\\b\\d+([eE][+-]?\\d+)(f32|f64|f)?\\b" },
+        { "name": "constant.numeric.integer.enma",
+          "match": "\\b\\d+(_[a-zA-Z_]\\w*)?(u?|i8|i16|i32|i64|u8|u16|u32|u64)?\\b" }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.enma",
+          "match": "\\b(if|else|for|while|do|switch|case|default|break|continue|return|try|catch|throw|defer|goto|match|yield)\\b" },
+        { "name": "keyword.other.declaration.enma",
+          "match": "\\b(struct|class|interface|mixin|enum|namespace|import|using|template|typename|typedef|delegate|operator|coroutine)\\b" },
+        { "name": "storage.modifier.enma",
+          "match": "\\b(const|constexpr|static|inline|extern|virtual|override|final|nullable|out|inout|property|get|set)\\b" },
+        { "name": "keyword.other.enma",
+          "match": "\\b(cast|static_cast|reinterpret_cast|const_cast|sizeof|move|offsetof|decltype|static_assert|new|delete)\\b" },
+        { "name": "storage.modifier.access.enma",
+          "match": "\\b(private|public|protected)\\b" },
+        { "name": "variable.language.enma",
+          "match": "\\bthis\\b" }
+      ]
+    },
+    "types": {
+      "patterns": [
+        { "name": "storage.type.primitive.enma",
+          "match": "\\b(void|bool|char|wchar|wchar_t|int8|int16|int32|int64|uint8|uint16|uint32|uint64|aint8|aint16|aint32|aint64|float32|float64|float|double|string|wstring|size_t|auto)\\b" },
+        { "name": "storage.type.math.enma",
+          "match": "\\b(vec2|vec3|vec4|quat|mat4|color)\\b" },
+        { "name": "storage.type.sdk.enma",
+          "match": "\\b[A-Za-z_]\\w*_t\\b" },
+        { "name": "storage.type.generic.enma",
+          "match": "\\b(list|array|map|imap|hash_set|sorted_map|vector)\\s*(?=<)" }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        { "name": "constant.language.boolean.enma",
+          "match": "\\b(true|false)\\b" },
+        { "name": "constant.language.null.enma",
+          "match": "\\b(null|nullptr)\\b" }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        { "name": "keyword.operator.assignment.enma",
+          "match": "=|\\+=|-=|\\*=|/=|%=|&=|\\|=|\\^=|<<=|>>=" },
+        { "name": "keyword.operator.logical.enma",
+          "match": "\\|\\||&&|!" },
+        { "name": "keyword.operator.comparison.enma",
+          "match": "==|!=|<=>|<=|>=|<|>" },
+        { "name": "keyword.operator.bitwise.enma",
+          "match": "\\||&|\\^|~|<<|>>" },
+        { "name": "keyword.operator.arithmetic.enma",
+          "match": "\\+\\+|--|\\+|\\-|\\*|/|%" },
+        { "name": "keyword.operator.ternary.enma",
+          "match": "\\?" },
+        { "name": "punctuation.special.enma",
+          "match": "::|->|\\.\\.\\.|\\*|&" },
+        { "name": "punctuation.separator.enma",
+          "match": ";" },
+        { "name": "punctuation.delimiter.enma",
+          "match": ",|\\." },
+        { "name": "punctuation.bracket.enma",
+          "match": "\\(|\\)|\\{|\\}|\\[|\\]" }
+      ]
+    },
+    "function-call": {
+      "patterns": [
+        { "name": "entity.name.function.call.enma",
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()" }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        { "name": "variable.other.enma",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b" }
+      ]
+    },
+    "expressions": {
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#strings" },
+        { "include": "#numbers" },
+        { "include": "#keywords" },
+        { "include": "#types" },
+        { "include": "#constants" },
+        { "include": "#operators" },
+        { "include": "#function-call" },
+        { "include": "#identifiers" }
+      ]
+    }
+  }
+}

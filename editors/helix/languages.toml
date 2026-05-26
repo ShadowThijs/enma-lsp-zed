@@ -1,0 +1,16 @@
+[[language]]
+name = "enma"
+scope = "source.enma"
+file-types = ["em"]
+comment-token = "//"
+block-comment-tokens = { start = "/*", end = "*/" }
+indent = { tab-width = 4, unit = "    " }
+language-servers = ["enma-lsp"]
+
+[[grammar]]
+name = "enma"
+source = { path = "/usr/lib/helix/runtime/grammars/enma.so" }
+
+[language-server.enma-lsp]
+command = "enma-lsp"
+args = []

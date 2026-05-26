@@ -1,0 +1,6 @@
+enma-lsp
+enma-lsp.exe
+*.vsix
+node_modules/
+out/
+package-lock.json
