@@ -303,16 +303,27 @@ impl Backend {
                 if resolved.contains(path) { continue; }
                 resolved.insert(path.clone());
 
+                let full_path = base_dir.join(path);
+                eprintln!("[import] trying: {:?}", full_path);
                 let src = Self::load_file_from_disk(base_dir, path);
-                if let Some(src) = src {
+                if let Some(ref src) = src {
+                    eprintln!("[import] loaded {} ({} bytes, {} syms)", path, src.len(),
+                        src.lines().count());
                     let mut parser = self.parser.lock().await;
                     if let Some(import_tree) = parser.parse(src.as_bytes()) {
-                        let import_model = SemanticModel::build(import_tree.root_node(), &src, get_db());
+                        let import_model = SemanticModel::build(import_tree.root_node(), src, get_db());
+                        eprintln!("[import] {} has {} symbols", path, import_model.symbols.len());
+                        for sym in &import_model.symbols {
+                            eprintln!("[import]   {:?} '{}' methods={}", sym.kind, sym.name, sym.methods.len());
+                        }
                         let nested = import_model.imports.clone();
                         model.merge_import(import_model, path);
+                        eprintln!("[import] merged, model now has {} symbols", model.symbols.len());
                         drop(parser);
                         to_process.extend(nested);
                     }
+                } else {
+                    eprintln!("[import] FAILED to load: {:?}", path);
                 }
             }
             depth += 1;
@@ -1383,6 +1394,87 @@ int64 main() {
         let total_pid = md.matches("::pid").count();
         assert!(total_pid <= 2, "FAIL: too many pid listings ({}), should be window_info_t-specific.\nMD:\n{}", total_pid, md);
         eprintln!("PASS: first.pid() resolves to window_info_t::pid ONLY (path: {})", path);
+    }
+
+    #[test]
+    fn test_custom_struct_method_hover() {
+        // Simulates: Cell c1; c1.inc(); → should show Cell::inc(), not atomic_int64::inc()
+        let source = r#"struct Cell {
+    int32 v;
+    Cell() { this->v = 0; }
+    void inc() { this->v = this->v + 1; }
+}
+
+int64 main() {
+    Cell c1;
+    c1.inc();
+    return 0;
+}
+"#;
+        let (model, db) = setup_test(source);
+        eprintln!("Symbols in model:");
+        for sym in &model.symbols {
+            eprintln!("  {:?} '{}' methods={} var_type={:?}",
+                sym.kind, sym.name, sym.methods.len(), sym.var_type);
+            for m in &sym.methods {
+                eprintln!("    method: {}()", m.name);
+            }
+        }
+
+        // Hover over 'inc' in c1.inc()
+        let pos = Position { line: 8, character: 7 };
+        let ctx = HoverContext::MethodAccess { receiver: Some("c1".into()) };
+        let result = resolve_hover("inc", pos, true, &ctx, &model, &db);
+        assert!(result.is_some(), "FAIL: 'inc' method not resolved at all");
+        let (md, path) = result.unwrap();
+        eprintln!("Path: {}", path);
+        eprintln!("Markdown:\n{}", md);
+
+        // Should show Cell::inc, NOT atomic_int64::inc
+        assert!(md.contains("Cell::inc") || md.contains("Cell.inc"),
+            "FAIL: should show Cell::inc, got path={} md={}", path, md);
+        let atomic = md.matches("atomic").count();
+        assert_eq!(atomic, 0, "FAIL: should NOT mention atomic methods, got {} occurrences.\nMD:\n{}", atomic, md);
+        eprintln!("PASS: custom struct method hover works correctly");
+    }
+
+    #[test]
+    fn test_imported_struct_method_merge() {
+        // Simulate imported struct: build lib model, merge into main model
+        let lib_source = r#"struct Cell {
+    int32 v;
+    Cell() { this->v = 0; }
+    void inc() { this->v = this->v + 1; }
+}
+"#;
+        let main_source = r#"int64 main() {
+    Cell c1;
+    c1.inc();
+    return 0;
+}
+"#;
+        let (lib_model, _) = setup_test(lib_source);
+        let (mut main_model, db) = setup_test(main_source);
+        eprintln!("Before merge: {} symbols", main_model.symbols.len());
+        main_model.merge_import(lib_model, "lib.em");
+        eprintln!("After merge: {} symbols", main_model.symbols.len());
+        for sym in &main_model.symbols {
+            eprintln!("  {:?} '{}' methods={} var_type={:?}",
+                sym.kind, sym.name, sym.methods.len(), sym.var_type);
+        }
+
+        // Hover over 'inc' in c1.inc()
+        let pos = Position { line: 2, character: 7 };
+        let ctx = HoverContext::MethodAccess { receiver: Some("c1".into()) };
+        let result = resolve_hover("inc", pos, true, &ctx, &main_model, &db);
+        assert!(result.is_some(), "FAIL: 'inc' on imported struct not resolved");
+        let (md, path) = result.unwrap();
+        eprintln!("Path: {}", path);
+        assert!(md.contains("Cell::inc") || md.contains("Cell.inc"),
+            "FAIL: should show Cell::inc from imported struct, got: {}", md);
+        let atomic = md.matches("atomic").count();
+        assert_eq!(atomic, 0, "FAIL: should NOT mention atomic methods");
+        eprintln!("PASS: imported struct method hover works after merge");
     }
 
     #[test]
