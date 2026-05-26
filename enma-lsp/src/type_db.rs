@@ -60,6 +60,8 @@ struct TypeDataFile {
     #[serde(default)]
     keyword_types: Vec<String>,
     #[serde(default)]
+    keyword_docs: HashMap<String, String>,
+    #[serde(default)]
     primitives: HashMap<String, serde_json::Value>,
     #[serde(default)]
     types: HashMap<String, ComplexType>,
@@ -74,6 +76,8 @@ pub struct TypeDatabase {
     pub math_types: HashMap<String, MathType>,
     pub functions: HashMap<String, FreeFunction>,
     pub module_functions: HashMap<String, Vec<FreeFunction>>,
+    pub type_docs: HashMap<String, String>,
+    pub keyword_docs: HashMap<String, String>,
     pub primitive_names: Vec<String>,
     pub keywords: Vec<String>,
     pub all_type_names: Vec<String>,
@@ -88,6 +92,7 @@ impl TypeDatabase {
         let mut types: HashMap<String, Vec<MethodInfo>> = HashMap::new();
         let mut functions: HashMap<String, FreeFunction> = HashMap::new();
         let mut module_functions: HashMap<String, Vec<FreeFunction>> = HashMap::new();
+        let mut type_docs: HashMap<String, String> = HashMap::new();
         let mut all_type_names: Vec<String> = Vec::new();
 
         let primitive_names: Vec<String> = data.primitives.keys().cloned().collect();
@@ -96,6 +101,9 @@ impl TypeDatabase {
         for (name, ct) in &data.types {
             types.insert(name.clone(), ct.methods.clone());
             all_type_names.push(name.clone());
+            if !ct.doc.is_empty() {
+                type_docs.insert(name.clone(), ct.doc.clone());
+            }
             for ff in &ct.free_functions {
                 functions.insert(ff.name.clone(), ff.clone());
                 module_functions.entry(ff.module.clone()).or_default().push(ff.clone());
@@ -117,6 +125,8 @@ impl TypeDatabase {
             math_types,
             functions,
             module_functions,
+            type_docs,
+            keyword_docs: data.keyword_docs,
             primitive_names,
             keywords: data.keyword_types,
             all_type_names,
@@ -129,6 +139,14 @@ impl TypeDatabase {
 
     pub fn get_fields(&self, type_name: &str) -> Option<&Vec<String>> {
         self.math_types.get(type_name).map(|m| &m.fields)
+    }
+
+    pub fn get_type_doc(&self, name: &str) -> Option<&str> {
+        self.type_docs.get(name).map(|s| s.as_str())
+    }
+
+    pub fn get_keyword_doc(&self, name: &str) -> Option<&str> {
+        self.keyword_docs.get(name).map(|s| s.as_str())
     }
 
     pub fn is_type(&self, name: &str) -> bool {

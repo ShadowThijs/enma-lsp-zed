@@ -18,6 +18,12 @@ pub struct Symbol {
     pub methods: Vec<MethodInfo2>,
     /// For variables: the declared variable type (extracted from the AST).
     pub var_type: Option<String>,
+    /// For functions: parameter list.
+    pub params: Vec<(String, Option<String>)>,
+    /// For functions: return type.
+    pub return_type: Option<String>,
+    /// For enums: variant names.
+    pub enum_variants: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -108,6 +114,9 @@ impl<'a> SymbolCollector<'a> {
             fields: Vec::new(),
             methods: Vec::new(),
             var_type: None,
+            params: Vec::new(),
+            return_type: None,
+            enum_variants: Vec::new(),
         }
     }
 
@@ -153,16 +162,60 @@ impl<'a> SymbolCollector<'a> {
         let name = self.child_text_by_field(node, "name");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            self.add_symbol(Self::empty_symbol(name, SymbolKind::Function, range));
+            let return_type = self.child_text_by_field(node, "return_type");
+            let params = self.extract_params(node);
+            let mut sym = Self::empty_symbol(name.clone(), SymbolKind::Function, range);
+            sym.return_type = return_type;
+            sym.params = params;
+            // type_name shows the full signature summary
+            sym.type_name = Some(self.function_sig_summary(&name, &sym.return_type, &sym.params));
+            self.add_symbol(sym);
         }
+    }
+
+    fn function_sig_summary(&self, name: &str, ret: &Option<String>, params: &[(String, Option<String>)]) -> String {
+        let param_strs: Vec<String> = params.iter()
+            .map(|(n, t)| {
+                if let Some(ty) = t {
+                    format!("{}: {}", n, ty)
+                } else {
+                    n.clone()
+                }
+            })
+            .collect();
+        let ret_str = ret.as_deref().unwrap_or("void");
+        format!("fn {}({}) -> {}", name, param_strs.join(", "), ret_str)
+    }
+
+    fn extract_params(&self, node: tree_sitter::Node) -> Vec<(String, Option<String>)> {
+        let mut params = Vec::new();
+        let mut cursor = node.walk();
+        for child in node.children(&mut cursor) {
+            if child.kind() == "parameter_list" || child.kind() == "parameters" {
+                let mut pc = child.walk();
+                for p in child.children(&mut pc) {
+                    if p.kind() == "parameter_declaration" || p.kind() == "optional_parameter_declaration" {
+                        let pname = self.child_text_by_field(p, "name");
+                        let ptype = self.child_text_by_field(p, "type");
+                        if let Some(n) = pname {
+                            params.push((n, ptype));
+                        }
+                    }
+                }
+            }
+        }
+        params
     }
 
     fn collect_struct(&mut self, node: tree_sitter::Node) {
         let name = self.child_text_by_field(node, "name");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            let mut sym = Self::empty_symbol(name, SymbolKind::Struct, range);
+            let mut sym = Self::empty_symbol(name.clone(), SymbolKind::Struct, range);
             self.extract_members(node, &mut sym);
+            let field_count = sym.fields.len();
+            let method_count = sym.methods.len();
+            sym.type_name = Some(format!("struct ({} fields, {} methods)", field_count, method_count));
             self.add_symbol(sym);
         }
     }
@@ -171,8 +224,11 @@ impl<'a> SymbolCollector<'a> {
         let name = self.child_text_by_field(node, "name");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            let mut sym = Self::empty_symbol(name, SymbolKind::Class, range);
+            let mut sym = Self::empty_symbol(name.clone(), SymbolKind::Class, range);
             self.extract_members(node, &mut sym);
+            let field_count = sym.fields.len();
+            let method_count = sym.methods.len();
+            sym.type_name = Some(format!("class ({} fields, {} methods)", field_count, method_count));
             self.add_symbol(sym);
         }
     }
@@ -196,8 +252,9 @@ impl<'a> SymbolCollector<'a> {
                     let rtype = self.child_text_by_field(child, "return_type");
                     if let Some(n) = mname {
                         let range = self.node_range(&child);
+                        let mparams = self.extract_params(child);
                         sym.methods.push(MethodInfo2 {
-                            name: n, return_type: rtype, params: Vec::new(), range,
+                            name: n, return_type: rtype, params: mparams, range,
                         });
                     }
                 }
@@ -219,7 +276,24 @@ impl<'a> SymbolCollector<'a> {
         let name = self.child_text_by_field(node, "name");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            self.add_symbol(Self::empty_symbol(name, SymbolKind::Enum, range));
+            let mut sym = Self::empty_symbol(name.clone(), SymbolKind::Enum, range);
+            // Extract enum variants
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                if child.kind() == "enum_body" {
+                    let mut bc = child.walk();
+                    for variant in child.children(&mut bc) {
+                        if variant.kind() == "enumerator" {
+                            if let Some(vname) = self.child_text_by_field(variant, "name") {
+                                sym.enum_variants.push(vname);
+                            }
+                        }
+                    }
+                }
+            }
+            let variant_count = sym.enum_variants.len();
+            sym.type_name = Some(format!("enum ({} variants)", variant_count));
+            self.add_symbol(sym);
         }
     }
 
@@ -244,8 +318,9 @@ impl<'a> SymbolCollector<'a> {
         let type_name = self.child_text_by_field(node, "type");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            let mut sym = Self::empty_symbol(name, SymbolKind::Variable, range);
-            sym.var_type = type_name;
+            let mut sym = Self::empty_symbol(name.clone(), SymbolKind::Variable, range);
+            sym.var_type = type_name.clone();
+            sym.type_name = type_name;
             self.add_symbol(sym);
         }
     }
@@ -255,14 +330,14 @@ impl<'a> SymbolCollector<'a> {
         let type_name = self.child_text_by_field(node, "type");
         if let Some(name) = name {
             let range = self.node_range(&node);
-            let mut sym = Self::empty_symbol(name, SymbolKind::Parameter, range);
-            sym.var_type = type_name;
+            let mut sym = Self::empty_symbol(name.clone(), SymbolKind::Parameter, range);
+            sym.var_type = type_name.clone();
+            sym.type_name = type_name;
             self.add_symbol(sym);
         }
     }
 
     /// Check for type errors in the collected symbols.
-    /// For now, reports basic issues; full type checking comes in later phases.
     fn check_type_errors(&self) -> Vec<Diagnostic> {
         let mut diags = Vec::new();
 
@@ -288,6 +363,46 @@ impl<'a> SymbolCollector<'a> {
             }
         }
 
+        // Also check for duplicate top-level definitions (function/struct/class/enum)
+        // by scanning ALL symbols regardless of scope, since scoping may miss some cases.
+        let def_kinds = [SymbolKind::Function, SymbolKind::Struct, SymbolKind::Class,
+                         SymbolKind::Enum, SymbolKind::Interface, SymbolKind::Namespace];
+        for i in 0..self.symbols.len() {
+            let sym = &self.symbols[i];
+            if !def_kinds.contains(&sym.kind) { continue; }
+            for j in (i+1)..self.symbols.len() {
+                let other = &self.symbols[j];
+                if !def_kinds.contains(&other.kind) { continue; }
+                if sym.name == other.name && sym.kind == other.kind {
+                    // Avoid duplicate diagnostics for the same pair
+                    let already = diags.iter().any(|d| d.range == other.range);
+                    if !already {
+                        diags.push(Diagnostic {
+                            range: other.range,
+                            severity: Some(DiagnosticSeverity::ERROR),
+                            code: Some(NumberOrString::String("duplicate-definition".into())),
+                            source: Some("enma-lsp".into()),
+                            message: format!(
+                                "Duplicate {} '{}' (previously defined at line {})",
+                                match sym.kind {
+                                    SymbolKind::Function => "function",
+                                    SymbolKind::Struct => "struct",
+                                    SymbolKind::Class => "class",
+                                    SymbolKind::Enum => "enum",
+                                    SymbolKind::Interface => "interface",
+                                    SymbolKind::Namespace => "namespace",
+                                    _ => "symbol",
+                                },
+                                sym.name,
+                                sym.range.start.line + 1
+                            ),
+                            ..Default::default()
+                        });
+                    }
+                }
+            }
+        }
+
         diags
     }
 
@@ -303,5 +418,256 @@ impl<'a> SymbolCollector<'a> {
             start: Position { line: start.row as u32, character: start.column as u32 },
             end: Position { line: end.row as u32, character: end.column as u32 },
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_function_symbols_collected() {
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = r#"int64 check(string x, bool y) {
+    return 1;
+}
+
+int64 main() {
+    int64 result = check("test", true);
+    return result;
+}
+"#;
+        let tree = parser.parse(source.as_bytes(), None).expect("parse failed");
+        let root = tree.root_node();
+        eprintln!("Root kind: '{}'", root.kind());
+
+        // Dump all direct children of root
+        eprintln!("Direct children of root:");
+        let mut cursor = root.walk();
+        for child in root.children(&mut cursor) {
+            let name = child.child_by_field_name("name")
+                .map(|n| source[n.start_byte()..n.end_byte()].to_string())
+                .unwrap_or_default();
+            eprintln!("  kind='{}' name='{}' range={}..{}",
+                child.kind(), name,
+                child.start_position().row, child.end_position().row);
+        }
+
+        let db = TypeDatabase::load();
+        let model = SemanticModel::build(root, source, &db);
+        eprintln!("\nCollected {} symbols:", model.symbols.len());
+        for sym in &model.symbols {
+            eprintln!("  {:?} '{}' range={}:{}..{}:{} type_name={:?} params={} ret={:?}",
+                sym.kind, sym.name,
+                sym.range.start.line, sym.range.start.character,
+                sym.range.end.line, sym.range.end.character,
+                sym.type_name,
+                sym.params.len(),
+                sym.return_type);
+        }
+
+        let check_sym = model.symbols.iter().find(|s| s.name == "check");
+        assert!(check_sym.is_some(), "FAIL: 'check' function was NOT collected by semantic model!");
+        let check = check_sym.unwrap();
+        assert_eq!(check.kind, SymbolKind::Function, "FAIL: 'check' is not a Function");
+        eprintln!("\nSUCCESS: 'check' function symbol found with {} params", check.params.len());
+
+        let main_sym = model.symbols.iter().find(|s| s.name == "main");
+        assert!(main_sym.is_some(), "FAIL: 'main' function was NOT collected!");
+    }
+
+    #[test]
+    fn test_type_db_has_critical_types() {
+        let db = TypeDatabase::load();
+        // These MUST be findable via is_type
+        for name in &["array", "window_info_t", "sidebar_section_t", "button_t", "menu_t",
+                       "proc_t", "cpu_t", "http_response_t", "frame_t", "label_t"] {
+            assert!(db.is_type(name), "FAIL: type '{}' not found via is_type()", name);
+        }
+        // These MUST be primitives
+        for name in &["int64", "float64", "string", "bool", "void", "int32", "uint64"] {
+            assert!(db.is_primitive(name), "FAIL: primitive '{}' not found", name);
+        }
+        // window_info_t should have methods
+        let methods = db.get_methods("window_info_t");
+        assert!(methods.is_some(), "FAIL: window_info_t has no methods");
+        assert!(!methods.unwrap().is_empty(), "FAIL: window_info_t methods are empty");
+
+        eprintln!("Type DB: {} types, {} functions, {} keywords",
+            db.all_type_names.len(), db.functions.len(), db.keywords.len());
+    }
+
+    #[test]
+    fn test_reference_site_resolution() {
+        // Simulates the hover handler's reference-site lookup
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+        let source = r#"int64 add(int64 a, int64 b) {
+    return a + b;
+}
+
+int64 main() {
+    int64 result = add(3, 4);
+    return result;
+}
+"#;
+        let tree = parser.parse(source.as_bytes(), None).expect("parse failed");
+        let root = tree.root_node();
+        let db = TypeDatabase::load();
+        let model = SemanticModel::build(root, source, &db);
+
+        // Find 'add' function
+        let add_sym = model.symbols.iter().find(|s| s.name == "add").unwrap();
+        let main_sym = model.symbols.iter().find(|s| s.name == "main").unwrap();
+
+        // Simulate cursor at 'add' call site: line 5, the 'add' in 'add(3, 4)'
+        // Line 5 in 0-indexed: row=5
+        let call_pos = Position { line: 5, character: 21 }; // Position on 'add'
+
+        // Declaration-site check: should NOT match (cursor is at call site, not in add's range)
+        let decl_match = model.symbols.iter()
+            .filter(|s| s.name == "add" && call_pos >= s.range.start && call_pos <= s.range.end)
+            .min_by_key(|s| (s.range.end.line - s.range.start.line) * 1000);
+        assert!(decl_match.is_none(), "FAIL: declaration-site check should NOT match at call site (but did)");
+
+        // Reference-site check: should match 'add'
+        let ref_match: Vec<_> = model.symbols.iter()
+            .filter(|s| s.name == "add" && !(call_pos >= s.range.start && call_pos <= s.range.end))
+            .collect();
+        assert!(!ref_match.is_empty(), "FAIL: reference-site check found NO matches for 'add'");
+        assert_eq!(ref_match[0].kind, SymbolKind::Function, "FAIL: reference match is not a Function");
+        eprintln!("Reference-site check found 'add' correctly");
+
+        // Verify 'add' symbol has expected data
+        assert_eq!(add_sym.return_type, Some("int64".to_string()));
+        assert_eq!(add_sym.params.len(), 2);
+        eprintln!("'add' signature: params={} ret={:?}", add_sym.params.len(), add_sym.return_type);
+    }
+
+    #[test]
+    fn test_full_hover_pipeline_e2e() {
+        // End-to-end test that simulates the EXACT logic in the hover handler.
+        // This proves that hovering over a reference site resolves to the definition.
+
+        let mut parser = tree_sitter::Parser::new();
+        unsafe {
+            let lang_fn = crate::parser::tree_sitter_enma;
+            let lang = tree_sitter::Language::from_raw(lang_fn() as *const _);
+            parser.set_language(&lang).unwrap();
+        }
+
+        // This mimics a typical Enma file with a function definition and its call site
+        let source = r#"int64 helper(string msg, int64 count) {
+    println(msg);
+    return count + 1;
+}
+
+int64 main() {
+    int64 x = helper("hello", 42);
+    //         ^ cursor here on 'helper'
+    return x;
+}
+"#;
+        let tree = parser.parse(source.as_bytes(), None).expect("parse failed");
+        let root = tree.root_node();
+        let db = TypeDatabase::load();
+        let model = SemanticModel::build(root, source, &db);
+
+        // Helper function for leaf-finding (replicates find_named_leaf from main.rs)
+        fn find_leaf(node: tree_sitter::Node, target: Position) -> Option<tree_sitter::Node> {
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                let cr = Range {
+                    start: Position { line: child.start_position().row as u32, character: child.start_position().column as u32 },
+                    end: Position { line: child.end_position().row as u32, character: child.end_position().column as u32 },
+                };
+                if target >= cr.start && target <= cr.end {
+                    if child.child_count() == 0 || child.kind() == "identifier" {
+                        return Some(child);
+                    }
+                    return find_leaf(child, target);
+                }
+            }
+            None
+        }
+
+        fn in_range(r: &Range, p: Position) -> bool {
+            p >= r.start && p <= r.end
+        }
+
+        // --- Test 1: hover at definition site (line 0, the 'helper' in 'int64 helper(...)') ---
+        let def_pos = Position { line: 0, character: 6 }; // on 'helper' name
+        let leaf = find_leaf(root, def_pos).expect("FAIL: no leaf at definition position");
+        assert_eq!(leaf.kind(), "identifier", "FAIL: leaf is not identifier");
+
+        // Declaration-site lookup
+        let name = &source[leaf.start_byte()..leaf.end_byte()];
+        assert_eq!(name, "helper");
+        let def_result = model.symbols.iter()
+            .filter(|s| s.name == name && in_range(&s.range, def_pos))
+            .min_by_key(|s| (s.range.end.line - s.range.start.line) * 1000);
+        assert!(def_result.is_some(), "FAIL: declaration-site lookup failed for 'helper' at definition");
+        assert_eq!(def_result.unwrap().kind, SymbolKind::Function);
+        eprintln!("TEST 1 PASS: declaration-site hover finds 'helper' at definition");
+
+        // --- Test 2: hover at reference site (line 6, the 'helper' in 'helper("hello", 42)') ---
+        let ref_line = 6u32;
+        let ref_pos = Position { line: ref_line, character: 15 }; // on 'helper' in call
+        let leaf2 = find_leaf(root, ref_pos).expect("FAIL: no leaf at reference position");
+        assert_eq!(leaf2.kind(), "identifier");
+        let name2 = &source[leaf2.start_byte()..leaf2.end_byte()];
+        assert_eq!(name2, "helper");
+
+        // Decl-site check should fail at reference site
+        let decl_at_ref = model.symbols.iter()
+            .filter(|s| s.name == name2 && in_range(&s.range, ref_pos))
+            .min_by_key(|s| (s.range.end.line - s.range.start.line) * 1000);
+        assert!(decl_at_ref.is_none(), "FAIL: decl-site check should NOT match at reference site");
+
+        // Ref-site check should succeed
+        let ref_result: Vec<_> = model.symbols.iter()
+            .filter(|s| s.name == name2 && !in_range(&s.range, ref_pos))
+            .collect();
+        assert!(!ref_result.is_empty(), "FAIL: reference-site lookup found NO matches for 'helper'");
+        let best = ref_result.iter().max_by_key(|s| match s.kind {
+            SymbolKind::Function => 5, _ => 0,
+        }).unwrap();
+        assert_eq!(best.kind, SymbolKind::Function, "FAIL: best reference match is not a Function");
+        assert_eq!(best.name, "helper");
+        assert!(best.return_type.is_some(), "FAIL: 'helper' has no return type");
+        eprintln!("TEST 2 PASS: reference-site hover correctly resolves 'helper' at call site (returns '{}')",
+            best.return_type.as_deref().unwrap_or("?"));
+
+        // --- Test 3: type database resolution for built-in and perception types ---
+        // window_info_t
+        assert!(db.is_type("window_info_t"), "FAIL: window_info_t not in DB");
+        assert!(db.get_methods("window_info_t").unwrap().len() >= 6, "FAIL: window_info_t has too few methods");
+        eprintln!("TEST 3 PASS: window_info_t has {} methods", db.get_methods("window_info_t").unwrap().len());
+
+        // primitive int64
+        assert!(db.is_primitive("int64"), "FAIL: int64 not a primitive");
+        eprintln!("TEST 4 PASS: int64 is a primitive");
+
+        // method lookup (hovering over 'length' should find string.length, array.length, etc.)
+        let mut found_len = false;
+        for (tname, methods) in &db.types {
+            for m in methods {
+                if m.name == "length" {
+                    found_len = true;
+                    eprintln!("TEST 5: method 'length' found on type '{}' -> {}", tname, m.r#return);
+                }
+            }
+        }
+        assert!(found_len, "FAIL: no types have 'length' method");
+        eprintln!("TEST 5 PASS: method lookup works for 'length'");
     }
 }

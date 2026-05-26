@@ -20,5 +20,5 @@ impl EnmaParser {
 }
 
 extern "C" {
-    fn tree_sitter_enma() -> *const std::ffi::c_void;
+    pub fn tree_sitter_enma() -> *const std::ffi::c_void;
 }
