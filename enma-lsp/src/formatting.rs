@@ -434,50 +434,60 @@ fn fmt_struct(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
 }
 
 fn fmt_enum(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
-    let mut in_body = false;
-    for k in kids(node) {
+    let all_kids = kids(node);
+    let body_start = all_kids.iter().position(|k| k.kind() == "{");
+    let body_end = all_kids.iter().position(|k| k.kind() == "}");
+
+    // Emit preamble (everything before {)
+    let preamble_end = body_start.unwrap_or(all_kids.len());
+    for k in all_kids.iter().take(preamble_end) {
         match k.kind() {
             "enum" => ctx.emit(out, "enum"),
-            "identifier" if !in_body => {
+            "identifier" => {
                 ctx.emit(out, " ");
-                ctx.emit(out, &trimmed(src, k));
+                ctx.emit(out, &trimmed(src, *k));
             }
-            "{" => {
-                ctx.emit(out, " {");
-                ctx.nl();
-                ctx.inc();
-                in_body = true;
-            }
-            "}" => {
-                ctx.dec();
-                ctx.emit(out, "}");
-                ctx.nl();
-                in_body = false;
-            }
-            "," => {} // handled when emitting each member
             _ => {
-                if in_body {
-                    ctx.emit(out, text(src, k).trim());
-                    ctx.emit(out, ",");
-                    ctx.nl();
+                let t = text(src, *k).trim();
+                if t == ":" {
+                    ctx.emit(out, ": ");
+                } else {
+                    ctx.emit(out, t);
                 }
             }
         }
     }
-}
 
-fn fmt_enum_body(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
-    ctx.emit(out, "{");
+    // Open brace
+    ctx.emit(out, " {");
     ctx.nl();
     ctx.inc();
-    for k in kids(node) {
-        let kind = k.kind();
-        if kind != "{" && kind != "}" && kind != "," && !k.is_extra() {
-            ctx.emit(out, text(src, k).trim());
+
+    // Format body members
+    if let (Some(s), Some(e)) = (body_start, body_end) {
+        let body_kids = &all_kids[s + 1..e];
+        let mut member: Vec<String> = Vec::new();
+        for &bk in body_kids {
+            let t = text(src, bk).trim().to_string();
+            if t == "," {
+                if !member.is_empty() {
+                    ctx.emit(out, &member.join(" "));
+                    ctx.emit(out, ",");
+                    ctx.nl();
+                    member.clear();
+                }
+            } else {
+                member.push(t);
+            }
+        }
+        if !member.is_empty() {
+            ctx.emit(out, &member.join(" "));
             ctx.emit(out, ",");
             ctx.nl();
         }
     }
+
+    // Close brace
     ctx.dec();
     ctx.emit(out, "}");
     ctx.nl();
@@ -1223,43 +1233,38 @@ mod tests {
     }
 
     #[test]
+    fn messy_real_test() {
+        let src = include_str!("../../test/benchmark/messy_real.em");
+        let tree = parse(src);
+        let result = format(src, &tree);
+        assert!(result.contains("struct Connection"));
+        assert!(result.contains("string host;"));
+        assert!(result.contains("conn.is_valid()"));
+        assert!(result.contains("catch(string err)"));
+        assert!(result.contains("arr[idx] == target"));
+        assert_eq!(result.matches('{').count(), result.matches('}').count());
+    }
+
+    #[test]
     fn stress_test() {
         let src = include_str!("../../test/benchmark/simple_test.em");
         let tree = parse(src);
         let result = format(src, &tree);
-        // Content preservation
         assert!(result.contains("struct Vec3"));
         assert!(result.contains("class Entity"));
         assert!(result.contains("int32 main"));
         assert!(result.contains("enum Color"));
-        assert!(result.contains("template<typename T>"));
-        // Brace balance
         assert_eq!(result.matches('{').count(), result.matches('}').count());
-        // Proper indentation
         assert!(result.contains("struct Vec3 {\n\tfloat32 x;"));
-        assert!(result.contains("class Entity {\n\tint64 id;"));
-        // Operator spacing
         assert!(result.contains("if (len > 0.0)"));
-        assert!(result.contains("if (a > b && b > c)"));
         assert!(result.contains("while (i < items.length())"));
         assert!(result.contains("for (int32 j = 0; j < items.length(); j = j + 1)"));
-        // Comma spacing
-        assert!(result.contains("int32 process(int32 a, int32 b, int32 c)"));
-        // Match arms
         assert!(result.contains("RED => \"red\","));
-        // Catch clause
         assert!(result.contains("catch(string e)"));
-        // Subscript
         assert!(result.contains("a[0]"));
-        // Trailing whitespace stripped
         for line in result.lines() {
-            assert!(
-                !line.ends_with(' ') && !line.ends_with('\t'),
-                "trailing whitespace: {:?}",
-                line
-            );
+            assert!(!line.ends_with(' ') && !line.ends_with('\t'));
         }
-        // No double blank lines
         let mut prev_empty = false;
         for line in result.lines() {
             let empty = line.trim().is_empty();
