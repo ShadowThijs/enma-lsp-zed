@@ -4,6 +4,7 @@ mod completion;
 mod semantic;
 mod hover;
 mod formatting;
+mod bundler;
 
 use parser::EnmaParser;
 use type_db::TypeDatabase;
@@ -49,6 +50,10 @@ impl LanguageServer for Backend {
                     ..Default::default()
                 }),
                 document_formatting_provider: Some(OneOf::Left(true)),
+                execute_command_provider: Some(ExecuteCommandOptions {
+                    commands: vec!["enma.bundle".to_string()],
+                    ..Default::default()
+                }),
                 ..Default::default()
             },
             server_info: Some(ServerInfo {
@@ -287,34 +292,84 @@ impl LanguageServer for Backend {
         }
         Ok(None)
     }
+
+    async fn execute_command(
+        &self,
+        params: ExecuteCommandParams,
+    ) -> LspResult<Option<serde_json::Value>> {
+        if params.command != "enma.bundle" {
+            return Ok(None);
+        }
+
+        let uri_str = params
+            .arguments
+            .first()
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        let strip_comments = params
+            .arguments
+            .get(1)
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let output_path = params
+            .arguments
+            .get(2)
+            .and_then(|v| v.as_str());
+
+        let uri: Url = uri_str
+            .parse()
+            .map_err(|e| tower_lsp::jsonrpc::Error {
+                code: tower_lsp::jsonrpc::ErrorCode::InvalidParams,
+                message: format!("Invalid URI: {}", e).into(),
+                data: None,
+            })?;
+
+        let entry_path = uri
+            .to_file_path()
+            .map_err(|_| tower_lsp::jsonrpc::Error {
+                code: tower_lsp::jsonrpc::ErrorCode::InvalidParams,
+                message: "URI is not a file path".into(),
+                data: None,
+            })?;
+
+        let opts = bundler::BundleOptions { strip_comments };
+        let result = bundler::bundle(&entry_path, &opts).map_err(|e| {
+            tower_lsp::jsonrpc::Error {
+                code: tower_lsp::jsonrpc::ErrorCode::InternalError,
+                message: e.to_string().into(),
+                data: None,
+            }
+        })?;
+
+        if let Some(out_path) = output_path {
+            if std::path::Path::new(out_path).exists() {
+                return Err(tower_lsp::jsonrpc::Error {
+                    code: tower_lsp::jsonrpc::ErrorCode::InternalError,
+                    message: format!("Output file already exists: {}", out_path).into(),
+                    data: None,
+                });
+            }
+            if let Some(parent) = std::path::Path::new(out_path).parent() {
+                let _ = std::fs::create_dir_all(parent);
+            }
+            if let Err(e) = std::fs::write(out_path, &result.source) {
+                return Err(tower_lsp::jsonrpc::Error {
+                    code: tower_lsp::jsonrpc::ErrorCode::InternalError,
+                    message: format!("Failed to write output: {}", e).into(),
+                    data: None,
+                });
+            }
+        }
+
+        Ok(Some(serde_json::json!({
+            "source": result.source,
+            "warnings": result.warnings,
+            "written": output_path,
+        })))
+    }
 }
 
 impl Backend {
-    /// Try to load a file from disk, given a directory and relative path.
-    /// Handles both relative paths (joined with base_dir) and absolute paths (used directly).
-    fn load_file_from_disk(base_dir: &std::path::Path, import_path: &str) -> Option<String> {
-        // Detect absolute paths: Unix (/...), Windows (C:\... or C:/...)
-        let is_absolute = import_path.starts_with('/')
-            || (import_path.len() >= 3
-                && import_path.as_bytes()[1] == b':'
-                && (import_path.as_bytes()[2] == b'/' || import_path.as_bytes()[2] == b'\\'));
-        let full = if is_absolute {
-            std::path::PathBuf::from(import_path)
-        } else {
-            base_dir.join(import_path)
-        };
-        let full_em = if is_absolute {
-            std::path::PathBuf::from(format!("{}.em", import_path))
-        } else {
-            base_dir.join(format!("{}.em", import_path))
-        };
-        if full.exists() {
-            std::fs::read_to_string(&full).ok()
-        } else {
-            std::fs::read_to_string(&full_em).ok()
-        }
-    }
-
     /// Build a semantic model with import resolution. Loads imported files
     /// from disk or from already-opened documents. Resolves imports recursively
     /// with cycle detection (max 10 levels deep).
@@ -366,7 +421,8 @@ impl Backend {
 
                 let full_path = base_dir.join(path);
                 eprintln!("[import] trying: {:?}", full_path);
-                let src = Self::load_file_from_disk(base_dir, path);
+                let src = bundler::resolve_import_path(base_dir, path)
+                    .and_then(|p| std::fs::read_to_string(p).ok());
                 if let Some(ref src) = src {
                     eprintln!("[import] loaded {} ({} bytes, {} syms)", path, src.len(),
                         src.lines().count());
@@ -408,7 +464,8 @@ impl Backend {
                 for path in &imports {
                     if !resolved.contains(path) {
                         resolved.insert(path.clone());
-                        if let Some(src) = Self::load_file_from_disk(base, path) {
+                        if let Some(src) = bundler::resolve_import_path(base, path)
+                            .and_then(|p| std::fs::read_to_string(p).ok()) {
                             if let Some(import_tree) = parser.parse(src.as_bytes()) {
                                 let im = SemanticModel::build(import_tree.root_node(), &src, get_db());
                                 model.merge_import(im, path);

@@ -25,4 +25,17 @@ function M.setup(opts)
   end
 end
 
+function M.bundle(opts)
+  opts = opts or {}
+  local params = {
+    command = "enma.bundle",
+    arguments = {
+      vim.uri_from_bufnr(opts.bufnr or 0),
+      opts.strip_comments or false,
+      opts.output or nil,
+    },
+  }
+  vim.lsp.buf.execute_command(params)
+end
+
 return M

@@ -36,3 +36,29 @@ if lsp_cmd then
     end,
   })
 end
+
+-- Bundle command
+vim.api.nvim_create_user_command("EnmaBundle", function(opts)
+  local output_path = opts.args ~= "" and opts.args or nil
+  if not output_path then
+    output_path = vim.fn.input("Output path: ", "output/bundled.em")
+    if output_path == "" then
+      vim.notify("Enma Bundle: cancelled", vim.log.levels.WARN)
+      return
+    end
+  end
+  local params = {
+    command = "enma.bundle",
+    arguments = {
+      vim.uri_from_bufnr(0),
+      opts.bang,  -- :EnmaBundle! enables strip-comments
+      output_path,
+    },
+  }
+  vim.lsp.buf.execute_command(params)
+  vim.notify("Enma Bundle: writing to " .. output_path, vim.log.levels.INFO)
+end, {
+  bang = true,   -- ! = strip comments
+  nargs = "?",   -- optional output path
+  desc = "Bundle Enma imports into a single file",
+})

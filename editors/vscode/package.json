@@ -36,6 +36,13 @@
         "language": "enma",
         "path": "./snippets/enma.code-snippets"
       }
+    ],
+    "commands": [
+      {
+        "command": "enma.bundleFile",
+        "title": "Enma: Bundle Imports",
+        "category": "Enma"
+      }
     ]
   },
   "scripts": {

@@ -8,11 +8,12 @@ mod parser;
 mod type_db;
 mod semantic;
 mod hover;
+mod bundler;
 
 use type_db::TypeDatabase;
 use semantic::SemanticModel;
 use hover::*;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
 static TYPE_DB: OnceLock<TypeDatabase> = OnceLock::new();
@@ -26,7 +27,51 @@ fn main() {
     if args.len() < 2 {
         eprintln!("Usage: test-lsp <file.em> [<file2.em> ...]");
         eprintln!("       test-lsp --dir <directory>");
+        eprintln!("       test-lsp --bundle <file.em> [--strip-comments] [--output <path>]");
         std::process::exit(1);
+    }
+
+    // ── Bundle mode ──
+    if args[1] == "--bundle" && args.len() >= 3 {
+        let entry = PathBuf::from(&args[2]);
+        let strip = args.iter().any(|a| a == "--strip-comments");
+        let output = args
+            .iter()
+            .position(|a| a == "--output")
+            .and_then(|i| args.get(i + 1));
+
+        let opts = bundler::BundleOptions {
+            strip_comments: strip,
+        };
+
+        match bundler::bundle(&entry, &opts) {
+            Ok(result) => {
+                for w in &result.warnings {
+                    eprintln!("[bundle] WARNING: {}", w);
+                }
+                if let Some(path) = output {
+                    if Path::new(path).exists() {
+                        eprintln!("[bundle] ERROR: output file already exists: {}", path);
+                        std::process::exit(1);
+                    }
+                    if let Some(parent) = Path::new(path).parent() {
+                        let _ = std::fs::create_dir_all(parent);
+                    }
+                    if let Err(e) = std::fs::write(path, &result.source) {
+                        eprintln!("[bundle] ERROR writing output: {}", e);
+                        std::process::exit(1);
+                    }
+                    eprintln!("[bundle] Wrote {} bytes to {}", result.source.len(), path);
+                } else {
+                    println!("{}", result.source);
+                }
+            }
+            Err(e) => {
+                eprintln!("[bundle] ERROR: {}", e);
+                std::process::exit(1);
+            }
+        }
+        return;
     }
 
     let db = get_db();
