@@ -9,7 +9,14 @@ pub fn format(source: &str, tree: &Tree) -> String {
         col: 0,
         wrap_stack: Vec::new(),
     };
-    fmt_node(&mut out, &mut ctx, source, tree.root_node());
+    let root = tree.root_node();
+    if root.kind() == "ERROR" {
+        // Parser produced an ERROR root — format each child individually,
+        // preserving ERROR children as raw text
+        fmt_unit(&mut out, &mut ctx, source, root);
+    } else {
+        fmt_node(&mut out, &mut ctx, source, root);
+    }
     polish(&mut out);
     out
 }
@@ -143,7 +150,7 @@ fn trimmed(src: &str, node: Node<'_>) -> String {
 
 fn fmt_node(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
     match node.kind() {
-        "ERROR" => fmt_unit(out, ctx, src, node),
+        "ERROR" => fmt_raw(out, ctx, src, node),
         "translation_unit" => fmt_unit(out, ctx, src, node),
         "comment" => {
             let t = text(src, node).trim();
@@ -238,6 +245,11 @@ fn fmt_node(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
 fn fmt_unit(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
     let items = kids(node);
     for (i, item) in items.iter().enumerate() {
+        if item.kind() == "ERROR" {
+            // Preserve ERROR subtrees as raw text — don't try to format them
+            fmt_raw(out, ctx, src, *item);
+            continue;
+        }
         if item.kind() == "empty_statement" {
             fmt_node(out, ctx, src, *item);
             continue;
@@ -246,7 +258,7 @@ fn fmt_unit(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
             let prev_top = items[..i]
                 .iter()
                 .rev()
-                .find(|k| k.kind() != "empty_statement")
+                .find(|k| k.kind() != "empty_statement" && k.kind() != "ERROR")
                 .map(|k| k.kind());
             if let Some(pk) = prev_top {
                 if top_level(pk) {
