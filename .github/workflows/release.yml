@@ -67,10 +67,10 @@ jobs:
         shell: bash
         run: |
           mkdir -p editors/dist/queries
-          cp grammars/enma/tree-sitter-enma/queries/highlights.scm editors/dist/queries/
-          cp grammars/enma/tree-sitter-enma/queries/brackets.scm editors/dist/queries/
-          cp grammars/enma/tree-sitter-enma/queries/indents.scm editors/dist/queries/
-          cp grammars/enma/tree-sitter-enma/queries/outline.scm editors/dist/queries/
+          cp tree-sitter-enma/queries/highlights.scm editors/dist/queries/
+          cp tree-sitter-enma/queries/brackets.scm editors/dist/queries/
+          cp tree-sitter-enma/queries/indents.scm editors/dist/queries/
+          cp tree-sitter-enma/queries/outline.scm editors/dist/queries/
 
       - name: Build VSCode extension
         shell: bash
