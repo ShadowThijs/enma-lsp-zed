@@ -3,6 +3,7 @@ mod type_db;
 mod completion;
 mod semantic;
 mod hover;
+mod formatting;
 
 use parser::EnmaParser;
 use type_db::TypeDatabase;
@@ -47,6 +48,7 @@ impl LanguageServer for Backend {
                     trigger_characters: Some(vec!["(".into(), ",".into()]),
                     ..Default::default()
                 }),
+                document_formatting_provider: Some(OneOf::Left(true)),
                 ..Default::default()
             },
             server_info: Some(ServerInfo {
@@ -247,6 +249,42 @@ impl LanguageServer for Backend {
         &self,
         _params: SignatureHelpParams,
     ) -> LspResult<Option<SignatureHelp>> {
+        Ok(None)
+    }
+
+    async fn formatting(
+        &self,
+        params: DocumentFormattingParams,
+    ) -> LspResult<Option<Vec<TextEdit>>> {
+        let uri = params.text_document.uri;
+        eprintln!("[formatting] request for {}", uri);
+        let docs = self.documents.lock().await;
+        if let Some(source) = docs.get(&uri) {
+            eprintln!("[formatting] source len={}", source.len());
+            let mut parser = self.parser.lock().await;
+            if let Some(tree) = parser.parse(source.as_bytes()) {
+                let formatted = formatting::format(source, &tree);
+                eprintln!("[formatting] formatted len={} same={}", formatted.len(), *source == formatted);
+                if *source != formatted {
+                    let line_count = source.lines().count().max(1) as u32;
+                    let last_line_len = source
+                        .lines()
+                        .last()
+                        .map(|l| l.len())
+                        .unwrap_or(0) as u32;
+                    let edit = vec![TextEdit {
+                        range: Range {
+                            start: Position::new(0, 0),
+                            end: Position::new(line_count - 1, last_line_len),
+                        },
+                        new_text: formatted,
+                    }];
+                    eprintln!("[formatting] returning {} bytes of edits", edit[0].new_text.len());
+                    return Ok(Some(edit));
+                }
+                eprintln!("[formatting] no changes needed");
+            }
+        }
         Ok(None)
     }
 }
