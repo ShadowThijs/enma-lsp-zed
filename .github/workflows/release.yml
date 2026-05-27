@@ -1,0 +1,113 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - 'b*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            bin_ext: ''
+            shlib_ext: so
+            shlib_flags: '-shared -fPIC'
+          - os: windows-latest
+            bin_ext: .exe
+            shlib_ext: dll
+            shlib_flags: '-shared'
+          - os: macos-latest
+            bin_ext: ''
+            shlib_ext: dylib
+            shlib_flags: '-shared -fPIC -install_name @rpath/enma.dylib'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build LSP server
+        run: |
+          cd enma-lsp
+          cargo build --release
+
+      - name: Build tree-sitter parser
+        if: matrix.os != 'windows-latest'
+        run: |
+          mkdir -p editors/dist/parser
+          cc ${{ matrix.shlib_flags }} -o editors/dist/parser/enma.${{ matrix.shlib_ext }} \
+            tree-sitter-enma/src/parser.c \
+            -Itree-sitter-enma/src -std=c11 -O2
+
+      - name: Build tree-sitter parser (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          mkdir -p editors/dist/parser
+          gcc -shared -o editors/dist/parser/enma.dll \
+            tree-sitter-enma/src/parser.c \
+            -Itree-sitter-enma/src -std=c11 -O2
+        env:
+          CC: gcc
+
+      - name: Build Zed extension
+        run: |
+          cargo build --release
+
+      - name: Copy queries
+        shell: bash
+        run: |
+          mkdir -p editors/dist/queries
+          cp grammars/enma/tree-sitter-enma/queries/highlights.scm editors/dist/queries/
+          cp grammars/enma/tree-sitter-enma/queries/brackets.scm editors/dist/queries/
+          cp grammars/enma/tree-sitter-enma/queries/indents.scm editors/dist/queries/
+          cp grammars/enma/tree-sitter-enma/queries/outline.scm editors/dist/queries/
+
+      - name: Build VSCode extension
+        shell: bash
+        run: |
+          mkdir -p editors/dist/lsp
+          cp enma-lsp/target/release/enma-lsp${{ matrix.bin_ext }} editors/dist/lsp/
+          cd editors/vscode
+          cp ../../editors/dist/lsp/enma-lsp${{ matrix.bin_ext }} .
+          npm install
+          node build.mjs
+          npx vsce package --allow-missing-repository
+
+      - name: Prepare Neovim artifacts
+        shell: bash
+        run: |
+          mkdir -p editors/dist/lsp
+          cp enma-lsp/target/release/enma-lsp${{ matrix.bin_ext }} editors/dist/lsp/
+          mkdir -p editors/nvim/parser editors/nvim/queries/enma
+          cp editors/dist/lsp/enma-lsp${{ matrix.bin_ext }} editors/nvim/
+          cp editors/dist/parser/enma.${{ matrix.shlib_ext }} editors/nvim/parser/
+          cp editors/dist/queries/*.scm editors/nvim/queries/enma/
+
+      - name: Prepare Helix artifacts
+        shell: bash
+        run: |
+          mkdir -p editors/helix/runtime/grammars editors/helix/runtime/queries/enma
+          cp editors/dist/lsp/enma-lsp${{ matrix.bin_ext }} editors/helix/
+          cp editors/dist/parser/enma.${{ matrix.shlib_ext }} editors/helix/runtime/grammars/
+          cp editors/dist/queries/*.scm editors/helix/runtime/queries/enma/
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            editors/vscode/enma-lsp-*.vsix
+            enma-lsp/target/release/enma-lsp${{ matrix.bin_ext }}
+            editors/dist/parser/enma.${{ matrix.shlib_ext }}
+            extension.wasm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

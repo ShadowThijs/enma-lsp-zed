@@ -16,20 +16,9 @@ Prompts for output path (default: `output/bundled.em`) and comment stripping.
 
 ## Zed
 
-Command palette (`Ctrl+Shift+P`):
-
-```
-enma.bundle
-```
-
-Or bind a key in `keymap.json`:
-```json
-{
-  "context": "Editor && language == enma",
-  "bindings": {
-    "ctrl-shift-b": ["lsp::ExecuteCommand", { "command": "enma.bundle" }]
-  }
-}
+Zed does not yet support LSP `workspace/executeCommand` natively.
+The Zed team is working on adding this — for now use VSCode or Neovim
+to bundle, or wait until the feature lands.
 ```
 
 ## Neovim

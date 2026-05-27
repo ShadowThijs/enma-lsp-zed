@@ -21,3 +21,7 @@ editors/vscode/node_modules/
 editors/vscode/enma-lsp
 editors/vscode/enma-lsp.exe
 editors/vscode/*.vsix
+enma-lsp/test-lsp
+enma-lsp/enma-lsp
+/examples
+/test
