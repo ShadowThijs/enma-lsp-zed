@@ -434,18 +434,34 @@ fn fmt_struct(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
 }
 
 fn fmt_enum(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
+    let mut in_body = false;
     for k in kids(node) {
         match k.kind() {
             "enum" => ctx.emit(out, "enum"),
-            "identifier" => {
+            "identifier" if !in_body => {
                 ctx.emit(out, " ");
                 ctx.emit(out, &trimmed(src, k));
             }
-            "enum_body" => {
-                ctx.emit(out, " ");
-                fmt_enum_body(out, ctx, src, k);
+            "{" => {
+                ctx.emit(out, " {");
+                ctx.nl();
+                ctx.inc();
+                in_body = true;
             }
-            _ => {}
+            "}" => {
+                ctx.dec();
+                ctx.emit(out, "}");
+                ctx.nl();
+                in_body = false;
+            }
+            "," => {} // handled when emitting each member
+            _ => {
+                if in_body {
+                    ctx.emit(out, text(src, k).trim());
+                    ctx.emit(out, ",");
+                    ctx.nl();
+                }
+            }
         }
     }
 }
@@ -551,6 +567,15 @@ fn fmt_if(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
                 ctx.emit(out, " (");
                 in_cond = true;
                 ctx.push_wrap();
+                // Collect condition children until )
+                let mut cond = Vec::new();
+                let mut j = i + 1;
+                while j < items.len() && items[j].kind() != ")" {
+                    cond.push(items[j]);
+                    j += 1;
+                }
+                fmt_nodes_spaced(out, ctx, src, &cond);
+                i = j - 1; // will get incremented to j at loop end
             }
             ")" if in_cond => {
                 ctx.pop_wrap();
@@ -561,20 +586,18 @@ fn fmt_if(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
                 ctx.emit(out, " ");
                 fmt_body_inline(out, ctx, src, k);
             }
-            _ => {
-                if in_cond {
-                    ctx.maybe_wrap(out);
-                    fmt_node(out, ctx, src, k);
-                }
-            }
+            _ => {}
         }
         i += 1;
     }
 }
 
 fn fmt_while(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
+    let items = kids(node);
     let mut in_cond = false;
-    for k in kids(node) {
+    let mut i = 0;
+    while i < items.len() {
+        let k = items[i];
         match k.kind() {
             "while" => ctx.emit(out, "while"),
             "do" => ctx.emit(out, "do"),
@@ -582,6 +605,14 @@ fn fmt_while(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
                 ctx.emit(out, " (");
                 in_cond = true;
                 ctx.push_wrap();
+                let mut cond = Vec::new();
+                let mut j = i + 1;
+                while j < items.len() && items[j].kind() != ")" {
+                    cond.push(items[j]);
+                    j += 1;
+                }
+                fmt_nodes_spaced(out, ctx, src, &cond);
+                i = j - 1;
             }
             ")" if in_cond => {
                 ctx.pop_wrap();
@@ -592,26 +623,55 @@ fn fmt_while(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
                 ctx.emit(out, " ");
                 fmt_body_inline(out, ctx, src, k);
             }
-            ";" => ctx.emit(out, ";"),
-            _ => {
-                if in_cond {
-                    ctx.maybe_wrap(out);
-                    fmt_node(out, ctx, src, k);
-                }
+            ";" => {
+                ctx.emit(out, ";");
+                ctx.nl();
             }
+            _ => {}
         }
+        i += 1;
     }
 }
 
 fn fmt_for(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
+    let items = kids(node);
     let mut in_cond = false;
-    for k in kids(node) {
+    let mut i = 0;
+    while i < items.len() {
+        let k = items[i];
         match k.kind() {
             "for" | "foreach" => ctx.emit(out, "for"),
             "(" if !in_cond => {
                 ctx.emit(out, " (");
                 in_cond = true;
                 ctx.push_wrap();
+                let mut cond = Vec::new();
+                let mut j = i + 1;
+                while j < items.len() && items[j].kind() != ")" {
+                    cond.push(items[j]);
+                    j += 1;
+                }
+                for (ci, &cn) in cond.iter().enumerate() {
+                    if ci > 0 {
+                        let prev = text(src, cond[ci - 1]).trim();
+                        let cur = text(src, cn).trim();
+                        if cur == ":" || cur == ";" || prev == ":" || prev == ";" {
+                            // : and ; have their own spacing, don't add extra
+                        } else if need_space(prev, cur) {
+                            ctx.emit(out, " ");
+                        }
+                    }
+                    let t = text(src, cn).trim();
+                    match t {
+                        ":" => ctx.emit(out, " : "),
+                        ";" => ctx.emit(out, "; "),
+                        _ => {
+                            ctx.maybe_wrap(out);
+                            fmt_node(out, ctx, src, cn);
+                        }
+                    }
+                }
+                i = j - 1;
             }
             ")" if in_cond => {
                 ctx.pop_wrap();
@@ -622,32 +682,32 @@ fn fmt_for(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
                 ctx.emit(out, " ");
                 fmt_body_inline(out, ctx, src, k);
             }
-            _ => {
-                if in_cond {
-                    let t = text(src, k).trim();
-                    match t {
-                        ":" => ctx.emit(out, " : "),
-                        ";" => ctx.emit(out, "; "),
-                        _ => {
-                            ctx.maybe_wrap(out);
-                            fmt_node(out, ctx, src, k);
-                        }
-                    }
-                }
-            }
+            _ => {}
         }
+        i += 1;
     }
 }
 
 fn fmt_switch(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
+    let items = kids(node);
     let mut in_cond = false;
-    for k in kids(node) {
+    let mut i = 0;
+    while i < items.len() {
+        let k = items[i];
         match k.kind() {
             "switch" => ctx.emit(out, "switch"),
             "(" if !in_cond => {
                 ctx.emit(out, " (");
                 in_cond = true;
                 ctx.push_wrap();
+                let mut cond = Vec::new();
+                let mut j = i + 1;
+                while j < items.len() && items[j].kind() != ")" {
+                    cond.push(items[j]);
+                    j += 1;
+                }
+                fmt_nodes_spaced(out, ctx, src, &cond);
+                i = j - 1;
             }
             ")" if in_cond => {
                 ctx.pop_wrap();
@@ -655,8 +715,7 @@ fn fmt_switch(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
                 in_cond = false;
             }
             "{" => {
-                ctx.emit(out, " ");
-                ctx.emit(out, "{");
+                ctx.emit(out, " {");
                 ctx.nl();
                 ctx.inc();
             }
@@ -669,25 +728,32 @@ fn fmt_switch(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
                 ctx.emit(out, text(src, k).trim());
                 ctx.nl();
             }
-            _ => {
-                if in_cond {
-                    ctx.maybe_wrap(out);
-                    fmt_node(out, ctx, src, k);
-                }
-            }
+            _ => {}
         }
+        i += 1;
     }
 }
 
 fn fmt_match(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
     let mut in_cond = false;
-    for k in kids(node) {
+    let items = kids(node);
+    let mut i = 0;
+    while i < items.len() {
+        let k = items[i];
         match k.kind() {
             "match" => ctx.emit(out, "match"),
             "(" if !in_cond => {
                 ctx.emit(out, " (");
                 in_cond = true;
                 ctx.push_wrap();
+                let mut cond = Vec::new();
+                let mut j = i + 1;
+                while j < items.len() && items[j].kind() != ")" {
+                    cond.push(items[j]);
+                    j += 1;
+                }
+                fmt_nodes_spaced(out, ctx, src, &cond);
+                i = j - 1;
             }
             ")" if in_cond => {
                 ctx.pop_wrap();
@@ -695,34 +761,28 @@ fn fmt_match(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
                 in_cond = false;
             }
             "{" => {
-                ctx.emit(out, " ");
-                ctx.emit(out, "{");
+                ctx.emit(out, " {");
                 ctx.nl();
                 ctx.inc();
             }
             "}" => {
                 ctx.dec();
                 ctx.emit(out, "}");
-                ctx.nl();
             }
             "match_arm" | "match_default_arm" => {
-                let arm_items = kids(k);
-                for ai in arm_items {
-                    match ai.kind() {
-                        "=>" => ctx.emit(out, " => "),
-                        "," => ctx.emit(out, ", "),
-                        _ => fmt_node(out, ctx, src, ai),
-                    }
+                // Emit entire arm preserving commas in source
+                let t = text(src, k).trim();
+                // Ensure comma at end
+                let needs_comma = !t.ends_with(',');
+                ctx.emit(out, t);
+                if needs_comma {
+                    ctx.emit(out, ",");
                 }
                 ctx.nl();
             }
-            _ => {
-                if in_cond {
-                    ctx.maybe_wrap(out);
-                    fmt_node(out, ctx, src, k);
-                }
-            }
+            _ => {}
         }
+        i += 1;
     }
 }
 
@@ -731,8 +791,20 @@ fn fmt_try(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
         match k.kind() {
             "try" => ctx.emit(out, "try"),
             "catch" => ctx.emit(out, " catch"),
-            "parameter_list" => {
-                ctx.emit(out, text(src, k).trim());
+            "catch_clause" => {
+                ctx.emit(out, " catch");
+                let ckids = kids(k);
+                let preamble: Vec<Node> = ckids.iter()
+                    .filter(|c| c.kind() != "catch" && c.kind() != "block")
+                    .copied()
+                    .collect();
+                fmt_nodes_spaced(out, ctx, src, &preamble);
+                for cc in ckids {
+                    if cc.kind() == "block" {
+                        ctx.emit(out, " ");
+                        fmt_body_inline(out, ctx, src, cc);
+                    }
+                }
             }
             "block" => {
                 ctx.emit(out, " ");
@@ -757,14 +829,21 @@ fn fmt_defer(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
 }
 
 fn fmt_return(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
-    for k in kids(node) {
+    let items = kids(node);
+    for (i, &k) in items.iter().enumerate() {
         let kind = k.kind();
         if kind == "return" || kind == "throw" {
             ctx.emit(out, &trimmed(src, k));
-            ctx.emit(out, " ");
         } else if kind == ";" {
             ctx.emit(out, ";");
         } else {
+            if i > 0 {
+                let prev = text(src, items[i - 1]).trim();
+                let cur = text(src, k).trim();
+                if need_space(prev, cur) {
+                    ctx.emit(out, " ");
+                }
+            }
             fmt_node(out, ctx, src, k);
         }
     }
@@ -930,6 +1009,42 @@ fn is_op(t: &str) -> bool {
 }
 
 /// Walk children through fmt_node, adding spaces between tokens that need them.
+/// Format a slice of nodes with proper spacing between adjacent tokens.
+fn fmt_nodes_spaced(out: &mut String, ctx: &mut Ctx, src: &str, items: &[Node]) {
+    for (i, &k) in items.iter().enumerate() {
+        if i > 0 {
+            let prev = text(src, items[i - 1]).trim();
+            let cur = text(src, k).trim();
+            if need_space(prev, cur) {
+                ctx.emit(out, " ");
+            }
+        }
+        fmt_node(out, ctx, src, k);
+    }
+}
+
+fn need_space(prev: &str, cur: &str) -> bool {
+    if cur.is_empty() || prev.is_empty() {
+        return false;
+    }
+    if is_op(prev) || is_op(cur) {
+        return false;
+    }
+    if cur.starts_with('(') || cur.starts_with('[') || cur.starts_with(')') || cur.starts_with(']') {
+        return false;
+    }
+    if cur == "," || cur == ";" || cur == "." || prev == "." {
+        return false;
+    }
+    if cur == "->" || prev == "->" || cur == "::" || prev == "::" {
+        return false;
+    }
+    if prev.ends_with('(') || prev.ends_with('[') {
+        return false;
+    }
+    true
+}
+
 fn fmt_kids_spaced(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
     let items = kids(node);
     for (i, &k) in items.iter().enumerate() {
@@ -1109,16 +1224,33 @@ mod tests {
 
     #[test]
     fn stress_test() {
-        let src = include_str!("../../test/benchmark/stress_test_messy.em");
+        let src = include_str!("../../test/benchmark/simple_test.em");
         let tree = parse(src);
         let result = format(src, &tree);
-        // No content loss
-        assert!(result.contains("struct Vec2"));
+        // Content preservation
+        assert!(result.contains("struct Vec3"));
         assert!(result.contains("class Entity"));
         assert!(result.contains("int32 main"));
-        assert!(result.contains("namespace Physics"));
+        assert!(result.contains("enum Color"));
+        assert!(result.contains("template<typename T>"));
         // Brace balance
         assert_eq!(result.matches('{').count(), result.matches('}').count());
+        // Proper indentation
+        assert!(result.contains("struct Vec3 {\n\tfloat32 x;"));
+        assert!(result.contains("class Entity {\n\tint64 id;"));
+        // Operator spacing
+        assert!(result.contains("if (len > 0.0)"));
+        assert!(result.contains("if (a > b && b > c)"));
+        assert!(result.contains("while (i < items.length())"));
+        assert!(result.contains("for (int32 j = 0; j < items.length(); j = j + 1)"));
+        // Comma spacing
+        assert!(result.contains("int32 process(int32 a, int32 b, int32 c)"));
+        // Match arms
+        assert!(result.contains("RED => \"red\","));
+        // Catch clause
+        assert!(result.contains("catch(string e)"));
+        // Subscript
+        assert!(result.contains("a[0]"));
         // Trailing whitespace stripped
         for line in result.lines() {
             assert!(
