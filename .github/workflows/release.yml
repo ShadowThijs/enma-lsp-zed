@@ -6,6 +6,9 @@ on:
       - 'v*'
       - 'b*'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
@@ -62,6 +65,7 @@ jobs:
       - name: Build Zed extension
         run: |
           cargo build --release
+          cp target/release/enma_lsp_zed.wasm extension.wasm
 
       - name: Copy queries
         shell: bash
