@@ -7,21 +7,30 @@
 
 /.claude
 .omc
-/docs
-snippet examples/
+
+
 grammars/enma/
 extension.wasm
+
 enma-lsp/target/
 enma-lsp/Cargo.lock
+
 tree-sitter-enma/target/
-/tools
+
 editors/dist/
 editors/vscode/out/
 editors/vscode/node_modules/
 editors/vscode/enma-lsp
 editors/vscode/enma-lsp.exe
 editors/vscode/*.vsix
+
 enma-lsp/test-lsp
 enma-lsp/enma-lsp
+
 /examples
 /test
+/tools
+/docs
+snippet examples/
+
+/scripts
