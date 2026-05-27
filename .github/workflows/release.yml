@@ -27,6 +27,9 @@ jobs:
             shlib_ext: dylib
             shlib_flags: '-shared -fPIC -install_name @rpath/enma.dylib'
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
         with:
@@ -69,7 +72,6 @@ jobs:
           cp target/wasm32-unknown-unknown/release/enma_lsp_zed.wasm extension.wasm
 
       - name: Copy queries
-        shell: bash
         run: |
           mkdir -p editors/dist/queries
           cp tree-sitter-enma/queries/highlights.scm editors/dist/queries/
@@ -78,7 +80,6 @@ jobs:
           cp tree-sitter-enma/queries/outline.scm editors/dist/queries/
 
       - name: Build VSCode extension
-        shell: bash
         run: |
           mkdir -p editors/dist/lsp
           cp enma-lsp/target/release/enma-lsp${{ matrix.bin_ext }} editors/dist/lsp/
@@ -89,7 +90,6 @@ jobs:
           npx vsce package --allow-missing-repository
 
       - name: Prepare Neovim artifacts
-        shell: bash
         run: |
           mkdir -p editors/dist/lsp
           cp enma-lsp/target/release/enma-lsp${{ matrix.bin_ext }} editors/dist/lsp/
@@ -99,7 +99,6 @@ jobs:
           cp editors/dist/queries/*.scm editors/nvim/queries/enma/
 
       - name: Prepare Helix artifacts
-        shell: bash
         run: |
           mkdir -p editors/helix/runtime/grammars editors/helix/runtime/queries/enma
           cp editors/dist/lsp/enma-lsp${{ matrix.bin_ext }} editors/helix/
