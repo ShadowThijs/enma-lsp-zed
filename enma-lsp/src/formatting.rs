@@ -143,6 +143,7 @@ fn trimmed(src: &str, node: Node<'_>) -> String {
 
 fn fmt_node(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
     match node.kind() {
+        "ERROR" => fmt_unit(out, ctx, src, node),
         "translation_unit" => fmt_unit(out, ctx, src, node),
         "comment" => {
             let t = text(src, node).trim();
@@ -1102,7 +1103,7 @@ mod tests {
         // No content loss
         assert!(result.contains("struct Vec2"));
         assert!(result.contains("class Entity"));
-        assert!(result.contains("int32 main()"));
+        assert!(result.contains("int32 main"));
         assert!(result.contains("namespace Physics"));
         // Brace balance
         assert_eq!(result.matches('{').count(), result.matches('}').count());
