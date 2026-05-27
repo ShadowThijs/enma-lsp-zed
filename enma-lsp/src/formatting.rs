@@ -257,7 +257,8 @@ fn fmt_node(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
 
 fn fmt_unit(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
     let items = kids(node);
-    let mut last_tl: Option<&str> = None;  // last non-comment top-level kind
+    let mut last_tl: Option<&str> = None;
+    let mut in_comment_block = false;
 
     for (_idx, item) in items.iter().enumerate() {
         let kind = item.kind();
@@ -272,17 +273,19 @@ fn fmt_unit(out: &mut String, ctx: &mut Ctx, src: &str, node: Node) {
         }
 
         if kind == "comment" {
-            // Blank before comment if preceded by a top-level item
-            if last_tl.is_some() {
+            // Only blank before the FIRST comment in a block
+            if last_tl.is_some() && !in_comment_block {
                 ctx.blank();
             }
+            in_comment_block = true;
             fmt_node(out, ctx, src, *item);
             continue;
         }
 
+        in_comment_block = false;
+
         if top_level(kind) {
             if let Some(pl) = last_tl {
-                // Don't blank between consecutive imports (group them)
                 if !(pl == "import_statement" && kind == "import_statement") {
                     ctx.blank();
                 }
